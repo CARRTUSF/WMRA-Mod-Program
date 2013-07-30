@@ -25,6 +25,8 @@ galilController::galilController(string IP)
 
 	if(sock.is_open())
 		cout << "socket open" << endl;
+	else
+		cout << "socket error" << endl;
 
 	sock.connected();
 
