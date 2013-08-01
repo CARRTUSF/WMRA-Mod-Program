@@ -7,8 +7,8 @@
 #include <sstream>
 #include <vector>
 #include <ctype.h>
-#include "Galil.h"
-//#include "galilController.h"
+//#include "Galil.h"
+#include "galilController.h"
 
 using namespace std;
 
@@ -42,8 +42,6 @@ private:
     //double rad2Enc[9];
 	double normalize[8]; // doesn't apply to gripper
     static string motorLookup[9];
-    static Galil controller;
-	//static galilController controller;
     //bool readSettings(); // read settings 
     bool definePosition(int motorNum, float angle);
     bool setPID(int motorNum, int P, int I, int D);

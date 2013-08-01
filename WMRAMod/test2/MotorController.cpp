@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include "stringUtility.h"
 #include "MotorController.h"
-
-#include "Galil.h"
+#include "galilController.h"
+//#include "Galil.h"
 
 using namespace std;
 
@@ -17,8 +17,8 @@ using namespace std;
 
 #define PI 3.14159265
 
-Galil MotorController::controller("192.168.1.22");
-//galilController galilController("192.168.1.22");
+//Galil MotorController::controller("192.168.1.22");
+galilController controller;
 string MotorController::motorLookup[] = {"H","A","B","C","D","E","F","G","H"};
 
 
@@ -26,8 +26,6 @@ MotorController::MotorController()
 {
 	long int sum;
 	initialized = false;
-	//controller = Galil("192.168.1.104");
-	//motorLookup[] = {'H','A','B','C','D','E','F','G','H'};
 
 	//calculate conversion values
 	enc2Radian[1] = PI/6595000;//a
@@ -120,6 +118,7 @@ bool MotorController::initialize(){
 
 	controller.command("SH"); //turn on motors
 */
+	controller.initialize("192.168.1.22");
 	initialized = wmraSetup();
 	return true;
 }

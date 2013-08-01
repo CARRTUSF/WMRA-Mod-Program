@@ -17,69 +17,26 @@ server_tcpsocket sock;
 
 // Public Functions
 
-galilController::galilController(string IP)
+galilController::galilController()
 {
 	initialized = false;
+}
 
+bool galilController::initialize(string IP)
+{
 	sock.open(IP.c_str());
-
-	if(sock.is_open())
-		cout << "socket open" << endl;
-	else
-		cout << "socket error" << endl;
-
 	sock.connected();
 
-	
-
-
-/*
-
-// OLD Socket For R-Pi
-
-
-	// Setting up Socket Communucation with Galil Board
-	int cID, s = 0;
-
-	// Initializing Socket Structs
-	struct addrinfo host_info;
-	struct addrinfo *host_info_list;
-
-
-	// Setting host_info values to zeros
-	memset(&host_info, 0, sizeof host_info);
-	
-
-	// Setting host type
-	host_info.ai_family = AF_INET;
-	host_info.ai_socktype = SOCK_STREAM;
-	
-
-	// Getting connection info from IP
-	s = getaddrinfo(IP, NULL, &host_info, &host_info_list);
-	if(s != 0)
-		cout << "IP error" << endl;
-	
-
-	// Setting up client(R-Pi) socket
-	sID = socket(AF_INET, SOCK_STREAM, 0);
-	cout << "Communication Socket ID: " << sID << endl;
-
-
-	// Client(R-Pi) connecting to Server(Controller Board)
-	cID = connect(sID, host_info_list->ai_addr, host_info_list->ai_addrlen);
-	if(cID == 0)
+	if(sock.is_open())
 	{
-		initialized = true;
-		cout << "WMRA Connection Success\n" << endl;
+		cout << "socket open" << endl;
+		return 1;
 	}
 	else
 	{
-		initialized = false;
-		cout << "WMRA Connection Error\n" << endl;
+		cout << "socket error" << endl;
+		return 0;
 	}
-
-	*/
 }
 /*
 void galilController::~MotorController()
@@ -95,6 +52,7 @@ bool galilController::isInitialized() // return initialized
 
 string galilController::command(string Command)
 {
+
 	char com[300];
 	char ret[300];
 	string c = Command + "\r";
