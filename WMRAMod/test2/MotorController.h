@@ -16,8 +16,10 @@ using namespace std;
 class MotorController {
 public:
     MotorController();
-    //~MotorController();
-    bool initialize(); //#debug figure out IP addr stuff for galil
+    bool initialize();
+	bool motorMode(int mode);
+	bool addLI(vector<long> angle);
+	bool beginLI();
     bool isInitialized(); // return initialized
 	bool wmraSetup();
     bool Stop(); //emergancy stop

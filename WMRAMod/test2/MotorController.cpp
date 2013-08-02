@@ -9,15 +9,11 @@
 #include "stringUtility.h"
 #include "MotorController.h"
 #include "galilController.h"
-//#include "Galil.h"
 
 using namespace std;
 
-// PI = M_PI;
-
 #define PI 3.14159265
 
-//Galil MotorController::controller("192.168.1.22");
 galilController controller;
 string MotorController::motorLookup[] = {"H","A","B","C","D","E","F","G","H"};
 
@@ -55,72 +51,74 @@ MotorController::MotorController()
 	normalize[6] = 2000000/sum;
 	normalize[7] = 1500000/sum;
 	
-
-	//read settings
-	//call initialize();
-	//set initilez flag
 }
-//MotorController::~MotorController()
-//{
-//	controller.command("MO"); //turn off motors
-//}
+
 bool MotorController::initialize(){
-	// set PID values
 
-	// set motor types as in brushed motr etc..
-/*
-	controller.command("BRA=1");
-	controller.command("BRB=1");
-	controller.command("BRC=1");
-	controller.command("BRD=1");
-
-	//set all motors to position tracking mode
-	controller.command("PTA=1");
-	controller.command("PTB=1");
-	controller.command("PTC=1");
-	controller.command("PTD=1");
-	controller.command("PTE=1");
-	controller.command("PTF=1");
-	controller.command("PTG=1");
-	controller.command("PTH=1");
-
-	// set accelaration decelaration values
-	//#debug CHANGE LATER TO PROPER ANGLES
-
-	setAccel(1, 0.2);
-	setAccel(2, 0.2);
-	setAccel(3, 0.2);
-	setAccel(4, 0.2);
-	setAccel(5, 0.2);
-	setAccel(6, 0.2);
-	setAccel(7, 0.2);
-
-	setDecel(1, 0.2);
-	setDecel(2, 0.2);
-	setDecel(3, 0.2);
-	setDecel(4, 0.2);
-	setDecel(5, 0.2);
-	setDecel(6, 0.2);
-	setDecel(7, 0.2);
-
-	//set accelaration smoothing 
-	controller.command("IT*=0.6");	
-
-	// ready position, #debug I believe this should be a function of its own, and the ready position should be recovered from the text file as well.
-	definePosition(1, (PI/2));
-	definePosition(2, (PI/2));
-	definePosition(3, 0);
-	definePosition(4, (PI/2));
-	definePosition(5, (PI/2));
-	definePosition(6, -(PI/2));
-	definePosition(7, 0);
-	definePosition(8, 0);
-
-	controller.command("SH"); //turn on motors
-*/
 	controller.initialize("192.168.1.22");
 	initialized = wmraSetup();
 	return true;
+}
+
+bool MotorController::motorMode(int mode) // 0=Position Tracking, 1=Linear Interpolation
+{
+	if(mode == 0)
+	{
+		//set all motors to position tracking mode
+		controller.command("PTA=1");
+		controller.command("PTB=1");
+		controller.command("PTC=1");
+		controller.command("PTD=1");
+		controller.command("PTE=1");
+		controller.command("PTF=1");
+		controller.command("PTG=1");
+		controller.command("PTH=1");
+	}
+	else if(mode == 1)
+	{
+		//set all motors to linear interpolation mode
+		controller.command("LM ABCDEFGH"); // galil manual pg.88 (pdf pg.98) 
+		controller.command("CAS"); // or ("CAT") - Specifying the Coordinate Plane
+	}
+	else
+		return 0;
+	return 1;
+}
+
+bool MotorController::addLI(vector<long> angle)
+{	
+	if(angle.size() == 8)
+	{
+		string Command = "LI " + angle[0]; // + "," + angle[1] + "," + angle[2] + "," + angle[3] + "," + angle[4] + "," + angle[5] + "," + angle[6] + "," + angle[7];
+		Command = Command + ",";
+		/*Command = Command + angle[1];
+		Command = Command + ",";
+		Command = Command + angle[2];
+		Command = Command + ",";
+		Command = Command + angle[3];
+		Command = Command + ",";
+		Command = Command + angle[4];
+		Command = Command + ",";
+		Command = Command + angle[5];
+		Command = Command + ",";
+		Command = Command + angle[6];
+		Command = Command + ",";
+		Command = Command + angle[7];
+		*/controller.command(Command);
+	}
+	else
+	{
+		cout << "Error: LI takes 8 joint angles" << endl;
+		return 0;
+	}
+	return 1;
+}
+
+bool MotorController::beginLI()
+{
+	controller.command("LE"); // Linear End, for smooth stopping
+	controller.command("BGS"); // Begin Sequence
+	return 1;
 }
 
 bool MotorController::isInitialized() // return initialized
