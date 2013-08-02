@@ -13,7 +13,7 @@ using namespace std;
 
 #define PI 3.14159265
 
-server_tcpsocket sock;
+client_tcpsocket sock;
 
 // Public Functions
 
@@ -24,7 +24,8 @@ galilController::galilController()
 
 bool galilController::initialize(string IP)
 {
-	sock.open(IP.c_str());
+	const char * c = IP.c_str();
+	sock.open(c,23);
 	sock.connected();
 
 	if(sock.is_open())
