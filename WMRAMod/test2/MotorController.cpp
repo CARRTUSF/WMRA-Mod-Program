@@ -91,20 +91,29 @@ bool MotorController::addLI(vector<long> angle)
 	{
 		string Command = "LI " + angle[0]; // + "," + angle[1] + "," + angle[2] + "," + angle[3] + "," + angle[4] + "," + angle[5] + "," + angle[6] + "," + angle[7];
 		Command = Command + ",";
-		/*Command = Command + angle[1];
+		char *temp;
+		ltoa(angle[1],temp,10);  // %Debug: not sure if ltoa is used correctly
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[2];
+		ltoa(angle[2],temp,10);  
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[3];
+		ltoa(angle[3],temp,10); 
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[4];
+		ltoa(angle[4],temp,10);
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[5];
+		ltoa(angle[5],temp,10); 
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[6];
+		ltoa(angle[6],temp,10);
+		Command = Command + temp;
 		Command = Command + ",";
-		Command = Command + angle[7];
-		*/controller.command(Command);
+		ltoa(angle[7],temp,10);  
+		Command = Command + temp;
+
+		controller.command(Command);
 	}
 	else
 	{
