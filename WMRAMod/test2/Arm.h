@@ -10,17 +10,7 @@ struct JointAngles{
 	vector<double> angles;
 };
 
-struct ArmPose{
-	int dx;
-	int dy;
-	int dz;
-	double pitch;
-	double roll;
-	double yaw;    
-	ArmPose(int x, int y, int z, double p, double ya, double r){
-		dx = x; dy = y; dz = z; pitch = p; yaw = ya; roll = r;
-	}
-};
+
 
 class Arm{
 public:
