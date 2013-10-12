@@ -8,6 +8,7 @@
 #include <vector>
 #include <ctype.h>
 //#include "Galil.h"
+#include "WmraTypes.h"
 #include "galilController.h"
 
 using namespace std;

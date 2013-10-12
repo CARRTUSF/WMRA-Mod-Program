@@ -427,6 +427,7 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 // yaw: change in yaw from current location
 // roll: change in roll from current location
 *******************************/
+//bool Arm::autonomous(WMRA::Pose destPose)
 bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw, double roll) 
 {
 

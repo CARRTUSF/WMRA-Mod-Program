@@ -20,6 +20,7 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
+//forward kinematics
 Matrix kinematics(vector<double> q){
 
 	Matrix T(4,4);
