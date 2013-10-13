@@ -27,9 +27,13 @@ public:
    */
    bool addLinearMotionSegment(vector<double> angles, vector<double> speeds);
    bool beginLI();/// \brief start linear motion
-   bool isInitialized(); /// \brief return initialized
+   /**
+   * \brief  waits until all waypoints are finished. blocking.
+   */
+   bool waitLinearMotionEnd(); 
+   bool isInitialized(); /// \brief return true if initialized
    bool wmraSetup();
-   bool Stop(); //emergancy stop
+   bool Stop(); /// \brief emergancy stop
    bool Stop(int motorNum); // emergancy stop a single motor
    double readPos(int motorNum); // returns the current motor angle in radians
    double readPosAll(); // returns the current motor angle in radians

@@ -310,124 +310,21 @@ bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destina
 }
 
 bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, double dt) { // sets the joints to move from current position to destination arm pose, in dt time.
-//	vector<double> currentAng;//, milestoneAng;
-//	vector<bool> destFlag;
-
 	vector<double> speeds;
-
-	int dFLAG = 0;
-	clock_t start_time = clock();
-	Matrix main_pos_T(4,4), main_destination_T(4,4);
-	double main_dist, thresh = 2, temp;
-	if(controller.isInitialized())
-	{
-		double temp_vel, temp_acc, dq;
-		long temp_enc;
-		for(int i = 0; i < 7; i++)
-		{
-			dq = abs(currentAng[i]-destinationAng[i])/controller.rad2Enc[i+1];
-			if (abs(dq)>25000)
-			{
-				controller.setMaxVelocity(i+1, controller.encToAng(i+1, 170000));
-				controller.setAccel(i+1, controller.encToAng(i+1, 75000));
-			}
-			else if(dq < 100)
-			{
-				controller.setMaxVelocity(i+1, controller.encToAng(i+1, 170000));
-				controller.setAccel(i+1, controller.encToAng(i+1, 75000));
-			}
-			else
-			{
-				temp_vel=2*abs(dq)/0.3;
-				temp_enc = temp_vel;
-				controller.setMaxVelocity(i+1, controller.encToAng(i+1, temp_enc));
-				temp_acc=2*abs(dq)/0.7;
-				temp_enc = temp_acc;
-				controller.setAccel(i+1, controller.encToAng(i+1, temp_enc));
-			}
-		}
-
+	if(controller.isInitialized()){
+      /* */
 		double vel;
-		for(int i = 0; i < destinationAng.size(); i++)
-		{
+		for(int i = 0; i < destinationAng.size(); i++){
 			vel = abs(destinationAng[i]-currentAng[i])/dt;
 			speeds.push_back(vel);
 		}
-
-		controller.addLinearMotionSegment(destinationAng, speeds); 
-/*
-		for(int i = 0; i < destinationAng.size(); i++)
-		{
-			//double temp;
-			//currentAng.push_back(controller.readPos(i+1));
-			//temp = (abs(destinationAng[i]-currentAng[i])/dt);
-			//controller.setMaxVelocity(i+1, temp);
-			controller.positionControl(i+1, (destinationAng[i])); //  + (destinationAng[i]-currentAng[i])));
-			//destFlag.push_back(0);
-			//milestoneAng.push_back(0);
-		}	
-*/
-		/*
-		while(dFLAG == 0)
-		{
-			for(int i = 0; i < destinationAng.size(); i++)
-			{
-				temp = abs(destinationAng[i]-controller.readPos(i+1));
-				if(temp < thresh)
-					destFlag[i] = 1;
-			}
-			dFLAG = 1;
-			for(int i = 0; i < destFlag.size(); i++)
-			{
-				if(destFlag[i] == 0)
-				{
-					dFLAG = 0;
-				}
-			}
-		}
-*/
-		
-		
-/*
-		main_pos_T = kinematics(currentAng);
-		main_destination_T = kinematics(destinationAng);
-		
-		// Finding the distance from the current gripper pose to the destination gripper pose.
-		main_dist = sqrt((pow((main_pos_T(0,3)-main_destination_T(0,3)),2) + pow((main_pos_T(1,3)-main_destination_T(1,3)),2) + pow((main_pos_T(2,3)-main_destination_T(2,3)),2)));
-
-
-		for(int i = 0; i < destFlag.size(); i++)
-		{
-			controller.positionControl(i+1, destinationAng[i]);
-		}
-
-		while (main_dist > thresh)
-		{
-			for(int i = 0; i < destFlag.size(); i++)
-			{
-				if(abs(currentAng[i]-destinationAng[i]) < (0.01) && !destFlag[i])
-				{
-					destFlag[i] = 1;
-					controller.positionControl(i+1, destinationAng[i]);
-				}
-			}
-			for(int i = 0; i < currentAng.size(); i++)
-			{
-				currentAng[i] = controller.readPos(i+1);
-			}			
-			main_pos_T = kinematics(currentAng);
-			main_dist = sqrt((pow((main_pos_T(0,3)-main_destination_T(0,3)),2) + pow((main_pos_T(1,3)-main_destination_T(1,3)),2) + pow((main_pos_T(2,3)-main_destination_T(2,3)),2)));
-		}
-*/
-	}
-	else
-	{
+		controller.addLinearMotionSegment(destinationAng, speeds);
+      return true; // Movement complete
+   }
+	else{
 		cout << "ERROR: controller not initialized (Arm.cpp)" << endl;
-		return 0;
-	}
-	//while(((clock()-start_time)/CLOCKS_PER_SEC) > dt)
-	//{}
-	return 1; // Movement complete
+		return false;
+	}	
 }
 
 
@@ -445,11 +342,11 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 {
 	// Unknown (not sure if these veriables are used)
 	double totalTime, distance, detJoa;
-	int n;
+	int numWayPoints;
 	vector<double> currentLoc, destinationLoc, delta;
 	Matrix currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_rotation(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
 	Matrix Joa(6,7), Ttnew(4,4), jointAng_Mat(7,1);
-	float ***Tt; // pointer to a 3D array containing 'n' 4x4 Transformation matricies
+	//float ***Tt; // pointer to a 3D array containing 'n' 4x4 Transformation matricies
 
 	delta.resize(6);
 	currentLoc.resize(8);
@@ -464,14 +361,7 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 			currentLoc[i] = controller.readPos(i+1);
 		}
 		currentLoc_T = kinematics(currentLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
-		//cout << "Movement Initialization Sequence" << endl;
-		// Sets the current location to a 1x8 vector
-		for(int i = 0; i < currentLoc.size(); i++)		
-		{
-			currentLoc[i] = controller.readPos(i+1);
-		}
-		
-		currentLoc_T = kinematics(currentLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
+
 		// Destination transformation matrix using input angles
 		temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
 		destination_Rotation_T = currentLoc_T*temp_rotation;
@@ -491,28 +381,16 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 		vector<Matrix> wayPoints = WMRA_traj(3,currentLoc_T,destination_T,n+1);
       //Tt=WMRA_traj(3,currentLoc_T,destination_T,n+1); // Generating all the transformation matricies for each milestone(n).
 		//cout << "Trajectory initialized" << endl;
-		cout << "number of way points = " << n << endl;
+		cout << "number of way points = " << numWayPoints << endl;
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
-		for(int cur_milestone = 1; cur_milestone < n; cur_milestone++)
-		{
-			//if(cur_milestone == 0)
-			//{
-			//	// Sets the current location to a 1x8 vector
-			//	for(int i = 0; i < currentLoc.size(); i++)		
-			//	{
-			//		destinationLoc[i] = controller.readPos(i+1);
-			//	}
-			//}
-			currentLoc_T = kinematics(destinationLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
-			
-			Ttnew.Null(4,4);
-         Matrix ttnew = wayPoints[cur_milestone];
-			for (int j=0; j<4; j++){
-				for (int k=0; k<4; k++){
-					Ttnew(j,k)=Tt[cur_milestone][j][k];	        			
-				}
-			}
 
+      Matrix prevPosTF = wayPoints[0]; 
+      Matrix currPosTF;
+		for(int cur_milestone = 1; cur_milestone < numWayPoints; cur_milestone++)
+		{			
+			currentLoc_T = kinematics(destinationLoc,Ta,T01,T12,T23,T34,T45,T56,T67);			
+         currPosTF = wayPoints[cur_milestone];
+			
 			// Calculating the 6X7 Jacobian of the arm in frame 0:
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
 			WMRA_delta(delta, currentLoc_T , Ttnew);

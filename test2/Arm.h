@@ -4,13 +4,6 @@
 #include <vector>
 #include "MotorController.h"
 
-struct JointAngles{
-   JointAngles(){
-   }
-   vector<double> angles;
-};
-
-
 
 class Arm{
 public:
@@ -20,7 +13,7 @@ public:
    bool moveArm(vector<double> destinationAng);
    bool milestone(vector<double> currentAng, vector<double> destinationAng, double dt);
    bool autonomous(int dx, int dy, int dz, double pitch, double yaw, double roll, int type = 0);
-   MotorController controller;
+
 private:
 
    double dt;	// the default time between milestones

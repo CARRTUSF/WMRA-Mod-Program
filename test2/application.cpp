@@ -24,7 +24,7 @@ int velocity;				// Max velocity of the gripper in movement
 */
 char *tempChar; //temporary char pointer passed to thread
 
-Arm control;
+Arm wmraArm;
 /*
 UINT wmraThread (LPVOID pParam)
 {
@@ -44,7 +44,7 @@ int main()
 	bool endFlag = 0;
 	int choice;
 
-	if(control.initialize())
+	if(wmraArm.initialize())
 		cout << "Controller intialized in main" << endl;
 	else
 		cout << "Controller initalizaition failed in main" << endl;
@@ -72,7 +72,7 @@ int main()
 		cin >> choice;
 		if(choice == 1)
 		{
-			control.autonomous(dx,dy,dz,pitch,yaw,roll,0);
+			wmraArm.autonomous(dx,dy,dz,pitch,yaw,roll,0);
 		}
 		else
 		{
