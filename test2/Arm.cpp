@@ -221,7 +221,7 @@ return 1;
 }
 
 bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destination pose. dt: the amount of time to reach this pose from the current position.
-    vector<double> currentAng, milestoneAng, moveStep;
+   vector<double> currentAng, milestoneAng, moveStep;
 	vector<bool> destFlag;
 	Matrix main_pos_T(4,4), main_destination_T(4,4);
 	double main_dist, main_time, main_velocity = 10, thresh = 10;

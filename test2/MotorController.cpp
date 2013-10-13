@@ -91,11 +91,19 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 {	
 	if(angles.size() == 8)
 	{
-		string Command = "LI " ; // + "," + angle[1] + "," + angle[2] + "," + angle[3] + "," + angle[4] + "," + angle[5] + "," + angle[6] + "," + angle[7];
-		Command = Command + ",";
-
-
-		controller.command(Command);
+      
+      std::stringstream ss;
+      ss << "LI " << angles[0] << "," << angles[1] << "," << angles[2] << "," << angles[3] << "," << angles[4] << "," 
+            <<  angles[5] << "," << angles[6] << "," << angles[6] ;
+      //calculate vector speed
+      double vectorSpeed; /// this is for Galil controller
+      vectorSpeed = (speeds[0]*speeds[0])+(speeds[1]*speeds[1])+(speeds[2]*speeds[2])+(speeds[3]*speeds[3])
+                 +(speeds[4]*speeds[4]) + (speeds[5]*speeds[5]) + (speeds[6]*speeds[6]) + (speeds[7]*speeds[7]);
+      vectorSpeed = std::sqrt(vectorSpeed);
+      //add speed to the command string 
+      ss << "<" << vectorSpeed << ">" << vectorSpeed;
+		string command = ss.str();
+		controller.command(command);
 	}
 	else
 	{
