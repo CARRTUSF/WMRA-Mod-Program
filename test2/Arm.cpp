@@ -513,14 +513,6 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 				}
 			}
 
-			Ttold.Null(4,4);
-         Matrix ttold = wayPoints[cur_milestone-1];
-			for (int j=0; j<4; j++){
-				for (int k=0; k<4; k++){
-					Ttold(j,k)=Tt[cur_milestone-1][j][k];	        			
-				}
-			}
-
 			// Calculating the 6X7 Jacobian of the arm in frame 0:
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
 			WMRA_delta(delta, currentLoc_T , Ttnew);
