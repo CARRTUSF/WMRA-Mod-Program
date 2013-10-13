@@ -312,6 +312,9 @@ bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destina
 bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, double dt) { // sets the joints to move from current position to destination arm pose, in dt time.
 //	vector<double> currentAng;//, milestoneAng;
 //	vector<bool> destFlag;
+
+	vector<double> speeds;
+
 	int dFLAG = 0;
 	clock_t start_time = clock();
 	Matrix main_pos_T(4,4), main_destination_T(4,4);
@@ -344,6 +347,15 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 			}
 		}
 
+		double vel;
+		for(int i = 0; i < destinationAng.size(); i++)
+		{
+			vel = abs(destinationAng[i]-currentAng[i])/dt;
+			speeds.push_back(vel);
+		}
+
+		controller.addLinearMotionSegment(destinationAng, speeds); 
+/*
 		for(int i = 0; i < destinationAng.size(); i++)
 		{
 			//double temp;
@@ -354,7 +366,8 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 			//destFlag.push_back(0);
 			//milestoneAng.push_back(0);
 		}	
-/*
+*/
+		/*
 		while(dFLAG == 0)
 		{
 			for(int i = 0; i < destinationAng.size(); i++)
@@ -430,8 +443,6 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 //bool Arm::autonomous(WMRA::Pose destPose)
 bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw, double roll) 
 {
-
-
 	// Unknown (not sure if these veriables are used)
 	double totalTime, distance, detJoa;
 	int n;
@@ -484,18 +495,29 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
 		for(int cur_milestone = 0; cur_milestone < n; cur_milestone++)
 		{
-			// Sets the current location to a 1x8 vector
-			for(int i = 0; i < currentLoc.size(); i++)		
+			if(cur_milestone == 0)
 			{
-				currentLoc[i] = controller.readPos(i+1);
+				// Sets the current location to a 1x8 vector
+				for(int i = 0; i < currentLoc.size(); i++)		
+				{
+					destinationLoc[i] = controller.readPos(i+1);
+				}
 			}
-			currentLoc_T = kinematics(currentLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
+			currentLoc_T = kinematics(destinationLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
 			
 			Ttnew.Null(4,4);
          Matrix ttnew = wayPoints[cur_milestone];
 			for (int j=0; j<4; j++){
 				for (int k=0; k<4; k++){
 					Ttnew(j,k)=Tt[cur_milestone][j][k];	        			
+				}
+			}
+
+			Ttold.Null(4,4);
+         Matrix ttold = wayPoints[cur_milestone-1];
+			for (int j=0; j<4; j++){
+				for (int k=0; k<4; k++){
+					Ttold(j,k)=Tt[cur_milestone-1][j][k];	        			
 				}
 			}
 
