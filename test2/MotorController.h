@@ -16,7 +16,7 @@ using namespace std;
 
 class MotorController {
 public:
-   enum motionMode = {POS_CONTROL = 0, LINEAR};
+   enum motionMode  {POS_CONTROL = 0, LINEAR};
    MotorController();
    bool initialize();
    bool setMotorMode(int mode);
@@ -33,7 +33,8 @@ public:
    bool Stop(int motorNum); // emergancy stop a single motor
    double readPos(int motorNum); // returns the current motor angle in radians
    double readPosAll(); // returns the current motor angle in radians
-   double readPosErr(int motorNum); // returns the error in  
+   double readPosErr(int motorNum); // returns the error in 
+
    bool setMaxVelocity(int motorNum, float angularVelocity);
    bool setAccel(int motorNum, float angularAccelaration);
    bool setAccelAll(std::vector<int> acclVal);
@@ -41,6 +42,7 @@ public:
    float encToAng(int motorNum, long enc);
    long angToEnc(int motorNum, float angle);
    bool positionControl(int motor,float angle);
+   bool motorsOn(); // Turns motors on
    bool MotorsOFF();
    double rad2Enc[9];
 

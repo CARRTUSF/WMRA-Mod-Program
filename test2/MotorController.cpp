@@ -60,7 +60,7 @@ bool MotorController::initialize(){
 	return true;
 }
 
-bool MotorController::motorMode(int mode) // 0=Position Tracking, 1=Linear Interpolation
+bool MotorController::setMotorMode(int mode) // 0=Position Tracking, 1=Linear Interpolation
 {
 	if(mode == 0)
 	{
@@ -78,40 +78,20 @@ bool MotorController::motorMode(int mode) // 0=Position Tracking, 1=Linear Inter
 	{
 		//set all motors to linear interpolation mode
 		controller.command("LM ABCDEFGH"); // galil manual pg.88 (pdf pg.98) 
-		controller.command("CAS"); // or ("CAT") - Specifying the Coordinate Plane
+		//controller.command("CAS"); // or ("CAT") - Specifying the Coordinate Plane
 	}
 	else
 		return 0;
 	return 1;
 }
 
-bool MotorController::addLI(vector<double> angle)
+bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
-	if(angle.size() == 8)
+	if(angles.size() == 8)
 	{
-		string Command = "LI " + angle[0]; // + "," + angle[1] + "," + angle[2] + "," + angle[3] + "," + angle[4] + "," + angle[5] + "," + angle[6] + "," + angle[7];
+		string Command = "LI " ; // + "," + angle[1] + "," + angle[2] + "," + angle[3] + "," + angle[4] + "," + angle[5] + "," + angle[6] + "," + angle[7];
 		Command = Command + ",";
-		char *temp;
-		ltoa(angle[1],temp,10);  // %Debug: not sure if ltoa is used correctly
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[2],temp,10);  
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[3],temp,10); 
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[4],temp,10);
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[5],temp,10); 
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[6],temp,10);
-		Command = Command + temp;
-		Command = Command + ",";
-		ltoa(angle[7],temp,10);  
-		Command = Command + temp;
+
 
 		controller.command(Command);
 	}
@@ -235,7 +215,7 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 	}
 }
 
-float MotorController::readPosErr(int motorNum) // returns the error in  
+double MotorController::readPosErr(int motorNum) // returns the error in  
 {
 
 	long encoderVal;	
@@ -402,6 +382,12 @@ bool MotorController::MotorsOFF()
 {
 	controller.command("MO"); //turn off motors
 	return 1;
+}
+
+bool MotorController::motorsOn()
+{
+	controller.command("SH"); //turn on motors
+	return true;
 }
 
 /*------------------------------------------------------

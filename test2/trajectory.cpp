@@ -20,7 +20,6 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 
 	float ***Tt;
    int n = numWayPoints;
-	vector<>
 	//Finding the rotation of the desired point based on the initial point:
 	Matrix R(3,3), Titemp(3,3),Tdtemp(3,3);
 	int i,j,m;
@@ -319,7 +318,7 @@ Matrix WMRA_Polynomial(float qi, float qf, float numWayPoints){
 
 	float tt=0;
 	float tf=abs(qf-qi);
-	float dt=tf/(n-1);
+	float dt=tf/(numWayPoints-1);
 	
 	float *qttemp;
 	qttemp = new float[numWayPoints];
@@ -334,7 +333,7 @@ Matrix WMRA_Polynomial(float qi, float qf, float numWayPoints){
 		tt = tt + dt;
 	}
 	qtp.SetSize(numWayPoints,1);
-	for (int i=0; i < n; i++){
+	for (int i=0; i < numWayPoints; i++){
 		qtp(i,0) = qttemp[i];
 	}
 	delete [] qttemp; 
