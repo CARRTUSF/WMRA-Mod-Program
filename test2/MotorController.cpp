@@ -89,16 +89,26 @@ bool MotorController::setMotorMode(int mode) // 0=Position Tracking, 1=Linear In
 
 bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
-	if(angles.size() == 8)
-	{
-      
+   if(angles.size() == 8 && speeds.size() == 8)
+	{ 
+      vector<long> posCount(8);
+      for(int i = 0; i < 8 ; i++){
+         int motorNum = i+1;
+         posCount[i] = (int)angToEnc(motorNum,angles[i]);
+      }
       std::stringstream ss;
-      ss << "LI " << angles[0] << "," << angles[1] << "," << angles[2] << "," << angles[3] << "," << angles[4] << "," 
-            <<  angles[5] << "," << angles[6] << "," << angles[6] ;
+      ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
+            <<  posCount[5] << "," << posCount[6] << "," << posCount[6] ;
       //calculate vector speed
+      vector<double> speedCount(8);
+      for(int i = 0; i < 8 ; i++){
+         int motorNum = i+1;
+         speedCount[i] = angToEnc(motorNum,speeds[i]);
+      }
       double vectorSpeed; /// this is for Galil controller
-      vectorSpeed = (speeds[0]*speeds[0])+(speeds[1]*speeds[1])+(speeds[2]*speeds[2])+(speeds[3]*speeds[3])
-                 +(speeds[4]*speeds[4]) + (speeds[5]*speeds[5]) + (speeds[6]*speeds[6]) + (speeds[7]*speeds[7]);
+      vectorSpeed = (speedCount[0]*speedCount[0])+(speedCount[1]*speedCount[1])+(speedCount[2]*speedCount[2])+
+         (speedCount[3]*speedCount[3])+(speedCount[4]*speedCount[4]) + (speedCount[5]*speedCount[5])
+          + (speedCount[6]*speedCount[6]) + (speedCount[7]*speedCount[7]);
       vectorSpeed = std::sqrt(vectorSpeed);
       //add speed to the command string 
       ss << "<" << vectorSpeed << ">" << vectorSpeed;

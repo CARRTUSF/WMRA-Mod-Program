@@ -72,7 +72,7 @@ int main()
 		cin >> choice;
 		if(choice == 1)
 		{
-			control.autonomous(0,dx,dy,dz,pitch,yaw,roll);
+			control.autonomous(dx,dy,dz,pitch,yaw,roll,0);
 		}
 		else
 		{

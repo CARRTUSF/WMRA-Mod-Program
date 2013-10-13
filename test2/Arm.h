@@ -19,7 +19,7 @@ public:
    bool setDefaults();
    bool moveArm(vector<double> destinationAng);
    bool milestone(vector<double> currentAng, vector<double> destinationAng, double dt);
-   bool autonomous(int type, int dx, int dy, int dz, double pitch, double yaw, double roll);
+   bool autonomous(int dx, int dy, int dz, double pitch, double yaw, double roll, int type = 0);
    MotorController controller;
 private:
 

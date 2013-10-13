@@ -441,7 +441,7 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 // roll: change in roll from current location
 *******************************/
 //bool Arm::autonomous(WMRA::Pose destPose)
-bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw, double roll) 
+bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
 {
 	// Unknown (not sure if these veriables are used)
 	double totalTime, distance, detJoa;
@@ -493,16 +493,16 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 		//cout << "Trajectory initialized" << endl;
 		cout << "number of way points = " << n << endl;
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
-		for(int cur_milestone = 0; cur_milestone < n; cur_milestone++)
+		for(int cur_milestone = 1; cur_milestone < n; cur_milestone++)
 		{
-			if(cur_milestone == 0)
-			{
-				// Sets the current location to a 1x8 vector
-				for(int i = 0; i < currentLoc.size(); i++)		
-				{
-					destinationLoc[i] = controller.readPos(i+1);
-				}
-			}
+			//if(cur_milestone == 0)
+			//{
+			//	// Sets the current location to a 1x8 vector
+			//	for(int i = 0; i < currentLoc.size(); i++)		
+			//	{
+			//		destinationLoc[i] = controller.readPos(i+1);
+			//	}
+			//}
 			currentLoc_T = kinematics(destinationLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
 			
 			Ttnew.Null(4,4);
@@ -518,7 +518,7 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 			WMRA_delta(delta, currentLoc_T , Ttnew);
 			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, currentLoc);
 			
-			for(int i = 0; i < 7; i++)
+			for(int i = 0; i < 8; i++)
 			{
 				destinationLoc[i] = currentLoc[i] + jointAng_Mat(i,0);
 			}
