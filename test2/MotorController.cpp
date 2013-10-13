@@ -89,29 +89,29 @@ bool MotorController::setMotorMode(int mode) // 0=Position Tracking, 1=Linear In
 
 bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
-   if(angles.size() == 8 && speeds.size() == 8)
+   if(angles.size() == 7 && speeds.size() == 7)
 	{ 
-      vector<long> posCount(8);
-      for(int i = 0; i < 8 ; i++){
+      vector<long> posCount(7);
+      for(int i = 0; i < 7 ; i++){
          int motorNum = i+1;
          posCount[i] = (int)angToEnc(motorNum,angles[i]);
       }
       std::stringstream ss;
       ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
-            <<  posCount[5] << "," << posCount[6] << "," << posCount[6] ;
+            <<  posCount[5] << "," << posCount[6] ;
       //calculate vector speed
-      vector<double> speedCount(8);
-      for(int i = 0; i < 8 ; i++){
+      vector<double> speedCount(7);
+      for(int i = 0; i < 7 ; i++){
          int motorNum = i+1;
          speedCount[i] = angToEnc(motorNum,speeds[i]);
       }
       double vectorSpeed; /// this is for Galil controller
       vectorSpeed = (speedCount[0]*speedCount[0])+(speedCount[1]*speedCount[1])+(speedCount[2]*speedCount[2])+
          (speedCount[3]*speedCount[3])+(speedCount[4]*speedCount[4]) + (speedCount[5]*speedCount[5])
-          + (speedCount[6]*speedCount[6]) + (speedCount[7]*speedCount[7]);
+          + (speedCount[6]*speedCount[6]) ;
       vectorSpeed = std::sqrt(vectorSpeed);
       //add speed to the command string 
-      ss << "<" << vectorSpeed << ">" << vectorSpeed;
+      ss << "<" << (int)vectorSpeed << ">" << (int)vectorSpeed;
 		string command = ss.str();
 		controller.command(command);
 	}
@@ -144,13 +144,17 @@ bool MotorController::wmraSetup() //WMRA setup
 	controller.command("BRD=1");
 
 	//set all motors to position tracking mode
-	controller.command("PTA=1");
-	controller.command("PTB=1");
-	controller.command("PTC=1");
-	controller.command("PTD=1");
-	controller.command("PTE=1");
-	controller.command("PTF=1");
-	controller.command("PTG=1");
+   //controller.command("PTA=1");
+   //controller.command("PTB=1");
+   //controller.command("PTC=1");
+   //controller.command("PTD=1");
+   //controller.command("PTE=1");
+   //controller.command("PTF=1");
+   //controller.command("PTG=1");
+
+   controller.command("LM ABCDEFG");
+
+
 	controller.command("PTH=1");
 
 	// set accelaration decelaration values

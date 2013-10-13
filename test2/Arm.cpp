@@ -343,24 +343,22 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 	// Unknown (not sure if these veriables are used)
 	double totalTime, distance, detJoa;
 	int numWayPoints;
-	vector<double> currentLoc, destinationLoc, delta;
+	vector<double> startJointAng(7);
+   vector<double> prevJointAng(7);
+   vector<double> currJointAng(7);
+   vector<double> destinationLoc(7); 
+   vector<double> delta(8);
 	Matrix currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_rotation(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
 	Matrix Joa(6,7), Ttnew(4,4), jointAng_Mat(7,1);
-	//float ***Tt; // pointer to a 3D array containing 'n' 4x4 Transformation matricies
 
-	delta.resize(6);
-	currentLoc.resize(8);
-	destinationLoc.resize(8);
-	
 	cout << "Thread Started, Checking WMRA Controller Initialization" << endl;
 	if(controller.isInitialized())	// If WMRA controller connection has been initialized start loop
 	{
 		cout << "WMRA-2 Controller Initialized" << endl;
-		for(int i = 0; i < currentLoc.size(); i++)		// Sets the current location to a 1x8 vector
-		{
-			currentLoc[i] = controller.readPos(i+1);
+		for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
+			startJointAng[i] = controller.readPos(i+1);
 		}
-		currentLoc_T = kinematics(currentLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
+		currentLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
 
 		// Destination transformation matrix using input angles
 		temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
@@ -375,36 +373,31 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 		distance = sqrt(pow(destination_T(0,3)-currentLoc_T(0,3),2) + pow(destination_T(1,3)-currentLoc_T(1,3),2) + pow(destination_T(2,3)-currentLoc_T(2,3),2));
 
 		totalTime = distance/Arm::control_velocity;
-		n = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
-		Arm::dt = totalTime/n;
+		numWayPoints = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
+		Arm::dt = totalTime/numWayPoints;
 
-		vector<Matrix> wayPoints = WMRA_traj(3,currentLoc_T,destination_T,n+1);
-      //Tt=WMRA_traj(3,currentLoc_T,destination_T,n+1); // Generating all the transformation matricies for each milestone(n).
+		vector<Matrix> wayPoints = WMRA_traj(3, currentLoc_T, destination_T, numWayPoints+1); 
 		//cout << "Trajectory initialized" << endl;
 		cout << "number of way points = " << numWayPoints << endl;
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
 
-      Matrix prevPosTF = wayPoints[0]; 
-      Matrix currPosTF;
-		for(int cur_milestone = 1; cur_milestone < numWayPoints; cur_milestone++)
+      prevJointAng = startJointAng;
+		for(int cur_milestone = 1 ; cur_milestone < numWayPoints; cur_milestone++)
 		{			
-			currentLoc_T = kinematics(destinationLoc,Ta,T01,T12,T23,T34,T45,T56,T67);			
-         currPosTF = wayPoints[cur_milestone];
-			
+			currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
 			// Calculating the 6X7 Jacobian of the arm in frame 0:
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
-			WMRA_delta(delta, currentLoc_T , Ttnew);
-			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, currentLoc);
+			WMRA_delta(delta, wayPoints[cur_milestone -1] , wayPoints[cur_milestone]);
+			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, prevJointAng);
 			
-			for(int i = 0; i < 8; i++)
-			{
-				destinationLoc[i] = currentLoc[i] + jointAng_Mat(i,0);
-			}
-			
-			//cout << "Moving to Milestone " << cur_milestone << endl;
-			Arm::milestone(currentLoc, destinationLoc, Arm::dt);
-			Sleep(1000*Arm::dt);
+			for(int i = 0; i < 7; i++){
+				currJointAng[i] = prevJointAng[i] + jointAng_Mat(i,0);
+			}			
+			Arm::milestone(prevJointAng, currJointAng, Arm::dt);
+         prevJointAng = currJointAng;
+			//Sleep(1000*Arm::dt);
 		}
+      controller.beginLI();
 	}
 	else
 		return 0;
