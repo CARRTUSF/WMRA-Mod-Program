@@ -16,14 +16,16 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
-float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
+float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 
 	float ***Tt;
-	
+   int n = numWayPoints;
+	vector<>
 	//Finding the rotation of the desired point based on the initial point:
 	Matrix R(3,3), Titemp(3,3),Tdtemp(3,3);
 	int i,j,m;
-	for ( i=0 ; i < 3 ; i++ ) {
+   //deep copy Matrix
+	for ( int i=0 ; i < 3 ; i++ ) {
 		for ( j = 0 ; j < 3 ; j++ ) {
 			Titemp(i,j)=Ti(i,j);
 			Tdtemp(i,j)=Td(i,j);
@@ -77,7 +79,7 @@ float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
 	Titemp=~Titemp;
 	if (ind == 2){
 		at=WMRA_Polynomial(0,a,n);
-		xt=WMRA_Polynomial(Ti(0,3), Td(0,3), n);
+		xt=WMRA_Polynomial(Ti(0,3), Td(0,3), n); // 
 		yt=WMRA_Polynomial(Ti(1,3), Td(1,3), n);
 		zt=WMRA_Polynomial(Ti(2,3), Td(2,3), n);
 	}
@@ -94,6 +96,11 @@ float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
 		zt=WMRA_BPolynomial(Ti(2,3), Td(2,3), n);
 	}
 	
+    /* create a 3D nx4x4 float array */
+
+   vector<Matrix> wayPoints;
+   wayPoints.resize(numWayPoints);
+
 	Tt = new float**[n];
 	for (i = 0; i < n; ++i) {
 		Tt[i] = new float*[4];
@@ -101,13 +108,17 @@ float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
 			Tt[i][j] = new float[4];
 		}
 	}
+   /* set the first Matrix to Ti*/
+   wayPoints[0] = Ti;
 	for ( i=0 ; i < 4 ; i++ ) {
 		for ( j = 0 ; j < 4 ; j++ ) {
 			Tt[0][i][j]=Ti(i,j);
+         wayPoints[0](i,j) = Ti(i,j);
 		}
 	}
+   
 
-	for (i=1; i<n; i++){
+	for (int i = 1; i < numWayPoints ; i++){
 		// Single-angle Change:
 		float da;
 		da=at(i,0)-at(0,0);
@@ -143,6 +154,7 @@ float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
 		for ( m=0 ; m < 4 ; m++ ) {
 			for ( j = 0 ; j < 4 ; j++ ) {
 				Tt[i][m][j]=Tti(m,j);
+            wayPoints[i](m,j) = Tti(m,j);
 			}
 		}
 	}
@@ -210,7 +222,8 @@ float ***WMRA_traj(int ind, Matrix Ti, Matrix Td, int n){
 		}
 	}
 */
-	return Tt;
+	//return Tt;
+   return wayPoints;
 }
 
 Matrix WMRA_BPolynomial(float qi, float qf, float n){
@@ -300,20 +313,18 @@ Matrix WMRA_Linear(float qi, float qf, float n){
 }
 
 
-Matrix WMRA_Polynomial(float qi, float qf, float n){
+Matrix WMRA_Polynomial(float qi, float qf, float numWayPoints){
 	
-	Matrix qtp(2,1);
+	Matrix qtp(numWayPoints,1);
 
-	float tt, tf, dt;
-	int i;
-	tt=0;
-	tf=abs(qf-qi);
-	dt=tf/(n-1);
+	float tt=0;
+	float tf=abs(qf-qi);
+	float dt=tf/(n-1);
 	
 	float *qttemp;
-	qttemp = new float[n];
+	qttemp = new float[numWayPoints];
 
-	for (i=0; i<n; i++){
+	for (int i=0; i<numWayPoints; i++){
 		if (tf<=0.001){
 			qttemp[i]=qi;
 		}
@@ -322,8 +333,8 @@ Matrix WMRA_Polynomial(float qi, float qf, float n){
 		}
 		tt = tt + dt;
 	}
-	qtp.SetSize(n,1);
-	for (i=0; i < n; i++){
+	qtp.SetSize(numWayPoints,1);
+	for (int i=0; i < n; i++){
 		qtp(i,0) = qttemp[i];
 	}
 	delete [] qttemp; 

@@ -25,8 +25,9 @@ public:
 	bool wmraSetup();
     bool Stop(); //emergancy stop
     bool Stop(int motorNum); // emergancy stop a single motor
-    float readPos(int motorNum); // returns the current motor angle in radians
-    float readPosErr(int motorNum); // returns the error in  
+    double readPos(int motorNum); // returns the current motor angle in radians
+    double readPosAll(); // returns the current motor angle in radians
+    double readPosErr(int motorNum); // returns the error in  
     bool setMaxVelocity(int motorNum, float angularVelocity);
     bool setAccel(int motorNum, float angularAccelaration);
     bool setAccelAll(std::vector<int> acclVal);

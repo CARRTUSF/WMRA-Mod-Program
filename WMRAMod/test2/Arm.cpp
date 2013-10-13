@@ -477,7 +477,8 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 		n = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
 		Arm::dt = totalTime/n;
 
-		Tt=WMRA_traj(3,currentLoc_T,destination_T,n+1); // Generating all the transformation matricies for each milestone(n).
+		vector<Matrix> wayPoints = WMRA_traj(3,currentLoc_T,destination_T,n+1);
+      //Tt=WMRA_traj(3,currentLoc_T,destination_T,n+1); // Generating all the transformation matricies for each milestone(n).
 		//cout << "Trajectory initialized" << endl;
 		cout << "n = " << n << endl;
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
@@ -491,6 +492,7 @@ bool Arm::autonomous(int type, int dx, int dy, int dz, double pitch, double yaw,
 			currentLoc_T = kinematics(currentLoc,Ta,T01,T12,T23,T34,T45,T56,T67);
 			
 			Ttnew.Null(4,4);
+         ttnew = wayPoints[cur_milestone]
 			for (int j=0; j<4; j++){
 				for (int k=0; k<4; k++){
 					Ttnew(j,k)=Tt[cur_milestone][j][k];	        			

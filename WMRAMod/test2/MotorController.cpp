@@ -214,7 +214,7 @@ bool MotorController::setPID(int motorNum, int P, int I, int D){
 }
 
 
-float MotorController::readPos(int motorNum) // returns the current motor angle in radians
+double MotorController::readPos(int motorNum) // returns the current motor angle in radians
 {
 	long encoderVal;	
 	string result;
