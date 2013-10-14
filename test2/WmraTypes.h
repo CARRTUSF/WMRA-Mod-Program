@@ -1,3 +1,6 @@
+#ifndef WMRATYPES_H
+#define WMRATYPES_H
+
 /**
 This file contains declarations of data types used by the WMRA program
 
@@ -13,24 +16,25 @@ using namespace math;
 
 namespace WMRA{
 
-   
+
    class Pose{
+   public:
       int x;
       int y;
       int z;
       double yaw;
       double pitch;
       double roll;    
-      Pose(int _x, int _y, int _z, double _yaw, double _pitch, double _roll){
+      Pose(int _x =0, int _y =0, int _z=0, double _yaw=0, double _pitch=0, double _roll=0){
          x = _x; y = _y; z = _z; pitch = _pitch; yaw = _yaw ; roll = _roll;
       }
    };
 
    struct WheelChairPose{
-		int x,y;
-		float angle;
-		matrix<double> transformation;
-	};
+      int x,y;
+      float angle;
+      matrix<double> transformation;
+   };
 
    class JointValueSet{
       vector<double> Joint;
@@ -42,3 +46,4 @@ namespace WMRA{
       }
    };
 }
+#endif;

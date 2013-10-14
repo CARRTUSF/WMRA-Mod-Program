@@ -2,6 +2,7 @@
 #define ARM_H
 
 #include <vector>
+#include "WmraTypes.h"
 #include "MotorController.h"
 
 
@@ -12,6 +13,7 @@ public:
    bool setDefaults();
    bool moveArm(vector<double> destinationAng);
    bool milestone(vector<double> currentAng, vector<double> destinationAng, double dt);
+   bool autonomous(WMRA::Pose dest, int type = 0);
    bool autonomous(int dx, int dy, int dz, double pitch, double yaw, double roll, int type = 0);
 
 private:

@@ -44,15 +44,6 @@ MotorController::MotorController()
 	rad2Enc[7] = 1500000/PI; //g
 	rad2Enc[8] = 0;
 
-	sum = 6595000+5100000+1800000+2300000+2000000+2000000+1500000;
-	normalize[1] = 6595000/sum;
-	normalize[2] = 5100000/sum;
-	normalize[3] = 1800000/sum;
-	normalize[4] = 2300000/sum;
-	normalize[5] = 2000000/sum;
-	normalize[6] = 2000000/sum;
-	normalize[7] = 1500000/sum;
-	
 }
 
 bool MotorController::initialize(){

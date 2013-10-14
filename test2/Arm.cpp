@@ -337,8 +337,8 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 // yaw: change in yaw from current location
 // roll: change in roll from current location
 *******************************/
-//bool Arm::autonomous(WMRA::Pose destPose)
-bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
+bool Arm::autonomous(WMRA::Pose dest, int type)
+//bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
 {
 	// Unknown (not sure if these veriables are used)
 	double totalTime, distance, detJoa;
@@ -361,13 +361,13 @@ bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double r
 		currentLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
 
 		// Destination transformation matrix using input angles
-		temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
+      temp_rotation = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
 		destination_Rotation_T = currentLoc_T*temp_rotation;
 
 		// Destination Transformation Matrix Td [4x4]
-		destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = currentLoc_T(0,3) + dx;
-		destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = currentLoc_T(1,3) + dy;
-		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = currentLoc_T(2,3) + dz;
+      destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = currentLoc_T(0,3) + dest.x;
+      destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = currentLoc_T(1,3) + dest.y;
+		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = currentLoc_T(2,3) + dest.z;
 		destination_T(3,0) = currentLoc_T(3,0);				destination_T(3,1) = currentLoc_T(3,1);				destination_T(3,2) = currentLoc_T(3,2);				destination_T(3,3) = currentLoc_T(3,3);
 
 		distance = sqrt(pow(destination_T(0,3)-currentLoc_T(0,3),2) + pow(destination_T(1,3)-currentLoc_T(1,3),2) + pow(destination_T(2,3)-currentLoc_T(2,3),2));
