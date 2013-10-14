@@ -29,8 +29,10 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 			Titemp(i,j)=Ti(i,j);
 			Tdtemp(i,j)=Td(i,j);
 		}
-	} 
-	Titemp=~Titemp;
+	}
+   Matrix Titemp2(3,3); //#debug clean this up later
+   Titemp2 = ~Titemp;
+	Titemp=Titemp2;
 	R=Titemp*Tdtemp;
 	
 	//Initial single-angle representation of the rotation:
