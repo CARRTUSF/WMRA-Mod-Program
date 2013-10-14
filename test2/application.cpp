@@ -24,16 +24,7 @@ int velocity;				// Max velocity of the gripper in movement
 char *tempChar; //temporary char pointer passed to thread
 
 Arm wmraArm;
-/*
-UINT wmraThread (LPVOID pParam)
-{
-cout << "Starting WMRA control thread" << endl;
-//thread for moving WMRA
-wmraThreadRet = wmraControl(); //calls main WMRA program
-//AfxEndThread(0);
-return 0;
-}
-*/
+
 int main()
 {
    WMRA::Pose dest;
@@ -44,7 +35,6 @@ int main()
 
    if(wmraArm.initialize()){
       cout << "Controller intialized in main" << endl;
-      //AfxBeginThread (wmraThread, tempChar);
       while(!endFlag){
          cout << "Select a destination" << endl;
          cout << "dx = ";
