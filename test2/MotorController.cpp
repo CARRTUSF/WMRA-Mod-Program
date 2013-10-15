@@ -26,23 +26,23 @@ MotorController::MotorController()
 	initialized = false;
 
 	//calculate conversion values
-	enc2Radian[1] = PI/6595000;//a
-	enc2Radian[2] = PI/5100000;//b
-	enc2Radian[3] = PI/1800000;//c
-	enc2Radian[4] = PI/2300000;//d
-	enc2Radian[5] = PI/2000000;//e
-	enc2Radian[6] = -PI/2000000;//f
-	enc2Radian[7] = PI/1500000; //g
+	enc2Radian[1] = (2*PI)/13200000;//a
+	enc2Radian[2] = (2*PI)/13320000;//b
+	enc2Radian[3] = (2*PI)/ 4720000;//c
+	enc2Radian[4] = (2*PI)/ 4720000;//d
+	enc2Radian[5] = (2*PI)/ 3840000;//e
+	enc2Radian[6] = -(2*PI)/4000000;//f
+	enc2Radian[7] = (2*PI)/ 2880000; //g
 	
 	rad2Enc[0] = 0;
-	rad2Enc[1] = 6595000/PI;//a
-	rad2Enc[2] = 5100000/PI;//b
-	rad2Enc[3] = 1800000/PI;//c
-	rad2Enc[4] = 2300000/PI;//d
-	rad2Enc[5] = 2000000/PI;//e
-	rad2Enc[6] = -2000000/PI;//f
-	rad2Enc[7] = 1500000/PI; //g
-	rad2Enc[8] = 0;
+	rad2Enc[1] = 1/enc2Radian[1];
+	rad2Enc[2] = 1/enc2Radian[2];
+	rad2Enc[3] = 1/enc2Radian[3];
+	rad2Enc[4] = 1/enc2Radian[4];
+	rad2Enc[5] = 1/enc2Radian[5];
+	rad2Enc[6] = 1/enc2Radian[6];
+	rad2Enc[7] = 1/enc2Radian[7];
+	rad2Enc[8] = 1/enc2Radian[7]; // #debug need to find the ratio for gripper
 
 }
 
@@ -53,11 +53,13 @@ bool MotorController::initialize(){
 	return true;
 }
 
-bool MotorController::setMotorMode(int mode) // 0=Position Tracking, 1=Linear Interpolation
+bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking, 1=Linear Interpolation
 {
-	if(mode == 0)
-	{
-		//set all motors to position tracking mode
+   /*gripper will always be in position control mode*/
+   controller.command("PTH=1");
+
+   /* set mode for 7 arm joints A through G */
+   if(mode == MotorController::POS_CONTROL){ //position tracking		
 		controller.command("PTA=1");
 		controller.command("PTB=1");
 		controller.command("PTC=1");
@@ -65,13 +67,12 @@ bool MotorController::setMotorMode(int mode) // 0=Position Tracking, 1=Linear In
 		controller.command("PTE=1");
 		controller.command("PTF=1");
 		controller.command("PTG=1");
-		controller.command("PTH=1");
+      motorMode = mode;
 	}
-	else if(mode == 1)
-	{
-		//set all motors to linear interpolation mode
-		controller.command("LM ABCDEFGH"); // galil manual pg.88 (pdf pg.98) 
-		//controller.command("CAS"); // or ("CAT") - Specifying the Coordinate Plane
+   else if(mode == MotorController::LINEAR){ //linear control mode
+		/* galil manual pg.88 (pdf pg.98) */
+		controller.command("LM ABCDEFGH");	
+      motorMode = mode;
 	}
 	else
 		return 0;
@@ -82,14 +83,20 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 {	
    if(angles.size() == 7 && speeds.size() == 7)
 	{ 
+      /*convert angles to position counts
+      * also Galil will return an error if all positions sent are 0
+      * so check if all positions are zero
+      */
       vector<long> posCount(7);
+      double zeroErrCheck = 0;
       for(int i = 0; i < 7 ; i++){
          int motorNum = i+1;
-         posCount[i] = (int)angToEnc(motorNum,angles[i]);
+         posCount[i] = (long)angToEnc(motorNum,angles[i]);
+         zeroErrCheck += abs(posCount[i]);
       }
-      std::stringstream ss;
-      ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
-            <<  posCount[5] << "," << posCount[6] ;
+      /* If all positions are zero, do not send command to galil controller*/
+      if(zeroErrCheck < 1) return false; 
+     
       //calculate vector speed
       vector<double> speedCount(7);
       for(int i = 0; i < 7 ; i++){
@@ -101,15 +108,18 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
          (speedCount[3]*speedCount[3])+(speedCount[4]*speedCount[4]) + (speedCount[5]*speedCount[5])
           + (speedCount[6]*speedCount[6]) ;
       vectorSpeed = std::sqrt(vectorSpeed);
+
+      std::stringstream ss;
+      ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
+            <<  posCount[5] << "," << posCount[6] ;
       //add speed to the command string 
       ss << "<" << (int)vectorSpeed << ">" << (int)vectorSpeed;
 		string command = ss.str();
 		controller.command(command);
 	}
-	else
-	{
-		cout << "Error: LI takes 8 joint angles" << endl;
-		return 0;
+	else{
+		cerr << "addLinearMotionSegment takes 7 joint angles and speeds" << endl;
+			throw std::out_of_range ("Angles, Speeds incorrect vector size. Should be 7");
 	}
 	return 1;
 }
@@ -134,18 +144,10 @@ bool MotorController::wmraSetup() //WMRA setup
 	controller.command("BRC=1");
 	controller.command("BRD=1");
 
-	//set all motors to position tracking mode
-   //controller.command("PTA=1");
-   //controller.command("PTB=1");
-   //controller.command("PTC=1");
-   //controller.command("PTD=1");
-   //controller.command("PTE=1");
-   //controller.command("PTF=1");
-   //controller.command("PTG=1");
+   /*set all 7 arm joints to LI mode*/
+   setMotorMode(LINEAR);
 
-   controller.command("LM ABCDEFG");
-
-
+   /*set gripper to position control mode*/
 	controller.command("PTH=1");
 
 	// set accelaration decelaration values
@@ -176,7 +178,7 @@ bool MotorController::wmraSetup() //WMRA setup
 	definePosition(3, 0);
 	definePosition(4, (PI/2));
 	definePosition(5, (PI/2));
-	definePosition(6, -(PI/2));
+	definePosition(6, (PI/3)); //joint 6 is now 60 degrees
 	definePosition(7, 0);
 	definePosition(8, 0);
 
@@ -222,8 +224,7 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 		return encToAng(motorNum, encoderVal);        
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
-		{
+		if(motorNum != 9 && motorNum != 10){
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
 		}
@@ -330,9 +331,9 @@ bool MotorController::setDecel(int motorNum, float angularDecelaration)
 bool MotorController::definePosition(int motorNum,float angle)
 {
 	if(isValidMotor(motorNum)){
-		long encVal = abs(angToEnc(motorNum,angle));
+		long encVal = angToEnc(motorNum,angle);
 		string motor = motorLookup[motorNum];
-		if ((encVal >= -2147483647) && (encVal <= 2147483648)){
+		if (true){ //#debug  check if angle is in range
 			string command = "DP" + motor;
 			controller.command(command + "=" + toString(encVal));
 			return true;            

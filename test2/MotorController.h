@@ -16,14 +16,16 @@ using namespace std;
 
 class MotorController {
 public:
-   enum motionMode  {POS_CONTROL = 0, LINEAR};
+   enum motorControlMode  {POS_CONTROL = 0, LINEAR};
    MotorController();
+   //~MotorController();
    bool initialize();
-   bool setMotorMode(int mode);
+   bool setMotorMode(motorControlMode mode);
+   int getMotorMode(){return motorMode;}
    /**
    * \brief adds the next linear segment. sends to motor controller
    * \@param [in] angles vector of joint angles in radians. 
-   * \@param [in] section speed in rad/s^-1 
+   * \@param [in] speeds section speed in rad/s^-1 
    */
    bool addLinearMotionSegment(vector<double> angles, vector<double> speeds);
    bool beginLI();/// \brief start linear motion
@@ -53,6 +55,7 @@ public:
 private:
 
    bool initialized ;
+   motorControlMode motorMode ;
    string ipAddr;
    double enc2Radian[9];
    //double rad2Enc[9];
