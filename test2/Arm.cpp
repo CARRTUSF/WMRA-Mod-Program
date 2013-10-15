@@ -42,11 +42,37 @@ bool Arm::initialize(){
 	else if(controller.isInitialized())  // If controller class is initialized
 	{
 		initialized = 1;
+      readyPosition = getJointAngles();
 		return 1;
 	}
 	else
 		return 0;
 }
+
+WMRA::JointValueSet Arm::getJointAngles(){
+   WMRA::JointValueSet joints;
+   for(int i = 0; i < joints.size(); i++){		// Sets the current location to a 1x8 vector		
+      joints[i] = controller.readPos(i+1);
+   }
+   return joints;   
+}
+
+
+
+//bool Arm::gotoReadyPos(){
+//
+//}
+
+//WMRA::Pose Arm::getPosition(){
+//   if(controller.isInitialized()){
+//   Matrix currLoc_T(4,4);
+//   vector<double> JointAng(7); // Joint angles for the 7 joints
+//   for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
+//			JointAng[i] = controller.readPos(i+1);
+//		}
+//		currLoc_T = kinematics(JointAng);
+//   }
+//}
 
 bool Arm::setDefaults()
 {
@@ -348,7 +374,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
    vector<double> currJointAng(7);
    vector<double> destinationLoc(7); 
    vector<double> delta(8);
-	Matrix startLoc_T(4,4), currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_rotation(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+	Matrix startLoc_T(4,4), currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_dest(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
 	Matrix Joa(6,7), Ttnew(4,4), jointAng_Mat(7,1);
 
 	cout << "Thread Started, Checking WMRA Controller Initialization" << endl;
@@ -359,16 +385,23 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			startJointAng[i] = controller.readPos(i+1);
 		}
 		startLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
+      cout << "start is " << endl;
+      cout << startLoc_T << endl;
+      //temp_dest =  pose2TfMat(dest);
 
 		// Destination transformation matrix using input angles
-      temp_rotation = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
-		destination_Rotation_T = startLoc_T*temp_rotation;
+      temp_dest = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
+		destination_Rotation_T = startLoc_T * temp_dest;
+      //destination_T = startLoc_T * temp_dest;
 
-		// Destination Transformation Matrix Td [4x4]
+		 //Destination Transformation Matrix Td [4x4]
       destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = startLoc_T(0,3) + dest.x;
       destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = startLoc_T(1,3) + dest.y;
 		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = startLoc_T(2,3) + dest.z;
 		destination_T(3,0) = startLoc_T(3,0);				destination_T(3,1) = startLoc_T(3,1);				destination_T(3,2) = startLoc_T(3,2);				destination_T(3,3) = startLoc_T(3,3);
+
+      cout << "destination is :" << endl;
+      cout << destination_T << endl;
 
 		distance = sqrt(pow(destination_T(0,3)-startLoc_T(0,3),2) + pow(destination_T(1,3)-startLoc_T(1,3),2) + pow(destination_T(2,3)-startLoc_T(2,3),2));
 
@@ -407,12 +440,12 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, prevJointAng);
 
 			//cout << "Waypoint " << i ;
-			//for(int j = 0; j < 7; j++){
-			//	currJointAng[j] = /*prevJointAng[i] +*/ jointAng_Mat(j,0);
-   //         cout << currJointAng[j] << ", " ;
-			//}
+			for(int j = 0; j < 7; j++){
+				currJointAng[j] = /*prevJointAng[i] +*/ jointAng_Mat(j,0);
+            //cout << currJointAng[j] << ", " ;
+			}
 
-         cout << endl;
+         //cout << endl;
 			Arm::milestone(prevJointAng, currJointAng, Arm::dt);
          prevJointAng = currJointAng;
          prevPosTF = currPosTF;
@@ -420,6 +453,8 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		}
       controller.beginLI();
 	}
+
+   //#debug  output end position after the loop
 	else
 		return 0;
 	return 1;

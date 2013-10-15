@@ -9,13 +9,16 @@
 class Arm{
 public:
    Arm();
+   //WMRA::Pose getPosition();
    bool initialize();
    bool setDefaults();
    bool moveArm(vector<double> destinationAng);
    bool milestone(vector<double> currentAng, vector<double> destinationAng, double dt);
    bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME);
+   WMRA::JointValueSet getJointAngles();
 
 private:
+   
 
    double dt;	// the default time between milestones
    int control_type; // WMRA Control type; 0 = Simulation, 1 = Wheelchair Only, 2 = Arm Only, 3 = Both Arm and Wheelchair. [Prev=WCA]
@@ -32,7 +35,11 @@ private:
    int control_ini; // Does the arm need to move from park to ready position; 0=no, 1=yes
    int plt; // Debug: Not sure what this veriable is for, something to do with simulation results; 1 = no results
 
+   WMRA::JointValueSet readyPosition; //joint angles for ready position
+
    bool initialized;
    static MotorController control;
+
+   
 };
 #endif;

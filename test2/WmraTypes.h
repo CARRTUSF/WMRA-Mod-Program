@@ -13,6 +13,13 @@ Distributed under GPL2 or higher
 #include "matrix.h"
 
 using namespace math;
+#define PI 3.14159265
+
+#ifndef _NO_TEMPLATE
+typedef matrix<double> Matrix;
+#else
+typedef matrix Matrix;
+#endif
 
 namespace WMRA{
 
@@ -38,13 +45,20 @@ namespace WMRA{
    };
 
    class JointValueSet{
+   public:
       vector<double> Joint;
       JointValueSet(){
-         Joint.resize(8);
+         Joint.resize(7);
       }
-      double operator[](int i){
+      int size(){
+         return (int)Joint.size();
+      }
+      double& operator[](int i){
          if(i < Joint.size())  return Joint[i];
       }
    };
+
+   
+
 }
 #endif;

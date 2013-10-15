@@ -13,9 +13,11 @@ Function Declaration:*/
 #ifndef WMRA_KINEMATICS_H // if not defined
 #define WMRA_KINEMATICS_H // define MyHeader
 
-#include "matrix.h" 
+
 #include <vector>
 #include <time.h>
+#include "matrix.h" 
+#include "WmraTypes.h"
 
 #define EPS 2.2204460492503131e-016 
 
@@ -40,5 +42,6 @@ Matrix WMRA_w2T(int ind, Matrix Tp, Matrix q);
 Matrix WMRA_WCD();
 Matrix WMRA_p2T(double x, double y, double a);
 Matrix rotationMatrix(double pitch, double roll, double yaw);
+Matrix pose2TfMat(WMRA::Pose dest);
 
 #endif
