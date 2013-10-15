@@ -10,8 +10,8 @@
 
 Function Declaration:*/
 
-#ifndef _kinematics_H // if not defined
-#define _kinematics_H // define MyHeader
+#ifndef WMRA_KINEMATICS_H // if not defined
+#define WMRA_KINEMATICS_H // define MyHeader
 
 #include "matrix.h" 
 #include <vector>
