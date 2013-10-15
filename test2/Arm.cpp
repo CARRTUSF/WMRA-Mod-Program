@@ -315,7 +315,7 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
       /* */
 		double vel;
 		for(int i = 0; i < destinationAng.size(); i++){
-			vel = abs(destinationAng[i]-currentAng[i])/dt;
+			vel = abs(destinationAng[i]/*-currentAng[i]*/)/dt;
 			speeds.push_back(vel);
 		}
 		controller.addLinearMotionSegment(destinationAng, speeds);
@@ -337,7 +337,7 @@ bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, do
 // yaw: change in yaw from current location
 // roll: change in roll from current location
 *******************************/
-bool Arm::autonomous(WMRA::Pose dest, int type)
+bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 //bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
 {
 	// Unknown (not sure if these veriables are used)
@@ -348,7 +348,7 @@ bool Arm::autonomous(WMRA::Pose dest, int type)
    vector<double> currJointAng(7);
    vector<double> destinationLoc(7); 
    vector<double> delta(8);
-	Matrix currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_rotation(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+	Matrix startLoc_T(4,4), currentLoc_T(4,4), destination_T(4,4), destination_Rotation_T(4,4), temp_rotation(4,4), Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
 	Matrix Joa(6,7), Ttnew(4,4), jointAng_Mat(7,1);
 
 	cout << "Thread Started, Checking WMRA Controller Initialization" << endl;
@@ -358,43 +358,64 @@ bool Arm::autonomous(WMRA::Pose dest, int type)
 		for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
 			startJointAng[i] = controller.readPos(i+1);
 		}
-		currentLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
+		startLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
 
 		// Destination transformation matrix using input angles
       temp_rotation = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
-		destination_Rotation_T = currentLoc_T*temp_rotation;
+		destination_Rotation_T = startLoc_T*temp_rotation;
 
 		// Destination Transformation Matrix Td [4x4]
-      destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = currentLoc_T(0,3) + dest.x;
-      destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = currentLoc_T(1,3) + dest.y;
-		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = currentLoc_T(2,3) + dest.z;
-		destination_T(3,0) = currentLoc_T(3,0);				destination_T(3,1) = currentLoc_T(3,1);				destination_T(3,2) = currentLoc_T(3,2);				destination_T(3,3) = currentLoc_T(3,3);
+      destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = startLoc_T(0,3) + dest.x;
+      destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = startLoc_T(1,3) + dest.y;
+		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = startLoc_T(2,3) + dest.z;
+		destination_T(3,0) = startLoc_T(3,0);				destination_T(3,1) = startLoc_T(3,1);				destination_T(3,2) = startLoc_T(3,2);				destination_T(3,3) = startLoc_T(3,3);
 
-		distance = sqrt(pow(destination_T(0,3)-currentLoc_T(0,3),2) + pow(destination_T(1,3)-currentLoc_T(1,3),2) + pow(destination_T(2,3)-currentLoc_T(2,3),2));
+		distance = sqrt(pow(destination_T(0,3)-startLoc_T(0,3),2) + pow(destination_T(1,3)-startLoc_T(1,3),2) + pow(destination_T(2,3)-startLoc_T(2,3),2));
 
 		totalTime = distance/Arm::control_velocity;
 		numWayPoints = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
 		Arm::dt = totalTime/numWayPoints;
 
-		vector<Matrix> wayPoints = WMRA_traj(3, currentLoc_T, destination_T, numWayPoints+1); 
+		vector<Matrix> wayPoints = WMRA_traj(3, startLoc_T, destination_T, numWayPoints+1); 
 		//cout << "Trajectory initialized" << endl;
 		cout << "number of way points = " << numWayPoints << endl;
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
 
       prevJointAng = startJointAng;
-		for(int cur_milestone = 1 ; cur_milestone < numWayPoints; cur_milestone++)
+      Matrix prevPosTF(4,4);
+      prevPosTF =  startLoc_T;
+      Matrix currPosTF(4,4);
+      //Matrix tempMat(4,4);
+		for(int i = 1 ; i < numWayPoints; i++)
 		{			
-			currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+			//currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
 			// Calculating the 6X7 Jacobian of the arm in frame 0:
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
-			WMRA_delta(delta, wayPoints[cur_milestone -1] , wayPoints[cur_milestone]);
+         //#debug need to transform waypoints to arm base see matlab code WMRA_main.m line 346
+         //currPosTF = startLoc_T * wayPoints[i]; 
+         currPosTF = wayPoints[i] ;
+        /* cout << wayPoints[i] << endl;
+         cout << startLoc_T << endl;
+         cout << currPosTF << endl;*/
+			WMRA_delta(delta, prevPosTF , currPosTF);
+
+         /*for(int j = 0; j < delta.size(); j++){
+               cout << delta[j] ;
+         }
+         cout << endl;*/
+
 			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, prevJointAng);
-			
-			for(int i = 0; i < 7; i++){
-				currJointAng[i] = prevJointAng[i] + jointAng_Mat(i,0);
-			}			
+
+			//cout << "Waypoint " << i ;
+			//for(int j = 0; j < 7; j++){
+			//	currJointAng[j] = /*prevJointAng[i] +*/ jointAng_Mat(j,0);
+   //         cout << currJointAng[j] << ", " ;
+			//}
+
+         cout << endl;
 			Arm::milestone(prevJointAng, currJointAng, Arm::dt);
          prevJointAng = currJointAng;
+         prevPosTF = currPosTF;
 			//Sleep(1000*Arm::dt);
 		}
       controller.beginLI();

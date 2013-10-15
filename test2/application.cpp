@@ -17,8 +17,6 @@ using namespace std;
 int wmraThreadRet = 1;		// return value from WMRA thread
 int wmraCont = 1;			// return value from WMRA thread
 int movement;				// start movement flag
-double pitch, roll, yaw;	// pitch, roll, yaw orientation of the gripper
-double dx, dy, dz;			// X, Y, Y destination of the gripper
 int velocity;				// Max velocity of the gripper in movement
 */
 char *tempChar; //temporary char pointer passed to thread
@@ -30,7 +28,7 @@ int main()
    WMRA::Pose dest;
    int velocity;				// Max velocity of the gripper in movement
 
-   bool endFlag = 0;
+   bool endFlag = false;
    int choice;
 
    if(wmraArm.initialize()){
@@ -54,10 +52,10 @@ int main()
          cout << "Decision: ";
          cin >> choice;
          if(choice == 1){
-            wmraArm.autonomous(dest,0);
+            wmraArm.autonomous(dest,WMRA::ARM_FRAME);
          }
          else{
-            endFlag = 1;
+            endFlag = true;
          }
       }
    }
