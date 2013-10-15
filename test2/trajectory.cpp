@@ -152,10 +152,10 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 		Tti(1,3)=yt(i,0);
 		Tti(2,3)=zt(i,0);
 		
+      wayPoints[i] = Tti;
 		for ( m=0 ; m < 4 ; m++ ) {
 			for ( j = 0 ; j < 4 ; j++ ) {
-				Tt[i][m][j]=Tti(m,j);
-            wayPoints[i](m,j) = Tti(m,j);
+				Tt[i][m][j]=Tti(m,j);            
 			}
 		}
 	}
