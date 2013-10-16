@@ -438,7 +438,7 @@ Matrix WMRA_Opt(Matrix Jo, float detJo, vector<double> dx, vector<double> q){
 	//dq.SetSize(7,1);
 //	dq(7,0)= 0;//dq(7,0)*L(0,4);
 
-	cout<<"dq is\n\n"<<dq<<"\n\n";
+	//cout<<"dq is\n\n"<<dq<<"\n\n";
 
 	return dq;
 }

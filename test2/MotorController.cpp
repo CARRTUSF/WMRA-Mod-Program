@@ -126,8 +126,15 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 
 bool MotorController::beginLI()
 {
-	controller.command("LE"); // Linear End, for smooth stopping
+	//controller.command("LE"); // Linear End, for smooth stopping
 	controller.command("BGS"); // Begin Sequence
+	return 1;
+}
+
+bool MotorController::endLIseq()
+{
+	controller.command("LE"); // Linear End, for smooth stopping
+	//controller.command("BGS"); // Begin Sequence
 	return 1;
 }
 

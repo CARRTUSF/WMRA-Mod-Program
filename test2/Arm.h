@@ -13,7 +13,7 @@ public:
    bool initialize();
    bool setDefaults();
    bool moveArm(vector<double> destinationAng);
-   bool milestone(vector<double> currentAng, vector<double> destinationAng, double dt);
+   bool milestoneDelta(vector<double> destinationAng, double dt);
    bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME);
    WMRA::JointValueSet getJointAngles();
 

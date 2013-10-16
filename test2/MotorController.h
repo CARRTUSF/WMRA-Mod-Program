@@ -28,6 +28,7 @@ public:
    * \@param [in] speeds section speed in rad/s^-1 
    */
    bool addLinearMotionSegment(vector<double> angles, vector<double> speeds);
+   bool endLIseq();
    bool beginLI();/// \brief start linear motion
    /**
    * \brief  waits until all waypoints are finished. blocking.

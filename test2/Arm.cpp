@@ -335,7 +335,7 @@ bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destina
 	return 1; // Movement complete
 }
 
-bool Arm::milestone(vector<double> currentAng, vector<double> destinationAng, double dt) { // sets the joints to move from current position to destination arm pose, in dt time.
+bool Arm::milestoneDelta(vector<double> destinationAng, double dt) { // sets the joints to move from current position to destination arm pose, in dt time.
 	vector<double> speeds;
 	if(controller.isInitialized()){
       /* */
@@ -405,6 +405,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 
 		distance = sqrt(pow(destination_T(0,3)-startLoc_T(0,3),2) + pow(destination_T(1,3)-startLoc_T(1,3),2) + pow(destination_T(2,3)-startLoc_T(2,3),2));
 
+      //BUG #debug will not work for just rotations
 		totalTime = distance/Arm::control_velocity;
 		numWayPoints = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
 		Arm::dt = totalTime/numWayPoints;
@@ -419,9 +420,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
       prevPosTF =  startLoc_T;
       Matrix currPosTF(4,4);
       //Matrix tempMat(4,4);
-		for(int i = 1 ; i < numWayPoints; i++)
+		for(int i = 1 ; i < numWayPoints +1; i++)
 		{			
-			//currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+			currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
 			// Calculating the 6X7 Jacobian of the arm in frame 0:
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
          //#debug need to transform waypoints to arm base see matlab code WMRA_main.m line 346
@@ -442,19 +443,48 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			//cout << "Waypoint " << i ;
 			for(int j = 0; j < 7; j++){
 				currJointAng[j] = /*prevJointAng[i] +*/ jointAng_Mat(j,0);
+            prevJointAng[j] += currJointAng[j];
             //cout << currJointAng[j] << ", " ;
 			}
 
          //cout << endl;
-			Arm::milestone(prevJointAng, currJointAng, Arm::dt);
-         prevJointAng = currJointAng;
+			Arm::milestoneDelta(currJointAng, Arm::dt);
+         
+         //prevJointAng = currJointAng;
          prevPosTF = currPosTF;
 			//Sleep(1000*Arm::dt);
 		}
       controller.beginLI();
+      controller.endLIseq();
+
+      //#debug  output end position after the loop
+      cout << "last waypoint is :" << endl;
+      cout <<  wayPoints[numWayPoints]<< endl;
+
+      cout << "last waypoint ik->fwK is :" << endl;
+      startLoc_T = kinematics(prevJointAng);
+      cout << startLoc_T << endl;
+
+      Sleep(10000);
+      for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
+			startJointAng[i] = controller.readPos(i+1);
+		}
+		startLoc_T = kinematics(startJointAng);
+      cout << "arm reached position is " << endl;
+      cout << startLoc_T << endl;
+
+      cout << "and the same thing AGAIN.... " << endl;
+      for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
+			startJointAng[i] = controller.readPos(i+1);
+		}
+		startLoc_T = kinematics(startJointAng);
+      cout << "arm reached position is " << endl;
+      cout << startLoc_T << endl;
+      cout << endl;
+      //#debug end
 	}
 
-   //#debug  output end position after the loop
+   
 	else
 		return 0;
 	return 1;
