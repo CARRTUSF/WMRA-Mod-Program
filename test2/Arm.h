@@ -18,8 +18,7 @@ public:
    WMRA::JointValueSet getJointAngles();
 
 private:
-   
-
+   WMRA::CordFrame coordinate_frame;
    double dt;	// the default time between milestones
    int control_type; // WMRA Control type; 0 = Simulation, 1 = Wheelchair Only, 2 = Arm Only, 3 = Both Arm and Wheelchair. [Prev=WCA]
    int control_frame; // WMRA Control frame;  2 = Wheelchair Frame [Prev=coord]
