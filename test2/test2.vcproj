@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Galil1.lib ws2_32.lib snmpapi.lib"
+				AdditionalDependencies="ws2_32.lib snmpapi.lib"
 				AdditionalLibraryDirectories="&quot;$(OH_SDK_BASE)\lib\Win32\DebugAcademicEdition&quot;;&quot;$(OH_SDK_BASE)\utilities\lib\Win32\Debug&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -255,10 +255,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Galil.h"
-				>
-			</File>
-			<File
 				RelativePath=".\galilController.h"
 				>
 			</File>
@@ -313,10 +309,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath=".\Galil1.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

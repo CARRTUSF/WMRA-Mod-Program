@@ -8,15 +8,13 @@
 #include <stdio.h>
 #include "stringUtility.h"
 #include "MotorController.h"
-//#include "galilController.h"
-#include "Galil.h"
+#include "galilController.h"
 
 using namespace std;
 
 #define PI 3.14159265
 
-//static Galil g("192.168.1.104");
-Galil controller("192.168.1.22");
+galilController MotorController::controller;
 string MotorController::motorLookup[] = {"H","A","B","C","D","E","F","G","H"};
 
 
@@ -48,7 +46,7 @@ MotorController::MotorController()
 
 bool MotorController::initialize(){
 
-	//controller.initialize("192.168.1.22");
+	controller.initialize();
 	initialized = wmraSetup();
 	return true;
 }

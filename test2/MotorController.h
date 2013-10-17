@@ -7,12 +7,11 @@
 #include <sstream>
 #include <vector>
 #include <ctype.h>
-//#include "Galil.h"
 #include "WmraTypes.h"
-#include "galilController.h"
 
 using namespace std;
 
+class galilController;
 
 class MotorController {
 public:
@@ -54,7 +53,7 @@ public:
    double rad2Enc[9];
 
 private:
-
+   static galilController controller;
    bool initialized ;
    motorControlMode motorMode ;
    string ipAddr;
