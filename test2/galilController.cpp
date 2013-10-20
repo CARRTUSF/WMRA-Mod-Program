@@ -11,8 +11,6 @@ using namespace std;
 //
 ************************/
 
-std::string galilController::IP;
-bool galilController::initialized;
 client_tcpsocket galilController::sock;
 
 galilController::galilController(){
@@ -74,6 +72,15 @@ bool galilController::setDefaults()
 	else
 	{
 		cout << "'IP' default not found" << endl;
+		return 0;
+	}
+	if(reader.keyPresent("simulation"))
+	{
+		simulation = reader.getInt("simulation");
+	}
+	else
+	{
+		cout << "'simulation' default not found" << endl;
 		return 0;
 	}
 	//cout << "Closing config reader" << endl;

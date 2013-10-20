@@ -15,12 +15,13 @@ public:
 	std::string command(std::string Command); // user command structure, used by MotorController
 
 private:
-	static std::string IP; // IP address of the Galil Controller
-	static bool initialized; // Flag that is set when socket communication has been achieved
-	static bool setDefaults(); // set defaults
-	static bool initializeSocket(std::string IP); // sets up socket communication, sets initialized
-	static int commandGalil(char* Command, char* Response, int ResponseSize); // Galil Controller command structure, used by command()
+	std::string IP; // IP address of the Galil Controller
+	bool initialized; // Flag that is set when socket communication has been achieved
+	bool setDefaults(); // set defaults
+	bool initializeSocket(std::string IP); // sets up socket communication, sets initialized
+	int commandGalil(char* Command, char* Response, int ResponseSize); // Galil Controller command structure, used by command()
 	static client_tcpsocket sock; // The socket class used to communicate with galil controller
+	bool simulation;
 };
 
 #endif
