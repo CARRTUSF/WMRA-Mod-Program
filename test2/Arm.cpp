@@ -42,7 +42,7 @@ bool Arm::initialize(){
 	else if(controller.isInitialized())  // If controller class is initialized
 	{
 		initialized = 1;
-      readyPosition = getJointAngles();
+		readyPosition = getJointAngles();
 		return 1;
 	}
 	else

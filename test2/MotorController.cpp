@@ -571,7 +571,7 @@ bool MotorController::setDefaults()
 		cout << "'encoderPerRevolution7' default not found" << endl;
 		return 0;
 	}
-	if(reader.keyPresent("encoderPerRevolution8"))
+	if(reader.keyPresent("encoderPerRevolution8")) //#Debug: encoderPerRevolution8 value is incorrect
 	{
 		enc2Radian[8] = 2*PI/reader.getInt("encoderPerRevolution8"); //calculate conversion values
 		radian2Enc[8] = 1/enc2Radian[8];

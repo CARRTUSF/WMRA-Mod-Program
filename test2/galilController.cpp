@@ -27,8 +27,16 @@ bool galilController::initialize() // return initialized
 	initialized = setDefaults();
 	if(initialized)
 	{
-		cout << "Galil: initialize connection" << endl;
-		initialized = initializeSocket(galilController::IP);
+		if(simulation)
+		{
+			cout << "Simulation Mode" << endl;
+			initialized = true;
+		}
+		else
+		{
+			cout << "Galil: initialize connection" << endl;
+			initialized = initializeSocket(galilController::IP);
+		}
 	}
 	if(!initialized)
 	{
@@ -36,8 +44,16 @@ bool galilController::initialize() // return initialized
 		return 0;
 	}
 	else{
-		cout << "Galil: Initialized" << endl;
-		return 1;
+		if(simulation)
+		{
+			cout << "Simulation Initialized" << endl;
+			return 1;
+		}
+		else
+		{
+			cout << "Galil: Initialized" << endl;
+			return 1;
+		}
 	}
 }
 	
@@ -48,13 +64,21 @@ bool galilController::isInitialized() // return initialized
 
 std::string galilController::command(std::string Command)
 {
-	char com[300];
-	char ret[300];
-	std::string c = Command + "\r";
-	strcpy(com, c.c_str());
-	commandGalil(com, ret, sizeof(ret));
-	std::string ret_str(ret);
-	return ret_str;
+	if(simulation)
+	{
+			cout << "Simulation Mode" << endl;
+			return "0";
+	}
+	else
+	{
+		char com[300];
+		char ret[300];
+		std::string c = Command + "\r";
+		strcpy(com, c.c_str());
+		commandGalil(com, ret, sizeof(ret));
+		std::string ret_str(ret);
+		return ret_str;
+	}
 }
 
 // PRIVATE FUNCTIONS
@@ -83,9 +107,7 @@ bool galilController::setDefaults()
 		cout << "'simulation' default not found" << endl;
 		return 0;
 	}
-	//cout << "Closing config reader" << endl;
-	//
-	//cout << "config reader closed" << endl;
+
 	return 1;
 }	
 
