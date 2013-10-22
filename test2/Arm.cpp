@@ -387,25 +387,18 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		startLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
       cout << "start is " << endl;
       cout << startLoc_T << endl;
-	  
-	  //#DEBUG - Remove next line
-	  coordinate_frame = WMRA::ARM_FRAME;
+      //temp_dest =  pose2TfMat(dest);
 
-	  // Destination transformation matrix using input angles
-	  if(coordinate_frame == WMRA::GRIPPER_FRAME)
-	  {
-		  temp_dest =  pose2TfMat(dest); // gripper frame
-		  destination_T = startLoc_T * temp_dest;
-	  }
-	  else if(coordinate_frame == WMRA::ARM_FRAME)
-	  {
-			temp_dest = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
-			destination_T = temp_dest * startLoc_T;
-			destination_T(0,3) += dest.x;
-			destination_T(1,3) += dest.y;
-			destination_T(2,3) += dest.z;
-			//WMRA_transl(dest.x, dest.y, dest.z);
-	  }
+		// Destination transformation matrix using input angles
+      temp_dest = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
+		destination_Rotation_T = startLoc_T * temp_dest;
+      //destination_T = startLoc_T * temp_dest;
+
+		 //Destination Transformation Matrix Td [4x4]
+      destination_T(0,0) = destination_Rotation_T(0,0);	destination_T(0,1) = destination_Rotation_T(0,1);	destination_T(0,2) = destination_Rotation_T(0,2);	destination_T(0,3) = startLoc_T(0,3) + dest.x;
+      destination_T(1,0) = destination_Rotation_T(1,0);	destination_T(1,1) = destination_Rotation_T(1,1);	destination_T(1,2) = destination_Rotation_T(1,2);	destination_T(1,3) = startLoc_T(1,3) + dest.y;
+		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = startLoc_T(2,3) + dest.z;
+		destination_T(3,0) = startLoc_T(3,0);				destination_T(3,1) = startLoc_T(3,1);				destination_T(3,2) = startLoc_T(3,2);				destination_T(3,3) = startLoc_T(3,3);
 
       cout << "destination is :" << endl;
       cout << destination_T << endl;
