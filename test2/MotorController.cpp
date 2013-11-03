@@ -557,7 +557,7 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution6"))
 	{
-		enc2Radian[6] = 2*PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
+		enc2Radian[6] = -(2*PI)/reader.getInt("encoderPerRevolution6"); //calculate conversion values
 		radian2Enc[6] = 1/enc2Radian[6];
 	}
 	else
