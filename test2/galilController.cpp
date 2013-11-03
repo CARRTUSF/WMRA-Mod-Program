@@ -2,6 +2,7 @@
 #include "SockStream.h"
 #include "utility.h"
 #include "ConfigReader.h"
+#include <iostream>
 
 using namespace std;
 
@@ -14,6 +15,8 @@ using namespace std;
 client_tcpsocket galilController::sock;
 
 galilController::galilController(){
+	
+	debugFile.open("debug.txt");
 	initialized = false;
 }
 
@@ -77,6 +80,8 @@ std::string galilController::command(std::string Command)
 	}
 	else
 	{
+		if(debug)
+			debugFile << Command << endl;
 		char com[300];
 		char ret[300];
 		std::string c = Command + "\r";
@@ -111,6 +116,15 @@ bool galilController::setDefaults()
 	else
 	{
 		cout << "'simulation' default not found" << endl;
+		return 0;
+	}
+	if(reader.keyPresent("debug"))
+	{
+		debug = reader.getInt("debug");
+	}
+	else
+	{
+		cout << "'debug' default not found" << endl;
 		return 0;
 	}
 

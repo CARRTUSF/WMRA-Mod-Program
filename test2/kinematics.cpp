@@ -129,14 +129,14 @@ Matrix WMRA_DH(vector<double> q){
 //Inputting the D-H Parameters in a Matrix form, dimensions are in millimeters and radians:
 
 // Dimentions based on the actual physical arm:
-	double DHtemp[7][4]={
-					{-PI/2, 0,	102,	 q[0]},
-					{ PI/2, 0,	133,	 q[1]},  
-					{-PI/2, 0,  502,	 q[2]},
-					{ PI/2, 0,  135,		 q[3]},
-					{-PI/2, 0,  375+24,	 q[4]},
-					{ PI/2, 0,  0-23.5,		 q[5]},
-					{-PI/2, 0,  360 /*161+70 *//*143*/, q[6]}};
+	float DHtemp[7][4]={
+					{-PI/2, 0,	120.4 /*102*/,	 q[0]},
+					{ PI/2, 0,	134.25 /*133*/,	 q[1]},  
+					{-PI/2, 0,  503.345 /*502*/,	 q[2]},
+					{ PI/2, 0,  133.2 /*135*/,		 q[3]},
+					{-PI/2, 0,  386.658 /*375+24*/,	 q[4]},
+					{ PI/2, 0,  -23.5,		 q[5]},
+					{-PI/2, 0,  172.5+205 /*360*//*161+70 *//*143*/, q[6]}};
 			     
 // Dimentions based on the Virtual Reality arm model:
 /*  double DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},

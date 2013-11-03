@@ -3,6 +3,7 @@
 
 #pragma once
 #include <string>
+#include <fstream>
 
 class client_tcpsocket;
 
@@ -16,6 +17,7 @@ public:
 	std::string command(std::string Command); // user command structure, used by MotorController
 
 private:
+	bool debug;
 	std::string IP; // IP address of the Galil Controller
 	bool initialized; // Flag that is set when socket communication has been achieved
 	bool simulation; // Flag that is set when movement data needs to be output to visualization program
@@ -23,6 +25,7 @@ private:
 	bool initializeSocket(std::string IP); // sets up socket communication, sets initialized
 	int commandGalil(char* Command, char* Response, int ResponseSize); // Galil Controller command structure, used by command()
 	static client_tcpsocket sock; // The socket class used to communicate with galil controller
+	std::ofstream debugFile;
 };
 
 #endif
