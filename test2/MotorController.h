@@ -56,6 +56,9 @@ public:
    /// \brief return true if initialized
    bool isInitialized();
 
+   /// \brief return true if movement is simulated
+   bool isSimulated();
+
    /// \brief sends the default values to the galil controller
    bool wmraSetup();
 
@@ -85,14 +88,14 @@ public:
    * \@param [in] motorNum the number(int) of the motor for the velocity to be set.
    * \@param [in] angularVelocity the angular velocity in rad/s
    */
-   bool setMaxVelocity(int motorNum, float angularVelocity);
+   bool setMaxVelocity(int motorNum, double angularVelocity);
 
    /**
    * \brief sets the acceleration. sends to galil controller
    * \@param [in] motorNum the number(int) of the motor for the acceleration to be set.
    * \@param [in] angularAccelaration the angular acceleration in rad/s^2
    */
-   bool setAccel(int motorNum, float angularAccelaration);
+   bool setAccel(int motorNum, double angularAccelaration);
 
    /**
    * \brief sets all motors acceleration. sends to galil controller
@@ -105,35 +108,35 @@ public:
    * \@param [in] motorNum the number(int) of the motor for the deceleration to be set.
    * \@param [in] angularDecelaration the angular deceleration in rad/s^2
    */
-   bool setDecel(int motorNum, float angularDecelaration);
+   bool setDecel(int motorNum, double angularDecelaration);
    
    /**
    * \brief converts encoder counts to angles(radians) for selected motor
    * \@param [in] motorNum the number(int) of the motor for conversion.
    * \@param [in] enc the encoder counts to be converted.
    */
-   float encToAng(int motorNum, long enc);
+   double encToAng(int motorNum, long enc);
 
    /**
    * \brief converts angles(radians) to encoder counts for selected motor
    * \@param [in] motorNum the number(int) of the motor for conversion.
    * \@param [in] angle the angle(radians) to be converted.
    */
-   long angToEnc(int motorNum, float angle);
+   long angToEnc(int motorNum, double angle);
 
    /**
    * \brief sets and moves to desired position. sends to galil controller
    * \@param [in] motorNum the number(int) of the motor to be moved.
    * \@param [in] angle the desired position in angles(radians).
    */
-   bool positionControl(int motorNum, float angle);
+   bool positionControl(int motorNum, double angle);
 
    /**
    * \brief sets the current position of the motor. sends to galil controller
    * \@param [in] motorNum the number(int) of the motor to be set.
    * \@param [in] angle the position to be set in angles(radians).
    */
-   bool definePosition(int motorNum, float angle);
+   bool definePosition(int motorNum, double angle);
 
    /// \Turns motors on
    bool motorsOn();

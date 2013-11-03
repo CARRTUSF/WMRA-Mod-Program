@@ -18,7 +18,7 @@ using namespace math;
 
 vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 
-	float ***Tt;
+	double ***Tt;
    int n = numWayPoints;
 	//Finding the rotation of the desired point based on the initial point:
 	Matrix R(3,3), Titemp(3,3),Tdtemp(3,3);
@@ -36,14 +36,14 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 	R=Titemp*Tdtemp;
 	
 	//Initial single-angle representation of the rotation:
-	float a, s, c, v;
+	double a, s, c, v;
 	a=atan2(sqrt(pow((R(2,1)-R(1,2)),2)+pow((R(0,2)-R(2,0)),2)+pow((R(1,0)-R(0,1)),2)),(R(0,0)+R(1,1)+R(2,2)-1));
 	s=sin(a);
 	c=cos(a);
 	v=1-c;
 	
 	//Finding the single-vector components for the rotation:
-	float kx, ky, kz;
+	double kx, ky, kz;
 	if (a<0.001){
 		kx=1;
 		ky=0;
@@ -97,16 +97,16 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 		zt=WMRA_BPolynomial(Ti(2,3), Td(2,3), n);
 	}
 	
-    /* create a 3D nx4x4 float array */
+    /* create a 3D nx4x4 double array */
 
    vector<Matrix> wayPoints;
    wayPoints.resize(numWayPoints);
 
-	Tt = new float**[n];
+	Tt = new double**[n];
 	for (i = 0; i < n; ++i) {
-		Tt[i] = new float*[4];
+		Tt[i] = new double*[4];
 		for (j = 0; j < 4; ++j){
-			Tt[i][j] = new float[4];
+			Tt[i][j] = new double[4];
 		}
 	}
    /* set the first Matrix to Ti*/
@@ -121,7 +121,7 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 
 	for (int i = 1; i < numWayPoints ; i++){
 		// Single-angle Change:
-		float da;
+		double da;
 		da=at(i,0)-at(0,0);
 		s=sin(da);
 		c=cos(da);
@@ -185,11 +185,11 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 		dR(2,2)=pow(kz,2)*v+c;
 		
 	// Finding the trajectory points along the trajectory line:
-	Tt = new float**[n];
+	Tt = new double**[n];
 	for (i = 0; i < n; ++i) {
-		Tt[i] = new float*[4];
+		Tt[i] = new double*[4];
 		for (j = 0; j < 4; ++j){
-			Tt[i][j] = new float[4];
+			Tt[i][j] = new double[4];
 		}
 	}
 	for ( i=0 ; i < 4 ; i++ ) {
@@ -227,15 +227,15 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
    return wayPoints;
 }
 
-Matrix WMRA_BPolynomial(float qi, float qf, float n){
+Matrix WMRA_BPolynomial(double qi, double qf, double n){
 	Matrix qtb(2,1);
 	// Blending Factor:
 	int b;
 	b=5;
 
 	// Initializing the time:
-	float tt, tf, dt, qddb, tb, qdb, qb;
-	float a01, a11, a21, a31, a41, a51, a02, a12, a22, a32, a42, a52;
+	double tt, tf, dt, qddb, tb, qdb, qb;
+	double a01, a11, a21, a31, a41, a51, a02, a12, a22, a32, a42, a52;
 	int i;
 	tt=0;
 	tf=abs(qf-qi);
@@ -265,8 +265,8 @@ Matrix WMRA_BPolynomial(float qi, float qf, float n){
 	}
 	
 	// Calculating the intermediate joint angles along the trajectory from the initial to the final position:
-	float *qttemp;
-	qttemp = new float[n];
+	double *qttemp;
+	qttemp = new double[n];
 	for (i=0; i<n; i++){
 		if (tf<=0.001){
 			qttemp[i]=qi;
@@ -291,15 +291,15 @@ Matrix WMRA_BPolynomial(float qi, float qf, float n){
 }
 
 
-Matrix WMRA_Linear(float qi, float qf, float n){
+Matrix WMRA_Linear(double qi, double qf, double n){
 	
 	Matrix qt(2,1);
 	int i;
-	float dq;
+	double dq;
 	dq =(qf-qi)/(n-1);
 
-	float *qttemp;
-	qttemp = new float[n];
+	double *qttemp;
+	qttemp = new double[n];
 	for (i=1; i<n+1; i++){
 		qttemp[i-1]=qi+dq*(i-1);
 	}
@@ -314,16 +314,16 @@ Matrix WMRA_Linear(float qi, float qf, float n){
 }
 
 
-Matrix WMRA_Polynomial(float qi, float qf, float numWayPoints){
+Matrix WMRA_Polynomial(double qi, double qf, double numWayPoints){
 	
 	Matrix qtp(numWayPoints,1);
 
-	float tt=0;
-	float tf=abs(qf-qi);
-	float dt=tf/(numWayPoints-1);
+	double tt=0;
+	double tf=abs(qf-qi);
+	double dt=tf/(numWayPoints-1);
 	
-	float *qttemp;
-	qttemp = new float[numWayPoints];
+	double *qttemp;
+	qttemp = new double[numWayPoints];
 
 	for (int i=0; i<numWayPoints; i++){
 		if (tf<=0.001){

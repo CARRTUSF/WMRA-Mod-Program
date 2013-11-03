@@ -53,7 +53,7 @@ void dest(vector<double> &tgt, int val)
 	tgt = temp;
 }
 
-int sign(float x){
+int sign(double x){
 	int y;
 	if (x>0){
 		y=1;

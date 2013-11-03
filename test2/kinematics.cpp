@@ -129,7 +129,7 @@ Matrix WMRA_DH(vector<double> q){
 //Inputting the D-H Parameters in a Matrix form, dimensions are in millimeters and radians:
 
 // Dimentions based on the actual physical arm:
-	float DHtemp[7][4]={
+	double DHtemp[7][4]={
 					{-PI/2, 0,	102,	 q[0]},
 					{ PI/2, 0,	133,	 q[1]},  
 					{-PI/2, 0,  502,	 q[2]},
@@ -139,7 +139,7 @@ Matrix WMRA_DH(vector<double> q){
 					{-PI/2, 0,  360 /*161+70 *//*143*/, q[6]}};
 			     
 // Dimentions based on the Virtual Reality arm model:
-/*  float DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
+/*  double DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
 					{ PI/2, 0, 118.66, q(1,0)},  
 					{-PI/2, 0, 499.67, q(2,0)},
 					{ PI/2, 0, 121.78, q(3,0)},
@@ -157,11 +157,11 @@ Matrix WMRA_DH(vector<double> q){
 }
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the X axis.
-Matrix WMRA_rotx(float t){
+Matrix WMRA_rotx(double t){
 	
 	Matrix T(4,4);
 
-	float c, s;
+	double c, s;
 	c=cos(t);
 	s=sin(t);
 	T.Unit(4);
@@ -174,11 +174,11 @@ Matrix WMRA_rotx(float t){
 }
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the Z axis.
-Matrix WMRA_rotz(float t){
+Matrix WMRA_rotz(double t){
 	
 	Matrix T(4,4);
 
-	float c, s;
+	double c, s;
 	c=cos(t);
 	s=sin(t);
 	T.Unit(4);
@@ -191,7 +191,7 @@ Matrix WMRA_rotz(float t){
 }
 
 // This function gives the homogeneous transformation matrix, given the X, Y, Z cartesian translation values.
-Matrix WMRA_transl(float x, float y, float z){
+Matrix WMRA_transl(double x, double y, double z){
 	
 	Matrix T(4,4);
 
@@ -204,11 +204,11 @@ Matrix WMRA_transl(float x, float y, float z){
 }
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the Y axis.
-Matrix WMRA_roty(float t){
+Matrix WMRA_roty(double t){
 	
 	Matrix T(4,4);
 
-	float c, s;
+	double c, s;
 	c=cos(t);
 	s=sin(t);
 	T.Unit(4);
@@ -253,7 +253,7 @@ Matrix WMRA_w2T(int ind, Matrix Tp, Matrix q){
 		T = Tp * Twa;
 	}
 	else {
-		float po, p, r;
+		double po, p, r;
 		po=atan2(Tp(1,0),Tp(0,0));
 		p=q(1,0);
 		r=q(0,0)/p-L(0,0)/2;

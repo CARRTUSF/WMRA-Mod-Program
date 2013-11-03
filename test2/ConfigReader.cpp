@@ -14,7 +14,6 @@ ConfigReader::ConfigReader(void)
 	dataValid = false;
 }
 
-
 ConfigReader::~ConfigReader(void)
 {
 	clear();

@@ -26,8 +26,8 @@ typedef matrix Matrix;
 #endif
 
 vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int n);
-Matrix WMRA_BPolynomial(float qi, float qf, float n);
-Matrix WMRA_Linear(float qi, float qf, float n);
-Matrix WMRA_Polynomial(float qi, float qf, float n);
+Matrix WMRA_BPolynomial(double qi, double qf, double n);
+Matrix WMRA_Linear(double qi, double qf, double n);
+Matrix WMRA_Polynomial(double qi, double qf, double n);
 
 #endif

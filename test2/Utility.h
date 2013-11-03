@@ -10,7 +10,7 @@
 using namespace std;
 
 void dest(vector<double> &tgt, int val);
-int sign(float x);
+int sign(double x);
 void WMRA_delta(vector<double> &tgt, Matrix Tid, Matrix Tdd);
 void cross(vector<double> &tgt, vector<double> a, vector<double> b);
 

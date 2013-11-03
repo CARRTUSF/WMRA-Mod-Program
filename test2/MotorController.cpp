@@ -17,7 +17,6 @@ using namespace std;
 galilController MotorController::controller;
 string MotorController::motorLookup[] = {"H","A","B","C","D","E","F","G","H"};
 
-
 MotorController::MotorController()
 {
 	long int sum;
@@ -54,7 +53,7 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 		controller.command("PTE=1");
 		controller.command("PTF=1");
 		controller.command("PTG=1");
-      motorMode = mode;
+		motorMode = mode;
 	}
    else if(mode == MotorController::LINEAR){ //linear control mode
 		/* galil manual pg.88 (pdf pg.98) */
@@ -129,6 +128,12 @@ bool MotorController::isInitialized() // return initialized
 {
 	return initialized;
 }
+
+bool MotorController::isSimulated() // return simulation flag from controller
+{
+	return controller.isSimulated();
+}
+
 
 bool MotorController::wmraSetup() //WMRA setup
 {
@@ -256,7 +261,7 @@ double MotorController::readPosErr(int motorNum) // returns the error in
 	}
 }
 
-bool MotorController::setMaxVelocity(int motorNum, float angularVelocity)
+bool MotorController::setMaxVelocity(int motorNum, double angularVelocity)
 {
 	if(isValidMotor(motorNum)){
 		long encVal = abs(angToEnc(motorNum,angularVelocity));
@@ -281,7 +286,7 @@ bool MotorController::setMaxVelocity(int motorNum, float angularVelocity)
 
 }
 
-bool MotorController::setAccel(int motorNum, float angularAccelaration)
+bool MotorController::setAccel(int motorNum, double angularAccelaration)
 {	
 	if(isValidMotor(motorNum)){
 		long encVal = abs(angToEnc(motorNum,angularAccelaration));
@@ -306,7 +311,7 @@ bool MotorController::setAccel(int motorNum, float angularAccelaration)
 
 }
 
-bool MotorController::setDecel(int motorNum, float angularDecelaration)
+bool MotorController::setDecel(int motorNum, double angularDecelaration)
 {
 	if(isValidMotor(motorNum)){
 		long encVal = abs(angToEnc(motorNum,angularDecelaration));
@@ -331,7 +336,7 @@ bool MotorController::setDecel(int motorNum, float angularDecelaration)
 
 }
 
-bool MotorController::definePosition(int motorNum,float angle)
+bool MotorController::definePosition(int motorNum,double angle)
 {
 	if(isValidMotor(motorNum)){
 		long encVal = angToEnc(motorNum,angle);
@@ -355,7 +360,7 @@ bool MotorController::definePosition(int motorNum,float angle)
 	}
 }
 
-bool MotorController::positionControl(int motorNum,float angle)
+bool MotorController::positionControl(int motorNum,double angle)
 {
 	if(isValidMotor(motorNum)){
 		long encVal = (angToEnc(motorNum,angle));
@@ -426,7 +431,7 @@ bool readSettings() // Returns 0 is no file found or error occured
 
 }
 
-float MotorController::encToAng(int motorNum, long encCount) // #debug needs to be finished, Also need to check initialized
+double MotorController::encToAng(int motorNum, long encCount) // #debug needs to be finished, Also need to check initialized
 {
 	if (motorNum < 9 && motorNum > 0){
 		return encCount * enc2Radian[motorNum]; 
@@ -438,7 +443,7 @@ float MotorController::encToAng(int motorNum, long encCount) // #debug needs to 
 
 }
 
-long MotorController::angToEnc(int motorNum, float encCount) // #debug needs to be finished, Also need to check initialized
+long MotorController::angToEnc(int motorNum, double encCount) // #debug needs to be finished, Also need to check initialized
 {
 	if (motorNum < 9 && motorNum > 0){
 		return encCount * radian2Enc[motorNum]; 

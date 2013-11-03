@@ -21,7 +21,7 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
-Matrix WMRA_Opt(int i, float JLA, float JLO, Matrix Jo, float detJo, Matrix dq, vector<double> delta, float dt, vector<double> cur){
+Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 
 	Matrix dHo;
 	dHo.Null(7,1);
@@ -45,7 +45,7 @@ Matrix WMRA_Opt(int i, float JLA, float JLO, Matrix Jo, float detJo, Matrix dq, 
 	Matrix dH(7,1);
 	Matrix mul(1,1),  mul1(1,1), mul2(1,1), Jotrans(7,7);
 	Matrix W(7,7), dia(7,1), Winv(7,7);
-	float dof;
+	double dof;
 	// The case when wheelchair-only control is required with no arm motion:
 	if (i==0){
 		WCA=3;
@@ -152,7 +152,7 @@ Matrix WMRA_Opt(int i, float JLA, float JLO, Matrix Jo, float detJo, Matrix dq, 
 	}
 
 	// SR-Inverse and Weighted Least Norm Optimization:
-	float sf;
+	double sf;
 	if (i==1){
 		// Calculating the variable scale factor, sf:
 		if (detJo<wo){
@@ -319,8 +319,8 @@ Matrix WMRA_Opt(int i, float JLA, float JLO, Matrix Jo, float detJo, Matrix dq, 
 
 void WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 	
-	float qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
-	float qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
+	double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+	double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
 	int i;
 	for (i=0; i < 7; i++){
 		qmin(0,i) = qmintemp[i];
@@ -329,7 +329,7 @@ void WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 }
 
 
-Matrix WMRA_Opt(Matrix Jo, float detJo, vector<double> dx, vector<double> q){
+Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 
 	Matrix dHo;
 	dHo.Null(7,1);
@@ -346,7 +346,7 @@ Matrix WMRA_Opt(Matrix Jo, float detJo, vector<double> dx, vector<double> q){
 	Matrix dH(7,1);
 	Matrix mul(1,1),  mul1(1,1), mul2(1,1), Jotrans(7,7);
 	Matrix W(7,7), dia(7,1), Winv(7,7);
-	float dof;
+	double dof;
 
 	
 	// Creating the gradient of the optimization function to avoid joint limits:
@@ -407,7 +407,7 @@ Matrix WMRA_Opt(Matrix Jo, float detJo, vector<double> dx, vector<double> q){
 //		cout<<"dof is\n\n"<<dof<<"\n\n";
 	
 	// SR-Inverse and Weighted Least Norm Optimization:
-	float sf;
+	double sf;
 
 	// Calculating the variable scale factor, sf:
 	if (detJo<wo){

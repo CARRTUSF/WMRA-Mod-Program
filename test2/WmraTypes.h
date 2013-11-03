@@ -40,7 +40,7 @@ namespace WMRA{
 
    struct WheelChairPose{
       int x,y;
-      float angle;
+      double angle;
       matrix<double> transformation;
    };
 

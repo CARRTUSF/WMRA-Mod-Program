@@ -23,7 +23,7 @@ galilController::~galilController(){
 
 bool galilController::initialize() // return initialized
 {
-	cout << "Galil: set defaults" << endl;
+	//cout << "Galil: set defaults" << endl;
 	initialized = setDefaults();
 	if(initialized)
 	{
@@ -34,7 +34,7 @@ bool galilController::initialize() // return initialized
 		}
 		else
 		{
-			cout << "Galil: initialize connection" << endl;
+			//cout << "Galil: initialize connection" << endl;
 			initialized = initializeSocket(galilController::IP);
 		}
 	}
@@ -43,7 +43,8 @@ bool galilController::initialize() // return initialized
 		cout << "Error: Failed to initialize Galil Controller" << endl;
 		return 0;
 	}
-	else{
+	else
+	{
 		if(simulation)
 		{
 			cout << "Simulation Initialized" << endl;
@@ -62,12 +63,17 @@ bool galilController::isInitialized() // return initialized
 	return initialized;
 }
 
+bool galilController::isSimulated() // return simulation
+{
+	return simulation;
+}
+
 std::string galilController::command(std::string Command)
 {
 	if(simulation)
 	{
-			cout << "Simulation Mode" << endl;
-			return "0";
+		cout << "Sim Mode: " << Command <<  endl;
+		return "0";
 	}
 	else
 	{
@@ -91,7 +97,7 @@ bool galilController::setDefaults()
 	if(reader.keyPresent("IP"))
 	{
 		galilController::IP = reader.getString("IP");
-		cout << "IP: " << galilController::IP << endl;
+		//cout << "IP: " << galilController::IP << endl;
 	}
 	else
 	{
@@ -113,10 +119,10 @@ bool galilController::setDefaults()
 
 bool galilController::initializeSocket(std::string IP)
 {
-	cout << "Initializing Socket" << endl;
+	//cout << "Initializing Socket" << endl;
 	const char * c = IP.c_str();
 	galilController::sock.open(c,23);
-	cout << "After Opening Socket" << endl;
+	//cout << "After Opening Socket" << endl;
 	return galilController::sock.connected(); // #DEBUG - breaks if trying to setup sock while WMRA is off
 	//return sock.is_open();
 }
