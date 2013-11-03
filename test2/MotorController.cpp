@@ -26,12 +26,12 @@ MotorController::MotorController()
 	initialized = false;
 
 	//calculate conversion values
-	enc2Radian[1] = (2*PI)/13200000;//a
-	enc2Radian[2] = (2*PI)/13320000;//b
+	enc2Radian[1] = (2*PI)/13258000;//a
+	enc2Radian[2] = (2*PI)/13552000;//b
 	enc2Radian[3] = (2*PI)/ 4720000;//c
 	enc2Radian[4] = (2*PI)/ 4720000;//d
-	enc2Radian[5] = (2*PI)/ 3840000;//e
-	enc2Radian[6] = -(2*PI)/4000000;//f
+	enc2Radian[5] = (2*PI)/ 3850000;//e
+	enc2Radian[6] = -(2*PI)/3936000;//f
 	enc2Radian[7] = (2*PI)/ 2880000; //g
 	
 	rad2Enc[0] = 0;
