@@ -127,6 +127,8 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			return 0;	
 		}
 
+		cout << "\t\tDISTANCE: " << distance << endl;
+
 		// Determine the total time of movement, the number of waypoints, and the move time of each waypoint.
 		totalTime = distance/Arm::control_velocity;
 		numWayPoints = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
@@ -198,25 +200,30 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		cout <<  wayPoints[numWayPoints]<< endl;
 
 		cout << "last waypoint ik->fwK is :" << endl;
-		startLoc_T = kinematics(prevJointAng);
-		cout << startLoc_T << endl;
+		currPosTF = kinematics(prevJointAng);
+		cout << currPosTF << endl;
 
 		Sleep(10000);
-		for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
+/*		for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
 			startJointAng[i] = controller.readPos(i+1);
 		}
 		startLoc_T = kinematics(startJointAng);
 		cout << "arm reached position is " << endl;
 		cout << startLoc_T << endl;
-
+*/
 		cout << "and the same thing AGAIN.... " << endl;
 		for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
 			startJointAng[i] = controller.readPos(i+1);
 		}
-		startLoc_T = kinematics(startJointAng);
+		currPosTF = kinematics(startJointAng);
 		cout << "arm reached position is " << endl;
-		cout << startLoc_T << endl;
+		cout << currPosTF << endl;
 		cout << endl;
+
+		distance = sqrt(pow(currPosTF(0,3)-startLoc_T(0,3),2) + pow(currPosTF(1,3)-startLoc_T(1,3),2) + pow(currPosTF(2,3)-startLoc_T(2,3),2));
+
+		cout << "\t\tDISTANCE: " << distance << endl;
+
 		//#debug end
 	}
   
