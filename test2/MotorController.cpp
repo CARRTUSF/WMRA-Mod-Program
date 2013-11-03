@@ -557,7 +557,11 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution6"))
 	{
+<<<<<<< HEAD
 		enc2Radian[6] = -(2*PI)/reader.getInt("encoderPerRevolution6"); //calculate conversion values
+=======
+		enc2Radian[6] = -2*PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
+>>>>>>> added xyz output file functionality to arm
 		radian2Enc[6] = 1/enc2Radian[6];
 	}
 	else

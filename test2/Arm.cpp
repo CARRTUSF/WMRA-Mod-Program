@@ -24,6 +24,8 @@ using namespace math;
 MotorController controller;
 
 Arm::Arm(){
+	xyz_way.open("XYZ-way.csv");
+	xyz_acc.open("XYZ-acc.csv");
 }
 
 bool Arm::initialize(){
@@ -71,6 +73,9 @@ WMRA::JointValueSet Arm::getJointAngles(){
 bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 //bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
 {
+	// DEBUG - Erase test matrix
+	Matrix test_T(4,4);
+
 // VARIABLES
 	vector<double> startJointAng(7), prevJointAng(7), currJointAng(7), delta(8), speeds(7);
 	double totalTime, distance, detJoa;
@@ -154,7 +159,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
 			
 			//#debug need to transform waypoints to arm base see matlab code WMRA_main.m line 346
-			currPosTF = wayPoints[i] ;
+			currPosTF = wayPoints[i];
+			xyz_way << currPosTF(0,3) << "," << currPosTF(1,3) << "," << currPosTF(2,3) << endl;
+			
 			/* cout << wayPoints[i] << endl;
 			cout << startLoc_T << endl;
 			cout << currPosTF << endl;*/
@@ -175,18 +182,18 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			}
 			//cout << endl;
 			
+			test_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+			xyz_acc << test_T(0,3) << "," << test_T(1,3) << "," << test_T(2,3) << endl;
+			
+
 			//Arm::milestoneDelta(currJointAng, Arm::dt);
 			// DEBUG - moved milestoneDelta into autonomous
 			if(controller.isInitialized()){
-				for(int i = 0; i < currJointAng.size(); i++){
-					speeds[i] = abs(currJointAng[i]/*-currentAng[i]*/)/Arm::dt;
+				for(int k = 0; k < currJointAng.size(); k++){
+					speeds[k] = abs(currJointAng[k])/Arm::dt;
 				}
 				controller.addLinearMotionSegment(currJointAng, speeds);
 			}
-			else{
-				cout << "ERROR: controller not initialized (Arm.cpp)" << endl;
-				return false;
-			}	
 			
 			//prevJointAng = currJointAng;
 			prevPosTF = currPosTF;

@@ -2,6 +2,7 @@
 #define ARM_H
 
 #include <vector>
+#include <fstream>
 #include "WmraTypes.h"
 #include "MotorController.h"
 
@@ -18,8 +19,6 @@ public:
    WMRA::JointValueSet getJointAngles();
 
 private:
-   
-
    double dt;	// the default time between milestones
    int control_type; // WMRA Control type; 0 = Simulation, 1 = Wheelchair Only, 2 = Arm Only, 3 = Both Arm and Wheelchair. [Prev=WCA]
    int control_frame; // WMRA Control frame;  2 = Wheelchair Frame [Prev=coord]
@@ -37,6 +36,8 @@ private:
 
    WMRA::JointValueSet readyPosition; //joint angles for ready position
 
+   std::ofstream xyz_way; // Waypoint XYZ values
+   std::ofstream xyz_acc; // command XYZ values
    bool initialized;
    static MotorController control;
 
