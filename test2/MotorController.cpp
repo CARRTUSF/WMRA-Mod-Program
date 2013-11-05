@@ -239,6 +239,19 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 	}
 }
 
+std::vector<double> MotorController::readPosAll()
+{
+	vector<int> pos(8);
+	vector<double> tgt(8);
+	string result = controller.command( "TP");	
+	sscanf(result.c_str(), "%d,%d,%d,%d,%d,%d,%d,%d", &pos[0],&pos[1],&pos[2],&pos[3],&pos[4],&pos[5],&pos[6],&pos[7]);
+	for(int i = 0; i<8; i++)
+	{
+		tgt[i] = encToAng(i+1, pos[i]); 
+	}
+	return tgt;       
+}
+
 double MotorController::readPosErr(int motorNum) // returns the error in  
 {
 

@@ -78,7 +78,7 @@ public:
    double readPos(int motorNum);
 
    /// \brief returns all of the current motor angle in radians. reads from galil controller
-   double readPosAll();
+   std::vector<double> readPosAll();
 
    /// \brief returns the error in
    double readPosErr(int motorNum); 

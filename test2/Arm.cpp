@@ -25,7 +25,8 @@ MotorController controller;
 
 Arm::Arm(){
 	xyz_way.open("XYZ-way.csv");
-	xyz_acc.open("XYZ-acc.csv");
+	xyz_sent.open("XYZ-sent.csv");
+	xyz_cont.open("XYZ-cont.csv");
 }
 
 bool Arm::initialize(){
@@ -74,7 +75,8 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 //bool Arm::autonomous( int dx, int dy, int dz, double pitch, double yaw, double roll, int type) 
 {
 	// DEBUG - Erase test matrix
-	Matrix test_T(4,4);
+	Matrix test_T(4,4), debugPos_T(4,4);
+	vector<double> debugPos(8);
 
 // VARIABLES
 	vector<double> startJointAng(7), prevJointAng(7), currJointAng(7), delta(8), speeds(7);
@@ -88,6 +90,8 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 	
 	// A vector of all waypoints, transformation matrix
 	vector<Matrix> wayPoints;
+
+	Arm::dt_mod = Arm::dt;
 
 	if(controller.isSimulated())
 	{
@@ -137,7 +141,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		// Determine the total time of movement, the number of waypoints, and the move time of each waypoint.
 		totalTime = distance/Arm::control_velocity;
 		numWayPoints = ceil(totalTime/Arm::dt); // Number of iterations rounded up.
-		Arm::dt = totalTime/numWayPoints;
+		Arm::dt_mod = totalTime/numWayPoints;
 
 		wayPoints = WMRA_traj(3, startLoc_T, destination_T, numWayPoints+1);
 		cout << "number of way points = " << numWayPoints << endl;
@@ -150,6 +154,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
 		prevJointAng = startJointAng;
 		prevPosTF =  startLoc_T;
+
+		xyz_sent << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
+		xyz_way << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
 
 		for(int i = 1 ; i < numWayPoints +1; i++)
 		{			
@@ -183,24 +190,35 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			//cout << endl;
 			
 			test_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
-			xyz_acc << test_T(0,3) << "," << test_T(1,3) << "," << test_T(2,3) << endl;
-			
+			xyz_sent << test_T(0,3) << "," << test_T(1,3) << "," << test_T(2,3) << endl;
 
-			//Arm::milestoneDelta(currJointAng, Arm::dt);
-			// DEBUG - moved milestoneDelta into autonomous
 			if(controller.isInitialized()){
 				for(int k = 0; k < currJointAng.size(); k++){
-					speeds[k] = abs(currJointAng[k])/Arm::dt;
+					speeds[k] = abs(currJointAng[k])/Arm::dt_mod;
 				}
 				controller.addLinearMotionSegment(currJointAng, speeds);
 			}
 			
 			//prevJointAng = currJointAng;
 			prevPosTF = currPosTF;
-			//Sleep(1000*Arm::dt);
+			//Sleep(1000*Arm::dt_mod);
 		}
+
+		debugPos = controller.readPosAll();
+		debugPos_T = kinematics(debugPos);
+		xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;
+
 		controller.beginLI();
 		controller.endLIseq();
+	
+		for(int k = 0; k < (numWayPoints+10); k++)
+		{
+			debugPos = controller.readPosAll();
+			debugPos_T = kinematics(debugPos);
+			xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;
+			cout << debugPos[0] << "," << debugPos[1] << "," << debugPos[2] << "," << debugPos[3] << "," << debugPos[4] << "," << debugPos[5] << "," << debugPos[6] << "," << debugPos[7] << endl;
+			Sleep(1000*Arm::dt_mod);
+		}
 
 		//#debug - output end position after the loop
 		cout << "last waypoint is :" << endl;
@@ -240,12 +258,12 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 }
 
 /*
-bool Arm::milestoneDelta(vector<double> destinationAng, double dt) { // sets the joints to move from current position to destination arm pose, in dt time.
+bool Arm::milestoneDelta(vector<double> destinationAng, double dt_mod) { // sets the joints to move from current position to destination arm pose, in dt_mod time.
 	vector<double> speeds;
 	if(controller.isInitialized()){
 		double vel;
 		for(int i = 0; i < destinationAng.size(); i++){
-			vel = abs(destinationAng[i])/dt;
+			vel = abs(destinationAng[i])/dt_mod;
 			speeds.push_back(vel);
 		}
 		controller.addLinearMotionSegment(destinationAng, speeds);
@@ -258,7 +276,7 @@ bool Arm::milestoneDelta(vector<double> destinationAng, double dt) { // sets the
 }
 */
 
-bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destination pose. dt: the amount of time to reach this pose from the current position.
+bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destination pose. dt_mod: the amount of time to reach this pose from the current position.
 	vector<double> currentAng, milestoneAng, moveStep;
 	vector<bool> destFlag;
 	Matrix main_pos_T(4,4), main_destination_T(4,4);
