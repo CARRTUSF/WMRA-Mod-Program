@@ -21,9 +21,10 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
+// #DEBUG - Remove after debuging complete
 #include <fstream>
 #include <iostream>
-std::ofstream weight_f("weight.csv"), jointLimits_f("jointLimits.csv");
+std::ofstream weight_f("weight.csv");
 
 Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 
@@ -342,9 +343,6 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix L(1,1);
 	L=WMRA_WCD();
 	Matrix qmin(1,7), qmax(1,7);
-	WMRA_Jlimit(qmin, qmax); // #DEBUG - Joint Limits (DELETE this comment)
-
-	jointLimits_f << qmin << "\t" << qmax << endl;
 
 	double inf = std::numeric_limits<double>::infinity();
 	int WCA, wo, ko, j, k;
@@ -383,6 +381,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 
 	 // #DEBUG - Weights (DELETE this comment)
 	// The weight matrix to be used for the Weighted Least Norm Solution with Joint Limit Avoidance:
+	
 	for (j=0; j < 7; j++){
 		for (k=0; k < 7; k++){
 			if (j==k){
@@ -394,7 +393,9 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 		}
 	}
 
-	weight_f << W <<endl;
+	weight_f << W(0,0) << "," << W(1,1) << "," << W(2,2) << "," << W(3,3) << "," << W(4,4) << "," << W(5,5) << "," << W(6,6) << endl;
+	
+	
 
 	//	cout<<"dia is\n\n"<<dia<<"\n\n";
 	//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
