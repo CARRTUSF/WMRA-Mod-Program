@@ -21,6 +21,10 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
+#include <fstream>
+#include <iostream>
+std::ofstream weight_f("weight.csv"), jointLimits_f("jointLimits.csv");
+
 Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 
 	Matrix dHo;
@@ -340,6 +344,8 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix qmin(1,7), qmax(1,7);
 	WMRA_Jlimit(qmin, qmax); // #DEBUG - Joint Limits (DELETE this comment)
 
+	jointLimits_f << qmin << "\t" << qmax << endl;
+
 	double inf = std::numeric_limits<double>::infinity();
 	int WCA, wo, ko, j, k;
 	Matrix pinvJo(7,7);
@@ -388,6 +394,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 		}
 	}
 
+	weight_f << W <<endl;
 
 	//	cout<<"dia is\n\n"<<dia<<"\n\n";
 	//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
