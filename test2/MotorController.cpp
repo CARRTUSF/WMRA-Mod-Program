@@ -31,9 +31,9 @@ bool MotorController::initialize(){
 	if(initialized)
 		initialized = wmraSetup();
 	if(initialized)
-		cout << "Motor Controller Initialized" << endl;
+		if(controller.isDebug()) cout << "Motor Controller Initialized" << endl;
 	else {
-		cout << "Error: Initialization of Motor Controller FAILED" << endl;
+		if(controller.isDebug()) cout << "Error: Initialization of Motor Controller FAILED" << endl;
 		return false;
 	}
 	return true;
@@ -41,11 +41,11 @@ bool MotorController::initialize(){
 
 bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking, 1=Linear Interpolation
 {
-   /*gripper will always be in position control mode*/
-   controller.command("PTH=1");
+	/*gripper will always be in position control mode*/
+	controller.command("PTH=1");
 
-   /* set mode for 7 arm joints A through G */
-   if(mode == MotorController::POS_CONTROL){ //position tracking		
+	/* set mode for 7 arm joints A through G */
+	if(mode == MotorController::POS_CONTROL){ //position tracking		
 		controller.command("PTA=1");
 		controller.command("PTB=1");
 		controller.command("PTC=1");
@@ -55,10 +55,10 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 		controller.command("PTG=1");
 		motorMode = mode;
 	}
-   else if(mode == MotorController::LINEAR){ //linear control mode
+	else if(mode == MotorController::LINEAR){ //linear control mode
 		/* galil manual pg.88 (pdf pg.98) */
 		controller.command("LM ABCDEFG");	
-      motorMode = mode;
+		motorMode = mode;
 	}
 	else
 		return 0;
@@ -67,45 +67,45 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 
 bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
-   if(angles.size() == 7 && speeds.size() == 7)
+	if(angles.size() == 7 && speeds.size() == 7)
 	{ 
-      /*convert angles to position counts
-      * also Galil will return an error if all positions sent are 0
-      * so check if all positions are zero
-      */
-      vector<long> posCount(7);
-      double zeroErrCheck = 0;
-      for(int i = 0; i < 7 ; i++){
-         int motorNum = i+1;
-         posCount[i] = (long)angToEnc(motorNum,angles[i]);
-         zeroErrCheck += abs(posCount[i]);
-      }
-      /* If all positions are zero, do not send command to galil controller*/
-      if(zeroErrCheck < 1) return false; 
-     
-      //calculate vector speed
-      vector<double> speedCount(7);
-      for(int i = 0; i < 7 ; i++){
-         int motorNum = i+1;
-         speedCount[i] = angToEnc(motorNum,speeds[i]);
-      }
-      double vectorSpeed; /// this is for Galil controller
-      vectorSpeed = (speedCount[0]*speedCount[0])+(speedCount[1]*speedCount[1])+(speedCount[2]*speedCount[2])+
-         (speedCount[3]*speedCount[3])+(speedCount[4]*speedCount[4]) + (speedCount[5]*speedCount[5])
-          + (speedCount[6]*speedCount[6]) ;
-      vectorSpeed = std::sqrt(vectorSpeed);
+		/*convert angles to position counts
+		* also Galil will return an error if all positions sent are 0
+		* so check if all positions are zero
+		*/
+		vector<long> posCount(7);
+		double zeroErrCheck = 0;
+		for(int i = 0; i < 7 ; i++){
+			int motorNum = i+1;
+			posCount[i] = (long)angToEnc(motorNum,angles[i]);
+			zeroErrCheck += abs(posCount[i]);
+		}
+		/* If all positions are zero, do not send command to galil controller*/
+		if(zeroErrCheck < 1) return false; 
 
-      std::stringstream ss;
-      ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
-            <<  posCount[5] << "," << posCount[6] ;
-      //add speed to the command string 
-      ss << "<" << (int)vectorSpeed << ">" << (int)vectorSpeed;
+		//calculate vector speed
+		vector<double> speedCount(7);
+		for(int i = 0; i < 7 ; i++){
+			int motorNum = i+1;
+			speedCount[i] = angToEnc(motorNum,speeds[i]);
+		}
+		double vectorSpeed; /// this is for Galil controller
+		vectorSpeed = (speedCount[0]*speedCount[0])+(speedCount[1]*speedCount[1])+(speedCount[2]*speedCount[2])+
+			(speedCount[3]*speedCount[3])+(speedCount[4]*speedCount[4]) + (speedCount[5]*speedCount[5])
+			+ (speedCount[6]*speedCount[6]) ;
+		vectorSpeed = std::sqrt(vectorSpeed);
+
+		std::stringstream ss;
+		ss << "LI " << posCount[0] << "," << posCount[1] << "," << posCount[2] << "," << posCount[3] << "," << posCount[4] << "," 
+			<<  posCount[5] << "," << posCount[6] ;
+		//add speed to the command string 
+		ss << "<" << (int)vectorSpeed << ">" << (int)vectorSpeed;
 		string command = ss.str();
 		controller.command(command);
 	}
 	else{
 		cerr << "addLinearMotionSegment takes 7 joint angles and speeds" << endl;
-			throw std::out_of_range ("Angles, Speeds incorrect vector size. Should be 7");
+		throw std::out_of_range ("Angles, Speeds incorrect vector size. Should be 7");
 	}
 	return 1;
 }
@@ -134,13 +134,17 @@ bool MotorController::isSimulated() // return simulation flag from controller
 	return controller.isSimulated();
 }
 
+bool MotorController::isDebug() // return simulation flag from controller
+{
+	return controller.isDebug();
+}
 
 bool MotorController::wmraSetup() //WMRA setup
 {
 	/*set all motors to designated motor type*/
 	setBrushedMotors();
-	
-    /*set all 7 arm joints to LI mode, and gripper to PT mode*/
+
+	/*set all 7 arm joints to LI mode, and gripper to PT mode*/
 	setMotorMode(motorMode);
 
 	/*set all velocities with default values*/
@@ -191,7 +195,7 @@ bool MotorController::wmraSetup() //WMRA setup
 
 	/*set initialization value*/
 	initialized = true;
-	
+
 	return 1;
 }
 
@@ -203,7 +207,6 @@ bool MotorController::Stop() //emergancy stop
 
 bool MotorController::Stop(int motorNum) // emergancy stop a single motor
 {
-
 	if(isValidMotor(motorNum)){
 		string motor = motorLookup[motorNum];
 		controller.command("ST " + motor);
@@ -212,7 +215,6 @@ bool MotorController::Stop(int motorNum) // emergancy stop a single motor
 	else{
 		return false;
 	}
-
 }
 bool MotorController::setPID(int motorNum, int P, int I, int D){
 	return false;
@@ -392,11 +394,11 @@ bool MotorController::positionControl(int motorNum,double angle)
 			/*
 			string command2 = "BG " + motor;
 			try	{
-				controller.command(command2);
+			controller.command(command2);
 			}
 			catch(string s){
-				cout << s << endl;
-				cout << endl;
+			cout << s << endl;
+			cout << endl;
 			}
 			*/
 			return true;            
@@ -661,8 +663,8 @@ bool MotorController::setDefaults()
 	//set all motors to position tracking mode
 	if(reader.keyPresent("motorMode"))
 		motorMode = LINEAR;
-		//motorMode = reader.getInt("motorMode");
-		//motorMode = reader.getString("motorMode");
+	//motorMode = reader.getInt("motorMode");
+	//motorMode = reader.getString("motorMode");
 	else
 	{
 		cout << "'motorMode' default not found" << endl;

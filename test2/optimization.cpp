@@ -37,8 +37,8 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 	Matrix L(1,1);
 	L=WMRA_WCD();
 	Matrix qmin(1,7), qmax(1,7);
-	WMRA_Jlimit(qmin, qmax);
-		
+	WMRA_Jlimit(qmin, qmax); 
+
 	double inf = std::numeric_limits<double>::infinity();
 	int WCA, wo, ko, j, k;
 	Matrix pinvJo(7,7);
@@ -130,25 +130,25 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 				}
 			}
 		}
-	//	cout<<"dia is\n\n"<<dia<<"\n\n";
-	//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
+		//	cout<<"dia is\n\n"<<dia<<"\n\n";
+		//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
 
 		// Redefining the determinant based on the weight:
 		if (i==1 || i==2){
 			Jotrans=~Jo;
-	//		cout<<"Jo' is\n\n"<<Jotrans<<"\n\n";
+			//		cout<<"Jo' is\n\n"<<Jotrans<<"\n\n";
 			mul1=Winv*Jotrans;
-	//		cout<<"mul1 is\n\n"<<mul1<<"\n\n";
+			//		cout<<"mul1 is\n\n"<<mul1<<"\n\n";
 			mul2=Jo*mul1;
-	//		cout<<"mul2 is\n\n"<<mul2<<"\n\n";
+			//		cout<<"mul2 is\n\n"<<mul2<<"\n\n";
 			mul=mul2;
 			//mul= Jo * Winv * Jotrans;
-	//		cout<<"mul is\n\n"<<mul<<"\n\n";
+			//		cout<<"mul is\n\n"<<mul<<"\n\n";
 			detJo= sqrt(mul.Det());
-	//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
+			//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
 		}
 		dof=dx.RowNo();
-//		cout<<"dof is\n\n"<<dof<<"\n\n";
+		//		cout<<"dof is\n\n"<<dof<<"\n\n";
 	}
 
 	// SR-Inverse and Weighted Least Norm Optimization:
@@ -161,7 +161,7 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 		else {
 			sf=0;
 		}
-	//	cout<<"sf is\n\n"<<sf<<"\n\n";
+		//	cout<<"sf is\n\n"<<sf<<"\n\n";
 		// Calculating the SR-Inverse of the Jacobian:
 		Matrix sfm(2,2);
 		sfm.Unit(dof);
@@ -177,12 +177,12 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 		}
 		else {
 			dq = pinvJo * dx;
-	//		cout<<"dq is\n\n"<<dq<<"\n\n";
+			//		cout<<"dq is\n\n"<<dq<<"\n\n";
 			dq(7,0)=dq(7,0)*L(0,4);
 		}
-	//	cout<<"dq is\n\n"<<dq<<"\n\n";
+		//	cout<<"dq is\n\n"<<dq<<"\n\n";
 	}	
-	
+
 	// Pseudo Inverse and Weighted Least Norm Optimization:
 	else if (i==2){
 		// Calculating the Pseudo Inverse of the Jacobian:
@@ -198,7 +198,7 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 			dq(7,0)=dq(7,0)*L(0,4);
 		}
 	}
-	
+
 	// SR-Inverse and Projection Gradient Optimization based on Euclidean norm of errors:
 	else if (i==3){
 		Jotrans=~Jo;
@@ -213,17 +213,17 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 		Matrix sfm(2,2);
 		sfm.Unit(dof);
 		sfm*=(sf);
-	//	cout<<"\n sfm  is: "<<sfm<<"\n";
-	//	cout<<"\n Jo is: "<<Jo<<"\n";
-	//	cout<<"\n Jotrans is: "<<Jotrans<<"\n";
+		//	cout<<"\n sfm  is: "<<sfm<<"\n";
+		//	cout<<"\n Jo is: "<<Jo<<"\n";
+		//	cout<<"\n Jotrans is: "<<Jotrans<<"\n";
 		mul= Jo * Jotrans;
-	//	cout<<"\n mul is: "<<mul<<"\n";
+		//	cout<<"\n mul is: "<<mul<<"\n";
 		mul= mul + sfm;
-	//	cout<<"\n mul 2 is: "<<mul<<"\n";
+		//	cout<<"\n mul 2 is: "<<mul<<"\n";
 		mul=!mul;
-	//	cout<<"\n mul 3 is: "<<mul<<"\n";
+		//	cout<<"\n mul 3 is: "<<mul<<"\n";
 		pinvJo=Jotrans * mul;
-	//	cout<<"\n pinvJo is: "<<pinvJo<<"\n";
+		//	cout<<"\n pinvJo is: "<<pinvJo<<"\n";
 		// Calculating the joint angle change optimized based on minimizing the Euclidean norm of errors:
 		// Here, dq of the wheels are translated from distances travelled to radians, and back after using the Jacobian.
 		Matrix unit(7,7);
@@ -233,8 +233,8 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 			//dq=pinvJo*dx+mul*dq;
 			mul*=(0.001);
 			dq=pinvJo*dx+mul*dH;
-	//		cout<<"\n dq is: "<<pinvJo<<"\n";
-			
+			//		cout<<"\n dq is: "<<pinvJo<<"\n";
+
 		}
 		else {
 			//dq(7,0)=dq(7,0)/L(0,4);
@@ -245,10 +245,10 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 			dH.SetSize(9,1);
 			dq=pinvJo*dx+mul*dH;
 			dq(7,0)=dq(7,0)*L(0,4);
-	//		cout<<"\n dq is: "<<pinvJo<<"\n";
+			//		cout<<"\n dq is: "<<pinvJo<<"\n";
 		}
 	}
-		// Pseudo Inverse and Projection Gradient Optimization based on Euclidean norm of errors:
+	// Pseudo Inverse and Projection Gradient Optimization based on Euclidean norm of errors:
 	else if (i==4){
 		Jotrans=~Jo;
 		// Calculating the Pseudo Inverse of the Jacobian:
@@ -284,9 +284,9 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 					dq(k,0)=0;
 				}
 			}
-		//	cout<<"dq is\n\n"<<dq<<"\n\n";
+			//	cout<<"dq is\n\n"<<dq<<"\n\n";
 		}
-		
+
 		// A safety condition to slow the joint that exceeds the velocity limits in the WMRA:
 		Matrix dqmax(2,1);
 		if (WCA==3){
@@ -301,24 +301,24 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 			}
 			dqmax(7,0)=100;
 			dqmax(8,0)=0.15;
-	//		cout<<"dqmax is\n\n"<<dqmax<<"\n\n";
-	//		cout<<"dt is\n\n"<<dt<<"\n\n";
+			//		cout<<"dqmax is\n\n"<<dqmax<<"\n\n";
+			//		cout<<"dt is\n\n"<<dt<<"\n\n";
 			dqmax*=(dt);     // Joint velocity limits when the time increment is dt second.
-	//		cout<<"dqmax is\n\n"<<dqmax<<"\n\n";
+			//		cout<<"dqmax is\n\n"<<dqmax<<"\n\n";
 		}
 		for (k=0; k<dq.RowNo(); k++){
 			if (abs(dq(k,0)) >= dqmax(k,0)){
 				dq(k,0)=sign(dq(k,0))*dqmax(k,0);
 			}
 		}
-	//	cout << "\ndq is\n\n" << dq  ;
+		//	cout << "\ndq is\n\n" << dq  ;
 	}
-	
+
 	return dq;
 }
 
 void WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
-	
+
 	double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
 	double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
 	int i;
@@ -338,8 +338,8 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix L(1,1);
 	L=WMRA_WCD();
 	Matrix qmin(1,7), qmax(1,7);
-	WMRA_Jlimit(qmin, qmax);
-		
+	WMRA_Jlimit(qmin, qmax); // #DEBUG - Joint Limits (DELETE this comment)
+
 	double inf = std::numeric_limits<double>::infinity();
 	int WCA, wo, ko, j, k;
 	Matrix pinvJo(7,7);
@@ -348,10 +348,11 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix W(7,7), dia(7,1), Winv(7,7);
 	double dof;
 
-	
+
 	// Creating the gradient of the optimization function to avoid joint limits:
 	dH.Null(7,1);
 
+	// JLA
 	for (j=0; j<7; j++){
 		dH(j,0)=-0.25*pow((qmax(0,j)-qmin(0,j)),2)*(2*q[j]-qmax(0,j)-qmin(0,j))/(pow((qmax(0,j)-q[j]),2)*pow((q[j]-qmin(0,j)),2));
 		// Re-defining the weight in case the joint is moving away from it's limit or the joint limit was exceeded:
@@ -373,6 +374,8 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Winv.Null(7,7);
 	wo=20000000;
 	ko=350000;
+
+	 // #DEBUG - Weights (DELETE this comment)
 	// The weight matrix to be used for the Weighted Least Norm Solution with Joint Limit Avoidance:
 	for (j=0; j < 7; j++){
 		for (k=0; k < 7; k++){
@@ -385,27 +388,27 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 		}
 	}
 
-	
-//	cout<<"dia is\n\n"<<dia<<"\n\n";
-//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
+
+	//	cout<<"dia is\n\n"<<dia<<"\n\n";
+	//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
 
 	// Redefining the determinant based on the weight:
 
 	Jotrans=~Jo;
-//		cout<<"Jo' is\n\n"<<Jotrans<<"\n\n";
+	//		cout<<"Jo' is\n\n"<<Jotrans<<"\n\n";
 	mul1=Winv*Jotrans;
-//		cout<<"mul1 is\n\n"<<mul1<<"\n\n";
+	//		cout<<"mul1 is\n\n"<<mul1<<"\n\n";
 	mul2=Jo*mul1;
-//		cout<<"mul2 is\n\n"<<mul2<<"\n\n";
+	//		cout<<"mul2 is\n\n"<<mul2<<"\n\n";
 	mul=mul2;
 	//mul= Jo * Winv * Jotrans;
-//		cout<<"mul is\n\n"<<mul<<"\n\n";
+	//		cout<<"mul is\n\n"<<mul<<"\n\n";
 	detJo= sqrt(mul.Det());
-//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
+	//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
 
 	dof=dx.size();
-//		cout<<"dof is\n\n"<<dof<<"\n\n";
-	
+	//		cout<<"dof is\n\n"<<dof<<"\n\n";
+
 	// SR-Inverse and Weighted Least Norm Optimization:
 	double sf;
 
@@ -416,7 +419,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	else {
 		sf=0;
 	}
-//	cout<<"sf is\n\n"<<sf<<"\n\n";
+	//	cout<<"sf is\n\n"<<sf<<"\n\n";
 	// Calculating the SR-Inverse of the Jacobian:
 	Matrix sfm(2,2);
 	sfm.Unit(dof);
@@ -436,7 +439,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix dq(6,1);
 	dq = pinvJo * temp_dx;
 	//dq.SetSize(7,1);
-//	dq(7,0)= 0;//dq(7,0)*L(0,4);
+	//	dq(7,0)= 0;//dq(7,0)*L(0,4);
 
 	//cout<<"dq is\n\n"<<dq<<"\n\n";
 

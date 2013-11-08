@@ -22,7 +22,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	Matrix T(4,4), J0temp(6,6), J0trans(7,6);
 	T.Unit(4);
 	J0.SetSize(6,7);
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,6) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,6) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -32,7 +32,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,6) = T(2,2);
 
 	T = T7 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,5) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,5) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -42,7 +42,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,5) = T(2,2);
 
 	T = T6 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,4) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,4) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -52,7 +52,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,4) = T(2,2);
 
 	T = T5 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,3) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,3) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -62,7 +62,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,3) = T(2,2);
 
 	T = T4 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,2) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,2) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -72,7 +72,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,2) = T(2,2);
 
 	T = T3 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,1) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,1) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -82,7 +82,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,1) = T(2,2);
 
 	T = T2 * T;
-//	cout << "\nT is:\n" << T << endl;
+	//	cout << "\nT is:\n" << T << endl;
 
 	J0(0,0) = -T(0,0)*T(1,3)+T(1,0)*T(0,3);
 	J0(1,0) = -T(0,1)*T(1,3)+T(1,1)*T(0,3);
@@ -92,8 +92,8 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 	J0(5,0) = T(2,2);
 
 	T = T1 * T;
-//	cout << "\nT is:\n" << T << endl;
-	
+	//	cout << "\nT is:\n" << T << endl;
+
 	J0temp.Null(6,6);
 	int i, j; 
 
@@ -107,7 +107,7 @@ void WMRA_J07(Matrix T1, Matrix T2, Matrix T3, Matrix T4, Matrix T5, Matrix T6, 
 			J0temp(i,j)=T(i-3,j-3);
 		}
 	}
-	
+
 	J0 = J0temp * J0;
 	J0trans = ~J0;
 	J0temp = J0 * J0trans;

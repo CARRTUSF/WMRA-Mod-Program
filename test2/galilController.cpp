@@ -15,7 +15,7 @@ using namespace std;
 client_tcpsocket galilController::sock;
 
 galilController::galilController(){
-	
+
 	debugFile.open("debug.txt");
 	initialized = false;
 }
@@ -50,17 +50,17 @@ bool galilController::initialize() // return initialized
 	{
 		if(simulation)
 		{
-			cout << "Simulation Initialized" << endl;
+			if(isDebug()) cout << "Simulation Initialized" << endl;
 			return 1;
 		}
 		else
 		{
-			cout << "Galil: Initialized" << endl;
+			if(isDebug()) cout << "Galil: Initialized" << endl;
 			return 1;
 		}
 	}
 }
-	
+
 bool galilController::isInitialized() // return initialized
 {
 	return initialized;
@@ -70,12 +70,16 @@ bool galilController::isSimulated() // return simulation
 {
 	return simulation;
 }
+bool galilController::isDebug() // return simulation
+{
+	return debug;
+}
 
 std::string galilController::command(std::string Command)
 {
 	if(simulation)
 	{
-		cout << "Sim Mode: " << Command <<  endl;
+		//cout << "Sim Mode: " << Command <<  endl;
 		return "0";
 	}
 	else

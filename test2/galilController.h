@@ -14,6 +14,7 @@ public:
 	bool initialize(); // Initializes socket communication
 	bool isInitialized(); // return initialized
 	bool isSimulated(); // return simulation
+	bool isDebug(); // return debug
 	std::string command(std::string Command); // user command structure, used by MotorController
 
 private:

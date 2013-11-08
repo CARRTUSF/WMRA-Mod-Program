@@ -44,7 +44,7 @@ Matrix kinematics(vector<double> q){
 	T6 = WMRA_rotx(DH(5,0))*WMRA_transl(DH(5,1),0,0)*WMRA_rotz(DH(5,3))*WMRA_transl(0,0,DH(5,2));
 	//T7
 	T7 = WMRA_rotx(DH(6,0))*WMRA_transl(DH(6,1),0,0)*WMRA_rotz(DH(6,3))*WMRA_transl(0,0,DH(6,2));
-		
+
 	//Calculating the total Transformation Matrix of the given arm position:
 	T=T1*T2*T3*T4*T5*T6*T7;
 
@@ -62,103 +62,103 @@ Matrix kinematics(vector<double> q){
 //T1-T7 = Thransform Matrix of each of the joints
 *****************************************************/
 Matrix kinematics(vector<double> q, Matrix dq, Matrix Twc, Matrix& Ta, Matrix& Twco, Matrix& T1, Matrix& T2, Matrix& T3, Matrix& T4, Matrix& T5, Matrix& T6, Matrix& T7){
-	 
+
 	// Inputting the D-H Parameters in a Matrix form:
-		Matrix DH(1,1), T(4,4);
-		DH=WMRA_DH(q);
+	Matrix DH(1,1), T(4,4);
+	DH=WMRA_DH(q);
 
-		//Calculating the transformation matrices of each link:
-		//T1
-		T1 = WMRA_rotx(DH(0,0))*WMRA_transl(DH(0,1),0,0)*WMRA_rotz(DH(0,3))*WMRA_transl(0,0,DH(0,2));
-		//T2
-		T2 = WMRA_rotx(DH(1,0))*WMRA_transl(DH(1,1),0,0)*WMRA_rotz(DH(1,3))*WMRA_transl(0,0,DH(1,2));
-		//T3
-		T3 = WMRA_rotx(DH(2,0))*WMRA_transl(DH(2,1),0,0)*WMRA_rotz(DH(2,3))*WMRA_transl(0,0,DH(2,2));
-		//T4
-		T4 = WMRA_rotx(DH(3,0))*WMRA_transl(DH(3,1),0,0)*WMRA_rotz(DH(3,3))*WMRA_transl(0,0,DH(3,2));
-		//T5
-		T5 = WMRA_rotx(DH(4,0))*WMRA_transl(DH(4,1),0,0)*WMRA_rotz(DH(4,3))*WMRA_transl(0,0,DH(4,2));
-		//T6
-		T6 = WMRA_rotx(DH(5,0))*WMRA_transl(DH(5,1),0,0)*WMRA_rotz(DH(5,3))*WMRA_transl(0,0,DH(5,2));
-		//T7
-		T7 = WMRA_rotx(DH(6,0))*WMRA_transl(DH(6,1),0,0)*WMRA_rotz(DH(6,3))*WMRA_transl(0,0,DH(6,2));
+	//Calculating the transformation matrices of each link:
+	//T1
+	T1 = WMRA_rotx(DH(0,0))*WMRA_transl(DH(0,1),0,0)*WMRA_rotz(DH(0,3))*WMRA_transl(0,0,DH(0,2));
+	//T2
+	T2 = WMRA_rotx(DH(1,0))*WMRA_transl(DH(1,1),0,0)*WMRA_rotz(DH(1,3))*WMRA_transl(0,0,DH(1,2));
+	//T3
+	T3 = WMRA_rotx(DH(2,0))*WMRA_transl(DH(2,1),0,0)*WMRA_rotz(DH(2,3))*WMRA_transl(0,0,DH(2,2));
+	//T4
+	T4 = WMRA_rotx(DH(3,0))*WMRA_transl(DH(3,1),0,0)*WMRA_rotz(DH(3,3))*WMRA_transl(0,0,DH(3,2));
+	//T5
+	T5 = WMRA_rotx(DH(4,0))*WMRA_transl(DH(4,1),0,0)*WMRA_rotz(DH(4,3))*WMRA_transl(0,0,DH(4,2));
+	//T6
+	T6 = WMRA_rotx(DH(5,0))*WMRA_transl(DH(5,1),0,0)*WMRA_rotz(DH(5,3))*WMRA_transl(0,0,DH(5,2));
+	//T7
+	T7 = WMRA_rotx(DH(6,0))*WMRA_transl(DH(6,1),0,0)*WMRA_rotz(DH(6,3))*WMRA_transl(0,0,DH(6,2));
 
-		//Calculating the Transformation Matrix of the initial arm position:
-		Ta=T1*T2*T3*T4*T5*T6*T7;
-		Twc = WMRA_w2T(1, Twc, dq);
-		Twco=Twc;
-		T=Twc*Ta;
-		return T;
+	//Calculating the Transformation Matrix of the initial arm position:
+	Ta=T1*T2*T3*T4*T5*T6*T7;
+	Twc = WMRA_w2T(1, Twc, dq);
+	Twco=Twc;
+	T=Twc*Ta;
+	return T;
 }
 
 Matrix kinematics(vector<double> q, Matrix& Ta, Matrix& T1, Matrix& T2, Matrix& T3, Matrix& T4, Matrix& T5, Matrix& T6, Matrix& T7){
-	 
+
 	// Inputting the D-H Parameters in a Matrix form:
-		Matrix DH(7,4), T(4,4);
-		DH=WMRA_DH(q);
+	Matrix DH(7,4), T(4,4);
+	DH=WMRA_DH(q);
 
-		//Calculating the transformation matrices of each link:
-		//T1
-		T1 = WMRA_rotx(DH(0,0))*WMRA_transl(DH(0,1),0,0)*WMRA_rotz(DH(0,3))*WMRA_transl(0,0,DH(0,2));
-		//T2
-		T2 = WMRA_rotx(DH(1,0))*WMRA_transl(DH(1,1),0,0)*WMRA_rotz(DH(1,3))*WMRA_transl(0,0,DH(1,2));
-		//T3
-		T3 = WMRA_rotx(DH(2,0))*WMRA_transl(DH(2,1),0,0)*WMRA_rotz(DH(2,3))*WMRA_transl(0,0,DH(2,2));
-		//T4
-		T4 = WMRA_rotx(DH(3,0))*WMRA_transl(DH(3,1),0,0)*WMRA_rotz(DH(3,3))*WMRA_transl(0,0,DH(3,2));
-		//T5
-		T5 = WMRA_rotx(DH(4,0))*WMRA_transl(DH(4,1),0,0)*WMRA_rotz(DH(4,3))*WMRA_transl(0,0,DH(4,2));
-		//T6
-		T6 = WMRA_rotx(DH(5,0))*WMRA_transl(DH(5,1),0,0)*WMRA_rotz(DH(5,3))*WMRA_transl(0,0,DH(5,2));
-		//T7
-		T7 = WMRA_rotx(DH(6,0))*WMRA_transl(DH(6,1),0,0)*WMRA_rotz(DH(6,3))*WMRA_transl(0,0,DH(6,2));
+	//Calculating the transformation matrices of each link:
+	//T1
+	T1 = WMRA_rotx(DH(0,0))*WMRA_transl(DH(0,1),0,0)*WMRA_rotz(DH(0,3))*WMRA_transl(0,0,DH(0,2));
+	//T2
+	T2 = WMRA_rotx(DH(1,0))*WMRA_transl(DH(1,1),0,0)*WMRA_rotz(DH(1,3))*WMRA_transl(0,0,DH(1,2));
+	//T3
+	T3 = WMRA_rotx(DH(2,0))*WMRA_transl(DH(2,1),0,0)*WMRA_rotz(DH(2,3))*WMRA_transl(0,0,DH(2,2));
+	//T4
+	T4 = WMRA_rotx(DH(3,0))*WMRA_transl(DH(3,1),0,0)*WMRA_rotz(DH(3,3))*WMRA_transl(0,0,DH(3,2));
+	//T5
+	T5 = WMRA_rotx(DH(4,0))*WMRA_transl(DH(4,1),0,0)*WMRA_rotz(DH(4,3))*WMRA_transl(0,0,DH(4,2));
+	//T6
+	T6 = WMRA_rotx(DH(5,0))*WMRA_transl(DH(5,1),0,0)*WMRA_rotz(DH(5,3))*WMRA_transl(0,0,DH(5,2));
+	//T7
+	T7 = WMRA_rotx(DH(6,0))*WMRA_transl(DH(6,1),0,0)*WMRA_rotz(DH(6,3))*WMRA_transl(0,0,DH(6,2));
 
-		//Calculating the Transformation Matrix of the initial arm position:
-		Ta=T1*T2*T3*T4*T5*T6*T7;
-		//Twc = WMRA_w2T(1, Twc, dq);
-		//Twco=Twc;
-		T=Ta;
-		return T;
+	//Calculating the Transformation Matrix of the initial arm position:
+	Ta=T1*T2*T3*T4*T5*T6*T7;
+	//Twc = WMRA_w2T(1, Twc, dq);
+	//Twco=Twc;
+	T=Ta;
+	return T;
 }
 
 
 Matrix WMRA_DH(vector<double> q){
-	
+
 	Matrix DH1(7,4);
 
-//Inputting the D-H Parameters in a Matrix form, dimensions are in millimeters and radians:
+	//Inputting the D-H Parameters in a Matrix form, dimensions are in millimeters and radians:
 
-// Dimentions based on the actual physical arm:
+	// Dimentions based on the actual physical arm:
 	float DHtemp[7][4]={
-					{-PI/2, 0,	120.4 /*102*/,	 q[0]},
-					{ PI/2, 0,	134.25 /*133*/,	 q[1]},  
-					{-PI/2, 0,  503.345 /*502*/,	 q[2]},
-					{ PI/2, 0,  133.2 /*135*/,		 q[3]},
-					{-PI/2, 0,  386.658 /*375+24*/,	 q[4]},
-					{ PI/2, 0,  -23.5,		 q[5]},
-					{-PI/2, 0,  172.5+205 /*360*//*161+70 *//*143*/, q[6]}};
-			     
-// Dimentions based on the Virtual Reality arm model:
-/*  double DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
-					{ PI/2, 0, 118.66, q(1,0)},  
-					{-PI/2, 0, 499.67, q(2,0)},
-					{ PI/2, 0, 121.78, q(3,0)},
-					{-PI/2, 0, 235.67, q(4,0)},
-					{ PI/2, 0,   0,    q(5,0)},
-					{-PI/2, 0, 276.68, q(6,0)}};
-*/
-	int i,j;
-	for (j=0; j < 4; j++){
-		for (i=0; i < 7; i++){
-			DH1(i,j) = DHtemp[i][j];				
+		{-PI/2, 0,	120.4 /*102*/,	 q[0]},
+		{ PI/2, 0,	134.25 /*133*/,	 q[1]},  
+		{-PI/2, 0,  503.345 /*502*/,	 q[2]},
+		{ PI/2, 0,  133.2 /*135*/,		 q[3]},
+		{-PI/2, 0,  386.658 /*375+24*/,	 q[4]},
+		{ PI/2, 0,  -23.5,		 q[5]},
+		{-PI/2, 0,  172.5+205 /*360*//*161+70 *//*143*/, q[6]}};
+
+		// Dimentions based on the Virtual Reality arm model:
+		/*  double DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
+		{ PI/2, 0, 118.66, q(1,0)},  
+		{-PI/2, 0, 499.67, q(2,0)},
+		{ PI/2, 0, 121.78, q(3,0)},
+		{-PI/2, 0, 235.67, q(4,0)},
+		{ PI/2, 0,   0,    q(5,0)},
+		{-PI/2, 0, 276.68, q(6,0)}};
+		*/
+		int i,j;
+		for (j=0; j < 4; j++){
+			for (i=0; i < 7; i++){
+				DH1(i,j) = DHtemp[i][j];				
+			}
 		}
-	}
-	return DH1;
+		return DH1;
 }
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the X axis.
 Matrix WMRA_rotx(double t){
-	
+
 	Matrix T(4,4);
 
 	double c, s;
@@ -175,7 +175,7 @@ Matrix WMRA_rotx(double t){
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the Z axis.
 Matrix WMRA_rotz(double t){
-	
+
 	Matrix T(4,4);
 
 	double c, s;
@@ -192,7 +192,7 @@ Matrix WMRA_rotz(double t){
 
 // This function gives the homogeneous transformation matrix, given the X, Y, Z cartesian translation values.
 Matrix WMRA_transl(double x, double y, double z){
-	
+
 	Matrix T(4,4);
 
 	T.Unit(4);
@@ -205,7 +205,7 @@ Matrix WMRA_transl(double x, double y, double z){
 
 // This function gives the homogeneous transformation matrix, given the rotation angle about the Y axis.
 Matrix WMRA_roty(double t){
-	
+
 	Matrix T(4,4);
 
 	double c, s;
@@ -233,14 +233,14 @@ Matrix WMRA_w2T(int ind, Matrix Tp, Matrix q){
 			L(0,i) = 0;
 		}
 	}
-	
+
 	// Defining the inverse of Transformation Matrix between the wheelchair center and the WMRA's base:
 	Matrix Twa(4,4), Twainv(4,4);
 	Twa.Unit(4);
 	for (i=0; i<3; i++){
 		Twa(i,3) = L(0,i+1);
 	}
-	
+
 	// The previous transformation matrix from the ground to the wheelchair center:
 	Twainv = !Twa;
 	Tp = Tp * Twainv;
@@ -288,7 +288,7 @@ Matrix WMRA_WCD(){
 	//L(0,2)=230;  // Horizontal distance between the middle point between the two driving wheels and the arm mounting position (along y).
 	//L(0,3)=182;  // Vertical distance between the wheels axix of rotation and the arm mounting position (along z).
 	//L(0,4)=168;  // Radius of the driving wheels.
-		
+
 	return L;
 }
 
@@ -315,17 +315,17 @@ Matrix WMRA_p2T(double x, double y, double a){
 
 Matrix rotationMatrix(double pitch, double roll, double yaw)
 {
-   Matrix temp_rotation(4,4);
-   temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
-   return temp_rotation;
+	Matrix temp_rotation(4,4);
+	temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
+	return temp_rotation;
 }
 
 Matrix pose2TfMat(WMRA::Pose dest){
-   Matrix temp(4,4);
-   temp.Unit(4);
-   temp = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
-   temp(0,3) = dest.x;
-   temp(1,3) = dest.y;
-   temp(2,3) = dest.z;
-   return temp;
+	Matrix temp(4,4);
+	temp.Unit(4);
+	temp = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
+	temp(0,3) = dest.x;
+	temp(1,3) = dest.y;
+	temp(2,3) = dest.z;
+	return temp;
 }
