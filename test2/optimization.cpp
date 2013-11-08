@@ -24,7 +24,7 @@ using namespace math;
 // #DEBUG - Remove after debuging complete
 #include <fstream>
 #include <iostream>
-std::ofstream weight_f("weight.csv");
+std::ofstream weight_f("weight.csv"), manipulability("man.csv");
 
 Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 
@@ -324,7 +324,9 @@ Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix d
 
 void WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
-	double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+	//double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-79*PI/180,-360*PI/180};
+   double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+   //double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,79*PI/180,360*PI/180};
 	double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
 	int i;
 	for (i=0; i < 7; i++){
@@ -343,6 +345,8 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	Matrix L(1,1);
 	L=WMRA_WCD();
 	Matrix qmin(1,7), qmax(1,7);
+   //this line????
+   WMRA_Jlimit(qmin, qmax); // #DEBUG - Joint Limits (DELETE this comment)
 
 	double inf = std::numeric_limits<double>::infinity();
 	int WCA, wo, ko, j, k;
@@ -379,7 +383,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	wo=20000000;
 	ko=350000;
 
-	 // #DEBUG - Weights (DELETE this comment)
+	// #DEBUG - Weights (DELETE this comment)
 	// The weight matrix to be used for the Weighted Least Norm Solution with Joint Limit Avoidance:
 	
 	for (j=0; j < 7; j++){
@@ -413,7 +417,7 @@ Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 	//		cout<<"mul is\n\n"<<mul<<"\n\n";
 	detJo= sqrt(mul.Det());
 	//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
-
+   manipulability << detJo << endl;
 	dof=dx.size();
 	//		cout<<"dof is\n\n"<<dof<<"\n\n";
 
