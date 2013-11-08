@@ -130,13 +130,13 @@ Matrix WMRA_DH(vector<double> q){
 
 // Dimentions based on the actual physical arm:
 	float DHtemp[7][4]={
-					{-PI/2, 0,	102,	 q[0]},
-					{ PI/2, 0,	133,	 q[1]},  
-					{-PI/2, 0,  502,	 q[2]},
-					{ PI/2, 0,  135,		 q[3]},
-					{-PI/2, 0,  375+24,	 q[4]},
+					{-PI/2, 0,	120.4,	 q[0]},
+					{ PI/2, 0,	134.25,	 q[1]},  
+					{-PI/2, 0,  503.345,	 q[2]},
+					{ PI/2, 0,  133.2,		 q[3]},
+					{-PI/2, 0,  386.658,	 q[4]},
 					{ PI/2, 0,  0-23.5,		 q[5]},
-					{-PI/2, 0,  360 /*161+70 *//*143*/, q[6]}};
+					{-PI/2, 0,  172.5+205 /*161+70 *//*143*/, q[6]}};
 			     
 // Dimentions based on the Virtual Reality arm model:
 /*  float DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
