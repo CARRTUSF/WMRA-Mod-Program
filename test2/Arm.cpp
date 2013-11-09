@@ -21,12 +21,12 @@
 using namespace std;
 using namespace math;
 
-MotorController controller;
+MotorController Arm::controller;
 
 Arm::Arm(){
-	xyz_way.open("XYZ-way.csv");
-	xyz_sent.open("XYZ-sent.csv");
-	xyz_cont.open("XYZ-cont.csv");
+	xyz_way.open("data/XYZ-way.csv");
+	xyz_sent.open("data/XYZ-sent.csv");
+	xyz_cont.open("data/XYZ-cont.csv");
 }
 
 bool Arm::initialize(){
@@ -354,6 +354,12 @@ bool Arm::moveArm(vector<double> destinationAng){ // destinationAng: the destina
 		return 0;
 	}
 	return 1; // Movement complete
+}
+
+void Arm::closeDebug(){
+	xyz_way.close();
+	xyz_sent.close();
+	xyz_cont.close();
 }
 
 bool Arm::setDefaults()

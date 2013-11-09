@@ -46,13 +46,16 @@ int main()
 			if(dest.yaw == 777)
 				dest.yaw == dest.yaw;// No-Op, will loop through choices again
 			else if(dest.yaw == 999)
+			{
+				wmraArm.closeDebug();
 				endFlag = true; // Will break out of loop
+			}
 			else
 				wmraArm.autonomous(dest,WMRA::ARM_FRAME); // Moves arm
 		}
 	}
 	else
 		cout << "Controller initalizaition failed in main" << endl;
-
+	
 	cout << "Ending Program" << endl;
 }

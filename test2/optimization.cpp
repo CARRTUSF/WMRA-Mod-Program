@@ -24,7 +24,7 @@ using namespace math;
 // #DEBUG - Remove after debuging complete
 #include <fstream>
 #include <iostream>
-std::ofstream weight_f("weight.csv"), manipulability("man.csv");
+std::ofstream weight_f("data/weight.csv"), manipulability("data/man.csv");
 
 Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 

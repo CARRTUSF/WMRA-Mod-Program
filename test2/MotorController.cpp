@@ -23,6 +23,11 @@ MotorController::MotorController()
 	initialized = false;
 }
 
+MotorController::~MotorController()
+{
+//	controller.~galilController();
+}
+
 bool MotorController::initialize(){
 
 	initialized = controller.initialize();

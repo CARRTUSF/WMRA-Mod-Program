@@ -16,6 +16,7 @@ public:
 	bool moveArm(vector<double> destinationAng);
 	bool milestoneDelta(vector<double> destinationAng, double dt);
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME);
+	void closeDebug();
 	WMRA::JointValueSet getJointAngles();
 
 private:
@@ -41,6 +42,6 @@ private:
 	std::ofstream xyz_sent; // command XYZ values
 	std::ofstream xyz_cont; // command XYZ values
 	bool initialized;
-	static MotorController control; 
+	static MotorController controller; 
 };
 #endif;

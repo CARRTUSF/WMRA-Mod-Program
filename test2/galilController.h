@@ -1,7 +1,7 @@
 #ifndef GALILCONTROLLER_H
 #define GALILCONTROLLER_H
 
-#pragma once
+//#pragma once
 #include <string>
 #include <fstream>
 
@@ -10,7 +10,7 @@ class client_tcpsocket;
 class galilController {
 public:
 	galilController(); // sets initialized to false
-	~galilController(); // closes socket communication
+	//~galilController(); // closes socket communication
 	bool initialize(); // Initializes socket communication
 	bool isInitialized(); // return initialized
 	bool isSimulated(); // return simulation

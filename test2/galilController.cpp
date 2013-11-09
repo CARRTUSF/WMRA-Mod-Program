@@ -16,13 +16,15 @@ client_tcpsocket galilController::sock;
 
 galilController::galilController(){
 
-	debugFile.open("debug.txt");
+	debugFile.open("data/debug.txt");
 	initialized = false;
 }
 
+/*
 galilController::~galilController(){
-	sock.close();
-}
+	debugFile.close();
+	sock.~client_tcpsocket();
+}*/
 
 bool galilController::initialize() // return initialized
 {
