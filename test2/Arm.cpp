@@ -27,13 +27,6 @@ Arm::Arm(){
 	xyz_way.open("XYZ-way.csv");
 	xyz_sent.open("XYZ-sent.csv");
 	xyz_cont.open("XYZ-cont.csv");
-	curPosition.push_back(1.57);
-	curPosition.push_back(1.57);
-	curPosition.push_back(0.0);
-	curPosition.push_back(1.57);
-	curPosition.push_back(1.57);
-	curPosition.push_back(1.04);
-	curPosition.push_back(0.0);
 }
 
 bool Arm::initialize(){
@@ -105,27 +98,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 	if(controller.isInitialized())	// If WMRA controller connection has been initialized start loop
 	{
 		//cout << "WMRA-2 Controller Initialized" << endl;
-
-
-		// #DEBUG - Diego
-		if(controller.isSimulated())
-		{	
-			//#DEBUG - Setup communication to Diego's visualization program here
-			startJointAng = curPosition; // curPosition is initialized to the readt position at startup, then is modified during execution
-		}
-		else
-		{
-			for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
-				startJointAng[i] = controller.readPos(i+1);
-			}
-		}
+		startJointAng = controller.readPosAll(); // Sets the current location to a 1x8 vector  
 
 		startLoc_T = kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
-		if(controller.isDebug())
-		{	
-			cout << "start is " << endl;
-			cout << startLoc_T << endl;
-		}
 
 		// Destination transformation matrix using input angles
 		temp_dest = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
@@ -137,12 +112,6 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		destination_T(2,0) = destination_Rotation_T(2,0);	destination_T(2,1) = destination_Rotation_T(2,1);	destination_T(2,2) = destination_Rotation_T(2,2);	destination_T(2,3) = startLoc_T(2,3) + dest.z;
 		destination_T(3,0) = 0;								destination_T(3,1) = 0;								destination_T(3,2) = 0;								destination_T(3,3) = 1;
 
-		if(controller.isDebug())
-		{
-			cout << "destination is :" << endl;
-			cout << destination_T << endl;
-		}
-
 		distance = sqrt(pow(destination_T(0,3)-startLoc_T(0,3),2) + pow(destination_T(1,3)-startLoc_T(1,3),2) + pow(destination_T(2,3)-startLoc_T(2,3),2));
 
 		// Checking if translation distance is 0. If it is rotation distance is calculated
@@ -152,11 +121,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		}
 		if(distance == 0.0) // if no translation or rotation change then movement is aborted.
 		{
-			if(controller.isDebug()) cout << "No Movement Selected" << endl;
+			cout << "No Movement Selected" << endl;
 			return 0;	
 		}
-
-		if(controller.isDebug()) cout << "\t\tDISTANCE: " << distance << endl;
 
 		// Determine the total time of movement, the number of waypoints, and the move time of each waypoint.
 		totalTime = distance/Arm::control_velocity;
@@ -164,7 +131,6 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		Arm::dt_mod = totalTime/numWayPoints;
 
 		wayPoints = WMRA_traj(3, startLoc_T, destination_T, numWayPoints+1);
-		if(controller.isDebug()) cout << "number of way points = " << numWayPoints << endl;
 
 		// Main movement loop where each 4x4 milestone matrix is converted into jacobian angles for the 7 arm joints
 		prevJointAng = startJointAng;
@@ -184,31 +150,13 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			currPosTF = wayPoints[i];
 			xyz_way << currPosTF(0,3) << "," << currPosTF(1,3) << "," << currPosTF(2,3) << endl;
 
-			/* cout << wayPoints[i] << endl;
-			cout << startLoc_T << endl;
-			cout << currPosTF << endl;*/
 			WMRA_delta(delta, prevPosTF , currPosTF);
-
-			/*for(int j = 0; j < delta.size(); j++){
-			cout << delta[j] ;
-			}
-			cout << endl;*/
 
 			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, prevJointAng);
 
-			//cout << "Waypoint " << i ;
 			for(int j = 0; j < 7; j++){
-				currJointAng[j] = /*prevJointAng[i] +*/ jointAng_Mat(j,0);
+				currJointAng[j] = jointAng_Mat(j,0);
 				prevJointAng[j] += currJointAng[j];
-				//cout << currJointAng[j] << ", " ;
-			}
-			//cout << endl;
-
-			if(controller.isSimulated())
-			{
-				// #DEBUG - Diego - This outputs the current simulated position, Timing is not included.
-				curPosition = prevJointAng; 
-				cout << curPosition[0] << ", " << curPosition[1] << ", " << curPosition[2] << ", " << curPosition[3] << ", " << curPosition[4] << ", " << curPosition[5] << ", " << curPosition[6] << endl;
 			}
 
 			test_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
@@ -219,9 +167,19 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			}
 			controller.addLinearMotionSegment(currJointAng, speeds);
 
-			//prevJointAng = currJointAng;
+			if(controller.isDebug())
+			{
+				for(int j = 0; j < delta.size(); j++)	cout << delta[j] ;
+				cout << endl;
+				cout << wayPoints[i] << endl;
+				cout << currPosTF << endl;
+				cout << "Speeds: " << speeds[0];
+				for(int k = 1; k < currJointAng.size(); k++)
+					cout << ", " << speeds[k];
+				cout << endl;
+			}
+
 			prevPosTF = currPosTF;
-			//Sleep(1000*Arm::dt_mod);
 		}
 
 		debugPos = controller.readPosAll();
@@ -241,6 +199,16 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 				Sleep(1000*Arm::dt_mod);
 			}
 
+
+			cout << "start is " << endl;
+			cout << startLoc_T << endl;
+
+			cout << "destination is :" << endl;
+			cout << destination_T << endl;
+
+			cout << "\t\tDISTANCE: " << distance << endl;
+
+			cout << "number of way points = " << numWayPoints << endl;
 
 			//#debug - output end position after the loop
 			cout << "last waypoint is :" << endl;

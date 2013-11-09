@@ -31,9 +31,9 @@ bool MotorController::initialize(){
 	if(initialized)
 		initialized = wmraSetup();
 	if(initialized)
-		if(controller.isDebug()) cout << "Motor Controller Initialized" << endl;
+		return true; //cout << "Motor Controller Initialized" << endl;
 	else {
-		if(controller.isDebug()) cout << "Error: Initialization of Motor Controller FAILED" << endl;
+		cout << "Error: Initialization of Motor Controller FAILED" << endl;
 		return false;
 	}
 	return true;
@@ -67,6 +67,21 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 
 bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
+	if(controller.isSimulated())
+	{
+		if(angles.size() == 8)
+		{
+			for(int i = 0; i < 8; i++)
+				curPosition[i] += angles[i];
+		}
+		else if(angles.size() == 7)
+		{
+			for(int i = 0; i < 7; i++)
+				curPosition[i] += angles[i];
+		}			
+		cout << curPosition[0] << ", " << curPosition[1] << ", " << curPosition[2] << ", " << curPosition[3] << ", " << curPosition[4] << ", " << curPosition[5] <<  ", " << curPosition[6] <<  ", " << curPosition[7] << endl;
+		return 1;
+	}
 	if(angles.size() == 7 && speeds.size() == 7)
 	{ 
 		/*convert angles to position counts
@@ -141,6 +156,9 @@ bool MotorController::isDebug() // return simulation flag from controller
 
 bool MotorController::wmraSetup() //WMRA setup
 {
+	/*update current position vector array size*/
+	curPosition.resize(8);
+
 	/*set all motors to designated motor type*/
 	setBrushedMotors();
 
@@ -190,6 +208,9 @@ bool MotorController::wmraSetup() //WMRA setup
 	definePosition(7, readyPosition[7]);
 	definePosition(8, readyPosition[8]);
 
+	for(int i = 0 ; i<8; i++)
+		curPosition[i] = readyPosition[i+1];
+
 	/*turn motors on*/
 	motorsOn();
 
@@ -227,6 +248,10 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 	string result;
 	string motor;
 	if ( isValidMotor(motorNum)){
+		if(controller.isSimulated())
+		{
+			return curPosition[motorNum-1];
+		}
 		motor = motorLookup[motorNum];
 		result = controller.command( "TP" + motor);	
 		istringstream stream(result);
@@ -243,6 +268,10 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 
 std::vector<double> MotorController::readPosAll()
 {
+	if(controller.isSimulated())
+	{
+			return curPosition;
+	}
 	vector<int> pos(8);
 	vector<double> tgt(8);
 	string result = controller.command( "TP");	
@@ -354,6 +383,10 @@ bool MotorController::setDecel(int motorNum, double angularDecelaration)
 bool MotorController::definePosition(int motorNum,double angle)
 {
 	if(isValidMotor(motorNum)){
+		if(controller.isSimulated())
+		{
+			curPosition[motorNum-1] = angle;
+		}
 		long encVal = angToEnc(motorNum,angle);
 		string motor = motorLookup[motorNum];
 		if (true){ //#debug  check if angle is in range
@@ -378,6 +411,11 @@ bool MotorController::definePosition(int motorNum,double angle)
 bool MotorController::positionControl(int motorNum,double angle)
 {
 	if(isValidMotor(motorNum)){
+		if(controller.isSimulated())
+		{
+			curPosition[motorNum-1] = angle;
+		}
+
 		long encVal = (angToEnc(motorNum,angle));
 		string motor;
 		motor = motorLookup[motorNum];

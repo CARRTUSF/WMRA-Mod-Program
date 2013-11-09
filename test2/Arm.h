@@ -41,8 +41,6 @@ private:
 	std::ofstream xyz_sent; // command XYZ values
 	std::ofstream xyz_cont; // command XYZ values
 	bool initialized;
-	static MotorController control;
-
-	vector<double> curPosition;   
+	static MotorController control; 
 };
 #endif;

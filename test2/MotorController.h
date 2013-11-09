@@ -168,6 +168,8 @@ private:
 	static string motorLookup[9];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
+
+	vector<double> curPosition;
 };
 
 #endif;

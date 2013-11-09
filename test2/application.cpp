@@ -28,7 +28,7 @@ int main()
 	if(wmraArm.initialize()){
 		//cout << "Controller intialized in main" << endl;
 		while(!endFlag){
-			cout << "Select a destination" << endl;
+			cout << "\n\nSelect a destination" << endl;
 			cout << "dx = ";
 			cin >> dest.x;
 			cout << "dy = ";
@@ -41,11 +41,7 @@ int main()
 			cin >> dest.roll;
 			cout << "Yaw = ";
 			cin >> dest.yaw;
-/*
-			cout << "Start Movement? 1 = yes, 0 = no" << endl;
-			cout << "Decision: ";
-			cin >> choice;
-*/
+			cout << endl;
 
 			if(dest.yaw == 777)
 				dest.yaw == dest.yaw;// No-Op, will loop through choices again
@@ -53,7 +49,6 @@ int main()
 				endFlag = true; // Will break out of loop
 			else
 				wmraArm.autonomous(dest,WMRA::ARM_FRAME); // Moves arm
-			
 		}
 	}
 	else
