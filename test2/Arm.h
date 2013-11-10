@@ -5,7 +5,7 @@
 #include <fstream>
 #include "WmraTypes.h"
 #include "MotorController.h"
-
+#include "optimization.h"
 
 class Arm{
 public:
@@ -43,5 +43,6 @@ private:
 	std::ofstream xyz_cont; // command XYZ values
 	bool initialized;
 	static MotorController controller; 
+	Opt opt;
 };
 #endif;

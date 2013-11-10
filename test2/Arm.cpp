@@ -15,7 +15,6 @@
 #include "trajectory.h"
 #include "jacobian.h"
 #include "Utility.h"
-#include "optimization.h"
 #include "ConfigReader.h"
 
 using namespace std;
@@ -152,7 +151,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 
 			WMRA_delta(delta, prevPosTF , currPosTF);
 
-			jointAng_Mat = WMRA_Opt(Joa, detJoa, delta, prevJointAng);
+			jointAng_Mat = opt.WMRA_Opt(Joa, detJoa, delta, prevJointAng);
 
 			for(int j = 0; j < 7; j++){
 				currJointAng[j] = jointAng_Mat(j,0);
