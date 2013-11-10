@@ -296,7 +296,7 @@ double MotorController::readPosErr(int motorNum) // returns the error in
 	long encoderVal;	
 	string result;
 	string motor;
-	if ( isValidMotor(motorNum)){
+	if (isValidMotor(motorNum)){
 		motor = motorLookup[motorNum];
 		result = controller.command( "TE" + motor);	
 		istringstream stream(result);
@@ -546,14 +546,14 @@ bool MotorController::setBrushedMode(int motorNum, int mode)
 bool MotorController::setBrushedMotors()
 {
 	// set motor types, as in brushed or brushless DC motor.
-	setBrushedMode(1, brushedMotors[0]);
-	setBrushedMode(2, brushedMotors[1]);
-	setBrushedMode(3, brushedMotors[2]);
-	setBrushedMode(4, brushedMotors[3]);
-	setBrushedMode(5, brushedMotors[4]);
-	setBrushedMode(6, brushedMotors[5]);
-	setBrushedMode(7, brushedMotors[6]);
-	setBrushedMode(8, brushedMotors[7]);
+	setBrushedMode(0, brushedMotors[0]);
+	setBrushedMode(1, brushedMotors[1]);
+	setBrushedMode(2, brushedMotors[2]);
+	setBrushedMode(3, brushedMotors[3]);
+	setBrushedMode(4, brushedMotors[4]);
+	setBrushedMode(5, brushedMotors[5]);
+	setBrushedMode(6, brushedMotors[6]);
+	setBrushedMode(7, brushedMotors[7]);
 	return 1;
 }
 
@@ -701,7 +701,7 @@ bool MotorController::setDefaults()
 
 	//set all motors to position tracking mode
 	if(reader.keyPresent("motorMode"))
-		motorMode = LINEAR;
+		motorMode = LINEAR;  // DEBUG - Needs to read from settings file
 	//motorMode = reader.getInt("motorMode");
 	//motorMode = reader.getString("motorMode");
 	else

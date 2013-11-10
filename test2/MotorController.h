@@ -155,16 +155,16 @@ private:
 	bool initialized ;
 	motorControlMode motorMode;
 	string ipAddr;
-	double enc2Radian[9];
-	double radian2Enc[9];
-	bool brushedMotors[9];
-	double motorVelocity[9];
-	double motorAccel[9];
-	double motorDecel[9];
+	double enc2Radian[8];
+	double radian2Enc[8];
+	bool brushedMotors[8];
+	double motorVelocity[8];
+	double motorAccel[8];
+	double motorDecel[8];
 	double smoothingVal;
-	double readyPosition[9];
-	double parkPosition[9];
-	string motorLookup[9];
+	double readyPosition[8];
+	double parkPosition[8];
+	string motorLookup[8];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
 
