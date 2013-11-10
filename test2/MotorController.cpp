@@ -8,19 +8,23 @@
 #include "ConfigReader.h"
 #include "stringUtility.h"
 #include "MotorController.h"
-#include "galilController.h"
 
 using namespace std;
 
 #define PI 3.14159265
 
-galilController MotorController::controller;
-string MotorController::motorLookup[] = {"H","A","B","C","D","E","F","G","H"};
-
 MotorController::MotorController()
 {
 	long int sum;
 	initialized = false;
+	motorLookup[0] = "A";
+	motorLookup[1] = "B";
+	motorLookup[2] = "C";
+	motorLookup[3] = "D";
+	motorLookup[4] = "E";
+	motorLookup[5] = "F";
+	motorLookup[6] = "G";
+	motorLookup[7] = "H";
 }
 
 MotorController::~MotorController()
@@ -96,8 +100,7 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 		vector<long> posCount(7);
 		double zeroErrCheck = 0;
 		for(int i = 0; i < 7 ; i++){
-			int motorNum = i+1;
-			posCount[i] = (long)angToEnc(motorNum,angles[i]);
+			posCount[i] = (long)angToEnc(i,angles[i]);
 			zeroErrCheck += abs(posCount[i]);
 		}
 		/* If all positions are zero, do not send command to galil controller*/
@@ -106,8 +109,7 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 		//calculate vector speed
 		vector<double> speedCount(7);
 		for(int i = 0; i < 7 ; i++){
-			int motorNum = i+1;
-			speedCount[i] = angToEnc(motorNum,speeds[i]);
+			speedCount[i] = angToEnc(i,speeds[i]);
 		}
 		double vectorSpeed; /// this is for Galil controller
 		vectorSpeed = (speedCount[0]*speedCount[0])+(speedCount[1]*speedCount[1])+(speedCount[2]*speedCount[2])+
@@ -171,6 +173,7 @@ bool MotorController::wmraSetup() //WMRA setup
 	setMotorMode(motorMode);
 
 	/*set all velocities with default values*/
+	setMaxVelocity(0, motorVelocity[0]);
 	setMaxVelocity(1, motorVelocity[1]);
 	setMaxVelocity(2, motorVelocity[2]);
 	setMaxVelocity(3, motorVelocity[3]);
@@ -178,9 +181,9 @@ bool MotorController::wmraSetup() //WMRA setup
 	setMaxVelocity(5, motorVelocity[5]);
 	setMaxVelocity(6, motorVelocity[6]);
 	setMaxVelocity(7, motorVelocity[7]);
-	setMaxVelocity(8, motorVelocity[8]);
 
 	/*set accelaration values from defaults*/
+	setAccel(0, motorAccel[0]);
 	setAccel(1, motorAccel[1]);
 	setAccel(2, motorAccel[2]);
 	setAccel(3, motorAccel[3]);
@@ -188,9 +191,9 @@ bool MotorController::wmraSetup() //WMRA setup
 	setAccel(5, motorAccel[5]);
 	setAccel(6, motorAccel[6]);
 	setAccel(7, motorAccel[7]);
-	setAccel(8, motorAccel[8]);
 
 	/*set deceleration values from defaults*/
+	setDecel(0, motorDecel[0]);
 	setDecel(1, motorDecel[1]);
 	setDecel(2, motorDecel[2]);
 	setDecel(3, motorDecel[3]);
@@ -198,12 +201,12 @@ bool MotorController::wmraSetup() //WMRA setup
 	setDecel(5, motorDecel[5]);
 	setDecel(6, motorDecel[6]);
 	setDecel(7, motorDecel[7]);
-	setDecel(8, motorDecel[8]);
 
 	/*set accelaration smoothing*/
 	setSmoothing(smoothingVal);
 
 	/*set default ready position*/
+	definePosition(0, readyPosition[0]);
 	definePosition(1, readyPosition[1]);
 	definePosition(2, readyPosition[2]);
 	definePosition(3, readyPosition[3]);
@@ -211,10 +214,9 @@ bool MotorController::wmraSetup() //WMRA setup
 	definePosition(5, readyPosition[5]);
 	definePosition(6, readyPosition[6]);
 	definePosition(7, readyPosition[7]);
-	definePosition(8, readyPosition[8]);
 
 	for(int i = 0 ; i<8; i++)
-		curPosition[i] = readyPosition[i+1];
+		curPosition[i] = readyPosition[i];
 
 	/*turn motors on*/
 	motorsOn();
@@ -255,7 +257,7 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 	if ( isValidMotor(motorNum)){
 		if(controller.isSimulated())
 		{
-			return curPosition[motorNum-1];
+			return curPosition[motorNum];
 		}
 		motor = motorLookup[motorNum];
 		result = controller.command( "TP" + motor);	
@@ -264,7 +266,7 @@ double MotorController::readPos(int motorNum) // returns the current motor angle
 		return encToAng(motorNum, encoderVal);        
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10){
+		if(motorNum != 8 && motorNum != 9){
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
 		}
@@ -283,7 +285,7 @@ std::vector<double> MotorController::readPosAll()
 	sscanf(result.c_str(), "%d,%d,%d,%d,%d,%d,%d,%d", &pos[0],&pos[1],&pos[2],&pos[3],&pos[4],&pos[5],&pos[6],&pos[7]);
 	for(int i = 0; i<8; i++)
 	{
-		tgt[i] = encToAng(i+1, pos[i]); 
+		tgt[i] = encToAng(i, pos[i]); 
 	}
 	return tgt;       
 }
@@ -302,7 +304,7 @@ double MotorController::readPosErr(int motorNum) // returns the error in
 		return encToAng(motorNum, encoderVal);        
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
@@ -326,13 +328,12 @@ bool MotorController::setMaxVelocity(int motorNum, double angularVelocity)
 		}
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
 		}
 	}
-
 }
 
 bool MotorController::setAccel(int motorNum, double angularAccelaration)
@@ -351,13 +352,12 @@ bool MotorController::setAccel(int motorNum, double angularAccelaration)
 		}
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
 		}
 	}
-
 }
 
 bool MotorController::setDecel(int motorNum, double angularDecelaration)
@@ -365,7 +365,7 @@ bool MotorController::setDecel(int motorNum, double angularDecelaration)
 	if(isValidMotor(motorNum)){
 		long encVal = abs(angToEnc(motorNum,angularDecelaration));
 		string motor = motorLookup[motorNum];
-		if ((encVal >= 1024) && (encVal <= 67107840)){
+		if((encVal >= 1024) && (encVal <= 67107840)){
 			string command = "DC" + motor;
 			controller.command(command + "=" + toString(encVal));
 			return true;            
@@ -376,13 +376,12 @@ bool MotorController::setDecel(int motorNum, double angularDecelaration)
 		}
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
 		}
 	}
-
 }
 
 bool MotorController::definePosition(int motorNum,double angle)
@@ -390,7 +389,7 @@ bool MotorController::definePosition(int motorNum,double angle)
 	if(isValidMotor(motorNum)){
 		if(controller.isSimulated())
 		{
-			curPosition[motorNum-1] = angle;
+			curPosition[motorNum] = angle;
 		}
 		long encVal = angToEnc(motorNum,angle);
 		string motor = motorLookup[motorNum];
@@ -405,7 +404,7 @@ bool MotorController::definePosition(int motorNum,double angle)
 		}
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
@@ -418,7 +417,7 @@ bool MotorController::positionControl(int motorNum,double angle)
 	if(isValidMotor(motorNum)){
 		if(controller.isSimulated())
 		{
-			curPosition[motorNum-1] = angle;
+			curPosition[motorNum] = angle;
 		}
 
 		long encVal = (angToEnc(motorNum,angle));
@@ -452,7 +451,7 @@ bool MotorController::positionControl(int motorNum,double angle)
 		}
 	}
 	else{
-		if(motorNum != 9 && motorNum != 10)
+		if(motorNum != 8 && motorNum != 9)
 		{
 			cerr << "The motor specified is not valid" << endl;
 			throw std::out_of_range ("MotorNum out_of_range");
@@ -479,38 +478,35 @@ Private Functions
 ------------------------------------------------------*/
 
 inline bool MotorController::isValidMotor(int motorNum){
-	if( motorNum >= 1 && motorNum <= 8) return true;
+	if( motorNum >= 0 && motorNum <= 8) return true;
 	else return false;
 }
 
 bool readSettings() // Returns 0 is no file found or error occured
 {
 	return true;
-
 }
 
 double MotorController::encToAng(int motorNum, long encCount) // #debug needs to be finished, Also need to check initialized
 {
-	if (motorNum < 9 && motorNum > 0){
+	if (motorNum < 9 && motorNum >= 0){
 		return encCount * enc2Radian[motorNum]; 
 	}
 	else{
 		cerr << "motor number outside range" << endl;
 		throw std::out_of_range ("MotorNum out_of_range");
 	}
-
 }
 
 long MotorController::angToEnc(int motorNum, double encCount) // #debug needs to be finished, Also need to check initialized
 {
-	if (motorNum < 9 && motorNum > 0){
+	if (motorNum < 9 && motorNum >= 0){
 		return encCount * radian2Enc[motorNum]; 
 	}
 	else{
 		cerr << "motor number outside range" << endl;
 		throw std::out_of_range ("MotorNum out_of_range");
 	}
-
 }
 
 bool MotorController::setSmoothing(double value)
@@ -550,14 +546,14 @@ bool MotorController::setBrushedMode(int motorNum, int mode)
 bool MotorController::setBrushedMotors()
 {
 	// set motor types, as in brushed or brushless DC motor.
-	setBrushedMode(1, brushedMotors[1]);
-	setBrushedMode(2, brushedMotors[2]);
-	setBrushedMode(3, brushedMotors[3]);
-	setBrushedMode(4, brushedMotors[4]);
-	setBrushedMode(5, brushedMotors[5]);
-	setBrushedMode(6, brushedMotors[6]);
-	setBrushedMode(7, brushedMotors[7]);
-	setBrushedMode(8, brushedMotors[8]);
+	setBrushedMode(1, brushedMotors[0]);
+	setBrushedMode(2, brushedMotors[1]);
+	setBrushedMode(3, brushedMotors[2]);
+	setBrushedMode(4, brushedMotors[3]);
+	setBrushedMode(5, brushedMotors[4]);
+	setBrushedMode(6, brushedMotors[5]);
+	setBrushedMode(7, brushedMotors[6]);
+	setBrushedMode(8, brushedMotors[7]);
 	return 1;
 }
 
@@ -567,16 +563,16 @@ bool MotorController::setDefaults()
 	reader.parseFile("settings_controller.conf");
 	reader.setSection("MOTOR_CONTROLLER_DEFAULTS");
 	if(reader.keyPresent("encoderPerRevolution1")){			
-		enc2Radian[1] = 2*PI/reader.getInt("encoderPerRevolution1"); //calculate conversion values
-		radian2Enc[1] = 1/enc2Radian[1];
+		enc2Radian[0] = 2*PI/reader.getInt("encoderPerRevolution1"); //calculate conversion values
+		radian2Enc[0] = 1/enc2Radian[0];
 	}
 	else{
 		cout << "'encoderPerRevolution1' default not found" << endl;			
 		return 0;
 	}
 	if(reader.keyPresent("encoderPerRevolution2")){
-		enc2Radian[2] = 2*PI/reader.getInt("encoderPerRevolution2"); //calculate conversion values
-		radian2Enc[2] = 1/enc2Radian[2];
+		enc2Radian[1] = 2*PI/reader.getInt("encoderPerRevolution2"); //calculate conversion values
+		radian2Enc[1] = 1/enc2Radian[1];
 	}
 	else{
 		cout << "'encoderPerRevolution2' default not found" << endl;			
@@ -584,8 +580,8 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution3"))
 	{
-		enc2Radian[3] = 2*PI/reader.getInt("encoderPerRevolution3"); //calculate conversion values
-		radian2Enc[3] = 1/enc2Radian[3];
+		enc2Radian[2] = 2*PI/reader.getInt("encoderPerRevolution3"); //calculate conversion values
+		radian2Enc[2] = 1/enc2Radian[2];
 	}
 	else
 	{
@@ -594,8 +590,8 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution4"))
 	{
-		enc2Radian[4] = 2*PI/reader.getInt("encoderPerRevolution4"); //calculate conversion values
-		radian2Enc[4] = 1/enc2Radian[4];
+		enc2Radian[3] = 2*PI/reader.getInt("encoderPerRevolution4"); //calculate conversion values
+		radian2Enc[3] = 1/enc2Radian[3];
 	}
 	else
 	{
@@ -604,8 +600,8 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution5"))
 	{
-		enc2Radian[5] = 2*PI/reader.getInt("encoderPerRevolution5"); //calculate conversion values
-		radian2Enc[5] = 1/enc2Radian[5];
+		enc2Radian[4] = 2*PI/reader.getInt("encoderPerRevolution5"); //calculate conversion values
+		radian2Enc[4] = 1/enc2Radian[4];
 	}
 	else
 	{
@@ -615,8 +611,8 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution6"))
 	{
-		enc2Radian[6] = -2*PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
-		radian2Enc[6] = 1/enc2Radian[6];
+		enc2Radian[5] = -2*PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
+		radian2Enc[5] = 1/enc2Radian[5];
 	}
 	else
 	{
@@ -626,8 +622,8 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution7"))
 	{
-		enc2Radian[7] = 2*PI/reader.getInt("encoderPerRevolution7"); //calculate conversion values
-		radian2Enc[7] = 1/enc2Radian[7];
+		enc2Radian[6] = 2*PI/reader.getInt("encoderPerRevolution7"); //calculate conversion values
+		radian2Enc[6] = 1/enc2Radian[6];
 	}
 	else
 	{
@@ -636,8 +632,8 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution8")) //#Debug: encoderPerRevolution8 value is incorrect
 	{
-		enc2Radian[8] = 2*PI/reader.getInt("encoderPerRevolution8"); //calculate conversion values
-		radian2Enc[8] = 1/enc2Radian[8];
+		enc2Radian[7] = 2*PI/reader.getInt("encoderPerRevolution8"); //calculate conversion values
+		radian2Enc[7] = 1/enc2Radian[7];
 	}
 	else
 	{
@@ -647,56 +643,56 @@ bool MotorController::setDefaults()
 
 	// set motor type to brushed motor
 	if(reader.keyPresent("brushedMotor1"))
-		brushedMotors[1] = reader.getInt("brushedMotor1");
+		brushedMotors[0] = reader.getInt("brushedMotor1");
 	else
 	{
 		cout << "'brushedMotor1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor2"))
-		brushedMotors[2] = reader.getInt("brushedMotor2"); 
+		brushedMotors[1] = reader.getInt("brushedMotor2"); 
 	else
 	{
 		cout << "'brushedMotor2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor3"))
-		brushedMotors[3] = reader.getInt("brushedMotor3");
+		brushedMotors[2] = reader.getInt("brushedMotor3");
 	else
 	{
 		cout << "'brushedMotor3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor4"))
-		brushedMotors[4] = reader.getInt("brushedMotor4"); 
+		brushedMotors[3] = reader.getInt("brushedMotor4"); 
 	else
 	{
 		cout << "'brushedMotor4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor5"))
-		brushedMotors[5] = reader.getInt("brushedMotor5"); 
+		brushedMotors[4] = reader.getInt("brushedMotor5"); 
 	else
 	{
 		cout << "'brushedMotor5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor6"))
-		brushedMotors[6] = reader.getInt("brushedMotor6"); 
+		brushedMotors[5] = reader.getInt("brushedMotor6"); 
 	else
 	{
 		cout << "'brushedMotor6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor7"))
-		brushedMotors[7] = reader.getInt("brushedMotor7"); 
+		brushedMotors[6] = reader.getInt("brushedMotor7"); 
 	else
 	{
 		cout << "'brushedMotor7' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("brushedMotor8"))
-		brushedMotors[8] = reader.getInt("brushedMotor8"); 
+		brushedMotors[7] = reader.getInt("brushedMotor8"); 
 	else
 	{
 		cout << "'brushedMotor8' default not found" << endl;
@@ -716,56 +712,56 @@ bool MotorController::setDefaults()
 
 	// Set Max Velocity
 	if(reader.keyPresent("maxVelocity1"))
-		motorVelocity[1] = reader.getDouble("maxVelocity1"); 
+		motorVelocity[0] = reader.getDouble("maxVelocity1"); 
 	else
 	{
 		cout << "'maxVelocity1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity2"))
-		motorVelocity[2] = reader.getDouble("maxVelocity2"); 
+		motorVelocity[1] = reader.getDouble("maxVelocity2"); 
 	else
 	{
 		cout << "'maxVelocity2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity3"))
-		motorVelocity[3] = reader.getDouble("maxVelocity3"); 
+		motorVelocity[2] = reader.getDouble("maxVelocity3"); 
 	else
 	{
 		cout << "'maxVelocity3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity4"))
-		motorVelocity[4] = reader.getDouble("maxVelocity4"); 
+		motorVelocity[3] = reader.getDouble("maxVelocity4"); 
 	else
 	{
 		cout << "'maxVelocity4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity5"))
-		motorVelocity[5] = reader.getDouble("maxVelocity5"); 
+		motorVelocity[4] = reader.getDouble("maxVelocity5"); 
 	else		
 	{
 		cout << "'maxVelocity5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity6"))
-		motorVelocity[6] = reader.getDouble("maxVelocity6"); 
+		motorVelocity[5] = reader.getDouble("maxVelocity6"); 
 	else
 	{
 		cout << "'maxVelocity6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity7"))
-		motorVelocity[7] = reader.getDouble("maxVelocity7"); 
+		motorVelocity[6] = reader.getDouble("maxVelocity7"); 
 	else
 	{
 		cout << "'maxVelocity7' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("maxVelocity8"))
-		motorVelocity[8] = reader.getDouble("maxVelocity8"); 
+		motorVelocity[7] = reader.getDouble("maxVelocity8"); 
 	else
 	{
 		cout << "'maxVelocity8' default not found" << endl;
@@ -774,49 +770,49 @@ bool MotorController::setDefaults()
 
 	//Set Acceleration
 	if(reader.keyPresent("acceleration1"))
-		motorAccel[1] = reader.getDouble("acceleration1"); 
+		motorAccel[0] = reader.getDouble("acceleration1"); 
 	else 
 	{
 		cout << "'acceleration1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration2"))
-		motorAccel[2] = reader.getDouble("acceleration2"); 
+		motorAccel[1] = reader.getDouble("acceleration2"); 
 	else
 	{
 		cout << "'acceleration2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration3"))
-		motorAccel[3] = reader.getDouble("acceleration3"); 
+		motorAccel[2] = reader.getDouble("acceleration3"); 
 	else
 	{
 		cout << "'acceleration3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration4"))
-		motorAccel[4] = reader.getDouble("acceleration4"); 
+		motorAccel[3] = reader.getDouble("acceleration4"); 
 	else
 	{
 		cout << "'acceleration4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration5"))
-		motorAccel[5] = reader.getDouble("acceleration5"); 
+		motorAccel[4] = reader.getDouble("acceleration5"); 
 	else		
 	{
 		cout << "'acceleration5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration6"))
-		motorAccel[6] = reader.getDouble("acceleration6"); 
+		motorAccel[5] = reader.getDouble("acceleration6"); 
 	else
 	{
 		cout << "'acceleration6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("acceleration7"))
-		motorAccel[7] = reader.getDouble("acceleration7"); 
+		motorAccel[6] = reader.getDouble("acceleration7"); 
 	else
 	{
 		cout << "'acceleration7' default not found" << endl;
@@ -824,7 +820,7 @@ bool MotorController::setDefaults()
 	}
 
 	if(reader.keyPresent("acceleration8"))
-		motorAccel[8] = reader.getDouble("acceleration8"); 
+		motorAccel[7] = reader.getDouble("acceleration8"); 
 	else
 	{
 		cout << "'acceleration8' default not found" << endl;
@@ -833,56 +829,56 @@ bool MotorController::setDefaults()
 
 	//Set Decceleration
 	if(reader.keyPresent("deceleration1"))
-		motorDecel[1] = reader.getDouble("deceleration1"); 
+		motorDecel[0] = reader.getDouble("deceleration1"); 
 	else
 	{
 		cout << "'deceleration1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration2"))
-		motorDecel[2] = reader.getDouble("deceleration2"); 
+		motorDecel[1] = reader.getDouble("deceleration2"); 
 	else
 	{
 		cout << "'deceleration2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration3"))
-		motorDecel[3] = reader.getDouble("deceleration3"); 
+		motorDecel[2] = reader.getDouble("deceleration3"); 
 	else
 	{
 		cout << "'deceleration3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration4"))
-		motorDecel[4] = reader.getDouble("deceleration4"); 
+		motorDecel[3] = reader.getDouble("deceleration4"); 
 	else
 	{
 		cout << "'deceleration4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration5"))
-		motorDecel[5] = reader.getDouble("deceleration5"); 
+		motorDecel[4] = reader.getDouble("deceleration5"); 
 	else
 	{
 		cout << "'deceleration5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration6"))
-		motorDecel[6] = reader.getDouble("deceleration6"); 
+		motorDecel[5] = reader.getDouble("deceleration6"); 
 	else
 	{
 		cout << "'deceleration6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration7"))
-		motorDecel[7] = reader.getDouble("deceleration7"); 
+		motorDecel[6] = reader.getDouble("deceleration7"); 
 	else
 	{
 		cout << "'deceleration7' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("deceleration8"))
-		motorDecel[8] = reader.getDouble("deceleration8"); 
+		motorDecel[7] = reader.getDouble("deceleration8"); 
 	else
 	{
 		cout << "'deceleration8' default not found" << endl;
@@ -900,56 +896,56 @@ bool MotorController::setDefaults()
 
 	/*set default ready position*/
 	if(reader.keyPresent("readyPosition1"))
-		readyPosition[1] = reader.getDouble("readyPosition1"); 
+		readyPosition[0] = reader.getDouble("readyPosition1"); 
 	else
 	{
 		cout << "'readyPosition1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition2"))
-		readyPosition[2] = reader.getDouble("readyPosition2"); 
+		readyPosition[1] = reader.getDouble("readyPosition2"); 
 	else
 	{
 		cout << "'readyPosition2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition3"))
-		readyPosition[3] = reader.getDouble("readyPosition3"); 
+		readyPosition[2] = reader.getDouble("readyPosition3"); 
 	else
 	{
 		cout << "'readyPosition3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition4"))
-		readyPosition[4] = reader.getDouble("readyPosition4"); 
+		readyPosition[3] = reader.getDouble("readyPosition4"); 
 	else
 	{
 		cout << "'readyPosition4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition5"))
-		readyPosition[5] = reader.getDouble("readyPosition5"); 
+		readyPosition[4] = reader.getDouble("readyPosition5"); 
 	else
 	{
 		cout << "'readyPosition5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition6"))
-		readyPosition[6] = reader.getDouble("readyPosition6"); 
+		readyPosition[5] = reader.getDouble("readyPosition6"); 
 	else
 	{
 		cout << "'readyPosition6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition7"))
-		readyPosition[7] = reader.getDouble("readyPosition7"); 
+		readyPosition[6] = reader.getDouble("readyPosition7"); 
 	else
 	{
 		cout << "'readyPosition7' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("readyPosition8"))
-		readyPosition[8] = reader.getDouble("readyPosition8"); 
+		readyPosition[7] = reader.getDouble("readyPosition8"); 
 	else
 	{
 		cout << "'readyPosition8' default not found" << endl;
@@ -958,56 +954,56 @@ bool MotorController::setDefaults()
 
 	/*set default park position*/
 	if(reader.keyPresent("parkPosition1"))
-		parkPosition[1] = reader.getDouble("parkPosition1"); 
+		parkPosition[0] = reader.getDouble("parkPosition1"); 
 	else
 	{
 		cout << "'parkPosition1' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition2"))
-		parkPosition[2] = reader.getDouble("parkPosition2"); 
+		parkPosition[1] = reader.getDouble("parkPosition2"); 
 	else
 	{
 		cout << "'parkPosition2' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition3"))
-		parkPosition[3] = reader.getDouble("parkPosition3"); 
+		parkPosition[2] = reader.getDouble("parkPosition3"); 
 	else
 	{
 		cout << "'parkPosition3' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition4"))
-		parkPosition[4] = reader.getDouble("parkPosition4"); 
+		parkPosition[3] = reader.getDouble("parkPosition4"); 
 	else
 	{
 		cout << "'parkPosition4' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition5"))
-		parkPosition[5] = reader.getDouble("parkPosition5"); 
+		parkPosition[4] = reader.getDouble("parkPosition5"); 
 	else
 	{
 		cout << "'parkPosition5' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition6"))
-		parkPosition[6] = reader.getDouble("parkPosition6"); 
+		parkPosition[5] = reader.getDouble("parkPosition6"); 
 	else
 	{
 		cout << "'parkPosition6' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition7"))
-		parkPosition[7] = reader.getDouble("parkPosition7"); 
+		parkPosition[6] = reader.getDouble("parkPosition7"); 
 	else
 	{
 		cout << "'parkPosition7' default not found" << endl;
 		return 0;
 	}
 	if(reader.keyPresent("parkPosition8"))
-		parkPosition[8] = reader.getDouble("parkPosition8"); 
+		parkPosition[7] = reader.getDouble("parkPosition8"); 
 	else
 	{
 		cout << "'parkPosition8' default not found" << endl;

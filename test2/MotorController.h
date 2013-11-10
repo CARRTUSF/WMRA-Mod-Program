@@ -8,10 +8,9 @@
 #include <vector>
 #include <ctype.h>
 #include "WmraTypes.h"
+#include "galilController.h"
 
 using namespace std;
-
-class galilController;
 
 class MotorController {
 public:
@@ -148,7 +147,7 @@ public:
 	bool MotorsOFF();
 
 private:
-	static galilController controller;
+	galilController controller;
 	bool setDefaults(); // set defaults
 	bool setBrushedMotors();
 	bool setBrushedMode(int motorNum, int mode);
@@ -165,7 +164,7 @@ private:
 	double smoothingVal;
 	double readyPosition[9];
 	double parkPosition[9];
-	static string motorLookup[9];
+	string motorLookup[9];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
 

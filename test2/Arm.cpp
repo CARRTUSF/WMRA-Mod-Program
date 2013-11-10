@@ -20,8 +20,6 @@
 using namespace std;
 using namespace math;
 
-MotorController Arm::controller;
-
 Arm::Arm(){
 	xyz_way.open("data/XYZ-way.csv");
 	xyz_sent.open("data/XYZ-sent.csv");
@@ -359,6 +357,32 @@ void Arm::closeDebug(){
 	xyz_way.close();
 	xyz_sent.close();
 	xyz_cont.close();
+}
+
+bool Arm::toReady()
+{
+	vector<double> readyAng;
+	vector<double> speeds;
+	readyAng.push_back(1.570796327-controller.readPos(0));
+	readyAng.push_back(1.570796327-controller.readPos(1));
+	readyAng.push_back(0.0-controller.readPos(2));
+	readyAng.push_back(1.570796327-controller.readPos(3));
+	readyAng.push_back(1.570796327-controller.readPos(4));
+	readyAng.push_back(1.0471975513-controller.readPos(5));
+	readyAng.push_back(0.0-controller.readPos(6));
+	readyAng.push_back(0.0-controller.readPos(7));
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	speeds.push_back(0.01);
+	controller.addLinearMotionSegment(readyAng, speeds);
+	controller.beginLI();
+	controller.endLIseq();
+	return true;
 }
 
 bool Arm::setDefaults()

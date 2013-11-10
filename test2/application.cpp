@@ -43,7 +43,9 @@ int main()
 			cin >> dest.yaw;
 			cout << endl;
 
-			if(dest.yaw == 777)
+			if(dest.yaw == 555)
+				wmraArm.toReady();
+			else if(dest.yaw == 777)
 				dest.yaw == dest.yaw;// No-Op, will loop through choices again
 			else if(dest.yaw == 999)
 			{
