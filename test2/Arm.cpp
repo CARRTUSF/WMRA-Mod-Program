@@ -136,6 +136,8 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		xyz_sent << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
 		xyz_way << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
 
+		Opt opt;
+
 		for(int i = 1 ; i < numWayPoints +1; i++)
 		{			
 			currentLoc_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
@@ -370,8 +372,6 @@ bool Arm::toReady()
 	readyAng.push_back(1.570796327-controller.readPos(4));
 	readyAng.push_back(1.0471975513-controller.readPos(5));
 	readyAng.push_back(0.0-controller.readPos(6));
-	readyAng.push_back(0.0-controller.readPos(7));
-	speeds.push_back(0.01);
 	speeds.push_back(0.01);
 	speeds.push_back(0.01);
 	speeds.push_back(0.01);

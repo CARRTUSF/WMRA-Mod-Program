@@ -44,6 +44,5 @@ private:
 	std::ofstream xyz_cont; // command XYZ values
 	bool initialized;
 	MotorController controller; 
-	Opt opt;
 };
 #endif;

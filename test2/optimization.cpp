@@ -35,9 +35,12 @@ Opt::Opt()
 void Opt::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
 	//double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-79*PI/180,-360*PI/180};
-   double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+   //double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+   
+   double qmintemp[7]= {-10*PI/180,-15*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-90*PI/180,-200*PI/180};
    //double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,79*PI/180,360*PI/180};
-	double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
+	//double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
+	double qmaxtemp[7] = {200*PI/180,120*PI/180,170*PI/180,170*PI/180,170*PI/180,90*PI/180,200*PI/180};
 	int i;
 	for (i=0; i < 7; i++){
 		qmin(0,i) = qmintemp[i];
