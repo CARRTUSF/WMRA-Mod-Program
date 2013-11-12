@@ -227,7 +227,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			*/
 			cout << "and the same thing AGAIN.... " << endl;
 			for(int i = 0; i < startJointAng.size(); i++){		// Sets the current location to a 1x8 vector		
-				startJointAng[i] = controller.readPos(i+1);
+				startJointAng[i] = controller.readPos(i);
 			}
 			currPosTF = kinematics(startJointAng);
 			cout << "arm reached position is " << endl;
