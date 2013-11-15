@@ -25,14 +25,14 @@ Function Declaration:*/
 using namespace std;
 using namespace math;
 
-Opt::Opt()
+KinematicOptimizer::KinematicOptimizer()
 {
 	weight_f.open("data/weight.csv");
 	manipulability.open("data/man.csv");
 	dHo.Null(7,1);
 }
 
-void Opt::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
+void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
 	//double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-79*PI/180,-360*PI/180};
    double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
@@ -49,7 +49,7 @@ void Opt::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 }
 
 
-Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
+Matrix KinematicOptimizer::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
 
 	// Reading the Wheelchair's constant dimentions, all dimentions are converted in millimeters:
 	Matrix L(1,1);
@@ -84,7 +84,7 @@ Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> 
 			dH(j,0)=0;
 		}
 	}
-	Opt::dHo = dH;
+	KinematicOptimizer::dHo = dH;
 	//cout<<"dHo is \n\n"<<dHo<<"\n\n";
 	// The case when arm-only control is required with no wheelchair motion:
 
@@ -107,7 +107,7 @@ Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> 
 		}
 	}
 
-	Opt::weight_f << W(0,0) << "," << W(1,1) << "," << W(2,2) << "," << W(3,3) << "," << W(4,4) << "," << W(5,5) << "," << W(6,6) << endl;
+	KinematicOptimizer::weight_f << W(0,0) << "," << W(1,1) << "," << W(2,2) << "," << W(3,3) << "," << W(4,4) << "," << W(5,5) << "," << W(6,6) << endl;
 	
 
 	// Redefining the determinant based on the weight:
@@ -123,7 +123,7 @@ Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> 
 	//		cout<<"mul is\n\n"<<mul<<"\n\n";
 	detJo= sqrt(mul.Det());
 	//		cout<<"detJo is\n\n"<<detJo<<"\n\n";
-	Opt::manipulability << detJo << endl;
+	KinematicOptimizer::manipulability << detJo << endl;
 	dof=dx.size();
 	//		cout<<"dof is\n\n"<<dof<<"\n\n";
 
@@ -165,7 +165,7 @@ Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> 
 }
 
 
-Matrix Opt::WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
+Matrix KinematicOptimizer::WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur){
 
 	Matrix dHo;
 	dHo.Null(7,1);

@@ -136,7 +136,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 		xyz_sent << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
 		xyz_way << startLoc_T(0,3) << "," << startLoc_T(1,3) << "," << startLoc_T(2,3) << endl;
 
-		Opt opt;
+		KinematicOptimizer opt;
 
 		for(int i = 1 ; i < numWayPoints +1; i++)
 		{			
