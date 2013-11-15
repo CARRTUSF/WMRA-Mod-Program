@@ -23,7 +23,7 @@ typedef matrix Matrix;
 
 namespace WMRA{
 
-   enum CordFrame { ARM_FRAME=0, GRIPPER_FRAME=1}; 
+   enum CordFrame { ARM_FRAME_ABS=0, ARM_FRAME_REL=1, GRIPPER_FRAME_REL=2}; 
 
    class Pose{
    public:
