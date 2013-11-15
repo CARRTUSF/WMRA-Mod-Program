@@ -76,20 +76,17 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 
 bool MotorController::addLinearMotionSegment(vector<double> angles, vector<double> speeds)
 {	
-	if(controller.isSimulated())
-	{
-		if(angles.size() == 8)
-		{
+	if(controller.isSimulated()){
+		if(angles.size() == 8){
 			for(int i = 0; i < 8; i++)
 				curPosition[i] += angles[i];
 		}
-		else if(angles.size() == 7)
-		{
+		else if(angles.size() == 7){
 			for(int i = 0; i < 7; i++)
 				curPosition[i] += angles[i];
 		}			
-		cout << curPosition[0] << ", " << curPosition[1] << ", " << curPosition[2] << ", " << curPosition[3] << ", " << curPosition[4] << ", " << curPosition[5] <<  ", " << curPosition[6] <<  ", " << curPosition[7] << endl;
-		return 1;
+		//cout << curPosition[0] << ", " << curPosition[1] << ", " << curPosition[2] << ", " << curPosition[3] << ", " << curPosition[4] << ", " << curPosition[5] <<  ", " << curPosition[6] <<  ", " << curPosition[7] << endl;
+		return true;
 	}
 	if(angles.size() == 7 && speeds.size() == 7)
 	{ 
