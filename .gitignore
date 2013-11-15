@@ -1,3 +1,7 @@
+#WMRA log files
+*.csv
+*.log
+
 # Compiled Object files
 *.slo
 *.lo

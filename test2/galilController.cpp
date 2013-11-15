@@ -16,7 +16,7 @@ client_tcpsocket galilController::sock;
 
 galilController::galilController(){
 
-	debugFile.open("data/debug.txt");
+	debugFile.open("data/GalilDebug.log");
 	initialized = false;
 }
 

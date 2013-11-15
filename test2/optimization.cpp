@@ -109,8 +109,6 @@ Matrix Opt::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> 
 
 	Opt::weight_f << W(0,0) << "," << W(1,1) << "," << W(2,2) << "," << W(3,3) << "," << W(4,4) << "," << W(5,5) << "," << W(6,6) << endl;
 	
-	//	cout<<"dia is\n\n"<<dia<<"\n\n";
-	//	cout<<"Winv is\n\n"<<Winv<<"\n\n";
 
 	// Redefining the determinant based on the weight:
 

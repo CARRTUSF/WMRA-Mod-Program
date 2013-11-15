@@ -166,7 +166,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 			}
 			controller.addLinearMotionSegment(currJointAng, speeds);
 
-			if(controller.isDebug())
+			/*if(controller.isDebug())
 			{
 				for(int j = 0; j < delta.size(); j++)	cout << delta[j] ;
 				cout << endl;
@@ -176,9 +176,10 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 				for(int k = 1; k < currJointAng.size(); k++)
 					cout << ", " << speeds[k];
 				cout << endl;
-			}
+			}*/
 
-			prevPosTF = currPosTF;
+			//prevPosTF = currPosTF;
+         prevPosTF = kinematics(prevJointAng);
 		}
 
 		debugPos = controller.readPosAll();
