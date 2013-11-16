@@ -17,7 +17,7 @@ public:
 	KinematicOptimizer();
 	Matrix WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, double detJo, Matrix dq, vector<double> delta, double dt, vector<double> cur);
 	void WMRA_Jlimit(Matrix& qmin, Matrix& qmax);
-	Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q);
+	Matrix WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q, double dt);
 private:
 	Matrix dHo;
 	std::ofstream weight_f, manipulability;

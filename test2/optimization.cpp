@@ -34,12 +34,12 @@ KinematicOptimizer::KinematicOptimizer()
 
 void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
-	//double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-79*PI/180,-360*PI/180};
-   double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
+	double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-90*PI/180,-360*PI/180};
+   //double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
    //double qmintemp[7]= {-10*PI/180,-15*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-90*PI/180,-200*PI/180};
    
-   //double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,79*PI/180,360*PI/180};
-	double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
+   double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,90*PI/180,360*PI/180};
+	//double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
 	//double qmaxtemp[7] = {200*PI/180,120*PI/180,170*PI/180,170*PI/180,170*PI/180,90*PI/180,200*PI/180};
 	int i;
 	for (i=0; i < 7; i++){
@@ -49,7 +49,7 @@ void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 }
 
 
-Matrix KinematicOptimizer::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q){
+Matrix KinematicOptimizer::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q, double dt){
 
 	// Reading the Wheelchair's constant dimentions, all dimentions are converted in millimeters:
 	Matrix L(1,1);
@@ -161,6 +161,25 @@ Matrix KinematicOptimizer::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, 
 
 	//cout<<"dq is\n\n"<<dq<<"\n\n";
 
+   bool JLO = true;
+   if(JLO){
+      for (k=0; k<7; k++){
+         if (q[k] >= qmax(0,k) || q[k] <= qmin(0,k)){
+            dq(k,0)=0;
+         }
+      }
+      Matrix dqmax;
+      dqmax.Null(7,1);
+      for (k=0; k<7; k++){
+         dqmax(k,0)=0.5;
+      }
+      dqmax*=(dt); 
+      for (k=0; k<dq.RowNo(); k++){
+         if (abs(dq(k,0)) >= dqmax(k,0)){
+            dq(k,0)=sign(dq(k,0))*dqmax(k,0);
+         }
+      }
+   }
 	return dq;
 }
 
@@ -432,7 +451,7 @@ Matrix KinematicOptimizer::WMRA_Opt(int i, double JLA, double JLO, Matrix Jo, do
 		}
 
 		// A safety condition to slow the joint that exceeds the velocity limits in the WMRA:
-		Matrix dqmax(2,1);
+		Matrix dqmax;
 		if (WCA==3){
 			dqmax(0,0)=100;
 			dqmax(1,0)=0.15;
