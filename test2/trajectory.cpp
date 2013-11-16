@@ -25,7 +25,7 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 	int i,j,m;
    //deep copy Matrix
 	for ( int i=0 ; i < 3 ; i++ ) {
-		for ( j = 0 ; j < 3 ; j++ ) {
+		for ( int j = 0 ; j < 3 ; j++ ) {
 			Titemp(i,j)=Ti(i,j);
 			Tdtemp(i,j)=Td(i,j);
 		}
