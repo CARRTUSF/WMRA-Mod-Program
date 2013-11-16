@@ -15,12 +15,17 @@ public:
 	bool setDefaults();
 	bool moveArm(vector<double> destinationAng);
 	bool milestoneDelta(vector<double> destinationAng, double dt);
-	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME);
+	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME_REL);
+   bool autonomous2(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME_REL);
+   bool openGripper();
+   bool closeGripper();
 	void closeDebug();
 	bool toReady();
+   WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
 
 private:
+   bool autonomousMove(Matrix start, Matrix dest);
 	double dt;	// the default time between milestones
 	double dt_mod;	// the default time between milestones
 	int control_type; // WMRA Control type; 0 = Simulation, 1 = Wheelchair Only, 2 = Arm Only, 3 = Both Arm and Wheelchair. [Prev=WCA]
@@ -30,7 +35,8 @@ private:
 	int control_JLA; //                    ; 1 = JLA applied, 0 = JLA not applied
 	int control_JLO; // WMRA Joint Limit Obstacle Avoidence; 1 = JLO applied, 0 = JLO not applied
 	int control_cont; // WMRA Control method; 1 = Position, 2 = Velocity, 3 = Spaceball
-	int control_velocity; // WMRA Desired Gripper Velocity; default=50
+	double control_velocity; // WMRA Desired Gripper Velocity; default=50
+   double maxAngularVelocity;
 	int control_traj; // WMRA Control Trajectory type; 1 = Polynomial with Blending
 	int vr, ml; // Debug: Not sure what these are for, something to do with animations default: vr=0, ml=0
 	int control_arm; // Arm(run) the WMRA; 1 = Armed, 0 = Disarmed
@@ -42,6 +48,7 @@ private:
 	std::ofstream xyz_way; // Waypoint XYZ values
 	std::ofstream xyz_sent; // command XYZ values
 	std::ofstream xyz_cont; // command XYZ values
+   std::ofstream jointVel; // joint velocity values
 	bool initialized;
 	MotorController controller; 
 };
