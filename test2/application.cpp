@@ -82,7 +82,7 @@ int main()
 			cin >> temp;
          dest.yaw = degToRad(temp);
 			cout << endl;
-         cout << "cord frame : 1=ABS, 2=REl, 3=Gripper" ; 
+         cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper : " ; 
          cin >> cordframe;
          
 

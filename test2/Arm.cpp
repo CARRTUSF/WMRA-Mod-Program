@@ -174,25 +174,34 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
          }
 
          //**debug**//
-         /*  test_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
-         xyz_sent << test_T(0,3) << "," << test_T(1,3) << "," << test_T(2,3) << endl;*/
+         Matrix test_T = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+         xyz_sent << test_T(0,3) << "," << test_T(1,3) << "," << test_T(2,3) << endl;
          //*******//
 
          for(int k = 0; k < currJointAng.size(); k++){
             speeds[k] = abs(currJointAng[k])/dt_mod;
          }
+
+         jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
+            << speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
+
          controller.addLinearMotionSegment(currJointAng, speeds);
 
          //prevPosTF = currPosTF;
          prevPosTF = kinematics(prevJointAng);
       }
 
-     /* debugPos = controller.readPosAll();
-      debugPos_T = kinematics(debugPos);
-      xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;*/
+     
+      Matrix debugPos_T = kinematics(controller.readPosAll());
+      xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;
 
       controller.beginLI();
       controller.endLIseq();
+      for(int k = 0; k < (numWayPoints+10); k++){
+         debugPos_T = kinematics(controller.readPosAll());
+         xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;        
+         Sleep(1000* dt_mod);
+      }
 
       //if(controller.isDebug())
       //{
