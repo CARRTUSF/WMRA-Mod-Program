@@ -9,6 +9,13 @@
 
 using namespace std;
 
+double degToRad(double deg){
+   return deg *(PI/180);
+}
+double radToDeg(double rad){
+   return rad *(180/PI);
+}
+
 void dest(vector<double> &tgt, int val)
 {
 	vector<double> temp;

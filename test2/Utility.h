@@ -9,6 +9,8 @@
 
 using namespace std;
 
+double degToRad(double deg);
+double radToDeg(double rad);
 void dest(vector<double> &tgt, int val);
 int sign(double x);
 void WMRA_delta(vector<double> &tgt, Matrix Tid, Matrix Tdd);
