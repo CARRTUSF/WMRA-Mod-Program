@@ -323,9 +323,41 @@ Matrix rotationMatrix(double pitch, double roll, double yaw)
 Matrix pose2TfMat(WMRA::Pose dest){
 	Matrix temp(4,4);
 	temp.Unit(4);
-	temp = WMRA_rotz(dest.pitch)*WMRA_roty(dest.yaw)*WMRA_rotx(dest.roll);
+	temp = WMRA_rotz(dest.yaw)*WMRA_roty(dest.roll)*WMRA_rotx(dest.pitch);
 	temp(0,3) = dest.x;
 	temp(1,3) = dest.y;
 	temp(2,3) = dest.z;
 	return temp;
+}
+
+WMRA::Pose TransfomationToPose(Matrix T)
+{	
+
+   double x,y,z;
+   if(T(2,0) != 1 || T(2,0) != -1 ){
+      y = -asin(T(2,0));
+      x = atan2(T(2,1)/cos(y), T(2,2)/cos(y));
+      z = atan2(T(1,0)/cos(y), T(0,0)/cos(y));
+   }
+   else{
+      z = 0;
+      if(T(2,0) == 1 ){
+         y = -PI/2;
+         x= z + atan2(-1* T(0,1), -1*T(0,2));
+      }
+      else{ //T(2,0) == -1 
+         y = PI/2;
+         x= z + atan2(T(0,1), T(0,2));
+      }
+   }
+
+   WMRA::Pose pose;
+   pose.pitch = x;
+   pose.roll = y;
+   pose.yaw = z;
+   pose.x = T(0,3);
+   pose.y = T(1,3);
+   pose.z = T(2,3);
+   return pose;
+
 }

@@ -43,5 +43,6 @@ Matrix WMRA_WCD();
 Matrix WMRA_p2T(double x, double y, double a);
 Matrix rotationMatrix(double pitch, double roll, double yaw);
 Matrix pose2TfMat(WMRA::Pose dest);
+WMRA::Pose TransfomationToPose(Matrix T);
 
 #endif
