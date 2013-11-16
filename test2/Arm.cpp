@@ -371,7 +371,9 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr)
 
          for(int k = 0; k < currJointAng.size(); k++){
             speeds[k] = abs(currJointAng[k])/dt_mod;
+            jointVel <<speeds[k] ;
          }
+         jointVel << endl;
          controller.addLinearMotionSegment(currJointAng, speeds);
 
          //prevPosTF = currPosTF;
