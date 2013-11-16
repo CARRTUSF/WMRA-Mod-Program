@@ -133,14 +133,14 @@ bool MotorController::beginLI()
 {
 	//controller.command("LE"); // Linear End, for smooth stopping
 	controller.command("BGS"); // Begin Sequence
-	return 1;
+	return true;
 }
 
 bool MotorController::endLIseq()
 {
 	controller.command("LE"); // Linear End, for smooth stopping
 	//controller.command("BGS"); // Begin Sequence
-	return 1;
+	return true;
 }
 
 bool MotorController::isInitialized() // return initialized
