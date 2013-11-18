@@ -25,6 +25,17 @@ namespace WMRA{
 
    enum CordFrame { ARM_FRAME_ABS=0, ARM_FRAME_REL=1, GRIPPER_FRAME_REL=2}; 
 
+   struct KinematicData{
+      Matrix T01;
+      Matrix T12;
+      Matrix T23;
+      Matrix T34;
+      Matrix T45;
+      Matrix T56;
+      Matrix T67;
+      Matrix Tfinal;
+   }
+
    class Pose{
    public:
       int x;
