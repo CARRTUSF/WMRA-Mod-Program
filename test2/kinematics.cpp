@@ -313,26 +313,24 @@ Matrix WMRA_p2T(double x, double y, double a){
 	return T;
 }
 
-Matrix rotationMatrix(double pitch, double roll, double yaw)
-{
-	Matrix temp_rotation(4,4);
-	temp_rotation = WMRA_rotz(pitch)*WMRA_roty(yaw)*WMRA_rotx(roll);
-	return temp_rotation;
-}
+//Matrix rotationMatrix(double pitch, double roll, double yaw)
+//{
+//	Matrix temp_rotation(4,4);
+//	temp_rotation = WMRA_rotz(yaw)*WMRA_roty(pitch)*WMRA_rotx(roll);
+//	return temp_rotation;
+//}
 
 Matrix pose2TfMat(WMRA::Pose dest){
 	Matrix temp(4,4);
 	temp.Unit(4);
-	temp = WMRA_rotz(dest.yaw)*WMRA_roty(dest.roll)*WMRA_rotx(dest.pitch);
+	temp = WMRA_rotz(dest.yaw)*WMRA_roty(dest.pitch)*WMRA_rotx(dest.roll);
 	temp(0,3) = dest.x;
 	temp(1,3) = dest.y;
 	temp(2,3) = dest.z;
 	return temp;
 }
 
-WMRA::Pose TransfomationToPose(Matrix T)
-{	
-
+WMRA::Pose TransfomationToPose(Matrix T){
    double x,y,z;
    if(T(2,0) != 1 || T(2,0) != -1 ){
       y = -asin(T(2,0));
@@ -352,8 +350,8 @@ WMRA::Pose TransfomationToPose(Matrix T)
    }
 
    WMRA::Pose pose;
-   pose.pitch = x;
-   pose.roll = y;
+   pose.pitch = y;
+   pose.roll = x;
    pose.yaw = z;
    pose.x = T(0,3);
    pose.y = T(1,3);
