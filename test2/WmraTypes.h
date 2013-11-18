@@ -34,7 +34,7 @@ namespace WMRA{
       Matrix T56;
       Matrix T67;
       Matrix Tfinal;
-   }
+   };
 
    class Pose{
    public:
