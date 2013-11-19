@@ -19,18 +19,18 @@ Arm wmraArm;
 
 int main()
 {
-	WMRA::Pose dest;
-	int velocity;				// Max velocity of the gripper in movement
+   WMRA::Pose dest;
+   int velocity;				// Max velocity of the gripper in movement
 
-	bool endFlag = false;
-	int choice;
+   bool endFlag = false;
+   int choice;
 
-	if(wmraArm.initialize()){
-		//cout << "Controller intialized in main" << endl;
+   if(wmraArm.initialize()){
+      //cout << "Controller intialized in main" << endl;
       WMRA::Pose readyPose = wmraArm.getPose();
       int cordframe;
       double temp;
-		while(!endFlag){
+      while(!endFlag){
          cout << "Current Position is :" << endl;
 
          WMRA::Pose pose = wmraArm.getPose();
@@ -59,42 +59,42 @@ int main()
 
 
 
-         
 
-			cout << "\n\nSelect a destination" << endl;
-			cout << "dx = ";
-			cin >> dest.x;
-			cout << "dy = ";
-			cin >> dest.y;
-			cout << "dz = ";
-			cin >> dest.z;
-			cout << "Pitch = ";
-			cin >> temp;
+
+         cout << "\n\nSelect a destination" << endl;
+         cout << "dx = ";
+         cin >> dest.x;
+         cout << "dy = ";
+         cin >> dest.y;
+         cout << "dz = ";
+         cin >> dest.z;
+         cout << "Pitch = ";
+         cin >> temp;
          dest.pitch = degToRad(temp);;
-			cout << "Roll = ";
-			cin >> temp;
+         cout << "Roll = ";
+         cin >> temp;
          dest.roll = degToRad(temp);
-			cout << "Yaw = ";
-			cin >> temp;
+         cout << "Yaw = ";
+         cin >> temp;
          dest.yaw = degToRad(temp);
-			cout << endl;
+         cout << endl;
          cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper : " ; 
          cin >> cordframe;
-         
 
-			if(dest.yaw == 555)
-				wmraArm.toReady();
-			else if(dest.yaw == 777)
-				dest.yaw == dest.yaw;// No-Op, will loop through choices again
-			else if(dest.yaw == 999)
-			{
-				wmraArm.closeDebug();
-				endFlag = true; // Will break out of loop
-			}
+
+         if(dest.yaw == 555)
+            wmraArm.toReady();
+         else if(dest.yaw == 777)
+            dest.yaw == dest.yaw;// No-Op, will loop through choices again
+         else if(dest.yaw == 999)
+         {
+            wmraArm.closeDebug();
+            endFlag = true; // Will break out of loop
+         }
          else{
 
             if(cordframe== 1){
-            wmraArm.autonomous2(dest, WMRA::ARM_FRAME_ABS); // Moves arm
+               wmraArm.autonomous2(dest, WMRA::ARM_FRAME_ABS); // Moves arm
             }
             if(cordframe== 2){
                wmraArm.autonomous2(dest, WMRA::ARM_FRAME_REL); // Moves arm
@@ -114,11 +114,11 @@ int main()
          else if(option == 0){
             endFlag = false;
          }
-		}
+      }
 
-	}
-	else
-		cout << "Controller initalizaition failed in main" << endl;
-	
-	cout << "Ending Program" << endl;
+   }
+   else
+      cout << "Controller initalizaition failed in main" << endl;
+
+   cout << "Ending Program" << endl;
 }
