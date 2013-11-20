@@ -166,7 +166,7 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
 
          WMRA_delta(delta, prevPosTF , currPosTF);
 
-         jointAng_Mat = opt.WMRA_Opt(Joa, detJoa, delta, prevJointAng, dt_mod);
+         jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
 
          for(int j = 0; j < 7; j++){
             currJointAng[j] = jointAng_Mat(j,0);

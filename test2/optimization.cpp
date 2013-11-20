@@ -34,13 +34,13 @@ KinematicOptimizer::KinematicOptimizer()
 
 void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
-	double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-90*PI/180,-360*PI/180};
+	//double qmintemp[7]= {-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-360*PI/180,-90*PI/180,-360*PI/180};
    //double qmintemp[7]= {-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-79*PI/180,-200*PI/180};
-   //double qmintemp[7]= {-10*PI/180,-15*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-90*PI/180,-200*PI/180};
+   double qmintemp[7]= {-10*PI/180,-15*PI/180,-170*PI/180,-170*PI/180,-170*PI/180,-90*PI/180,-200*PI/180};
    
-   double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,90*PI/180,360*PI/180};
+   //double qmaxtemp[7] = {360*PI/180,360*PI/180,360*PI/180,360*PI/180,360*PI/180,90*PI/180,360*PI/180};
 	//double qmaxtemp[7] = {170*PI/180,170*PI/180,170*PI/180,170*PI/180,170*PI/180,79*PI/180,200*PI/180};
-	//double qmaxtemp[7] = {200*PI/180,120*PI/180,170*PI/180,170*PI/180,170*PI/180,90*PI/180,200*PI/180};
+	double qmaxtemp[7] = {200*PI/180,120*PI/180,170*PI/180,170*PI/180,170*PI/180,90*PI/180,200*PI/180};
 	int i;
 	for (i=0; i < 7; i++){
 		qmin(0,i) = qmintemp[i];
@@ -48,6 +48,163 @@ void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 	}
 }
 
+Matrix KinematicOptimizer::WMRA_Opt2(Matrix Jo, double detJo, vector<double> dx, vector<double> q_prev, double dt){
+
+	// Reading the Wheelchair's constant dimentions, all dimentions are converted in millimeters:
+	Matrix L(1,1);
+	L=WMRA_WCD();
+	Matrix qmin(1,7), qmax(1,7);
+   //this line????
+   WMRA_Jlimit(qmin, qmax); // #DEBUG - Joint Limits
+
+	double inf = std::numeric_limits<double>::infinity();
+	int WCA ;
+	Matrix pinvJo(7,7);
+	Matrix dH(7,1);
+	Matrix mul(1,1),  mul1(1,1), mul2(1,1);
+	Matrix W(7,7), dia(7,1), Winv(7,7);
+	double dof;
+
+
+
+   //**need to calculate current angle ***//
+
+   //Matrix Winv;
+   Winv.Unit(7);
+   Matrix Jotrans= ~Jo;
+   mul = Jo * Winv * Jotrans;
+   detJo= sqrt(mul.Det());
+
+   // Calculating the variable scale factor, sf:   
+ //  int wo=20000000;
+	//int ko=350000;
+   double wo = 5000000;
+   double ko = 30000;
+   double sf;
+	if (detJo<wo){
+		sf=ko*pow((1-detJo/wo),2);        // from eq. 9.79 page 268 of Nakamura's book.
+	}
+	else {
+		sf=0;
+	}
+
+   Matrix sfm;
+	sfm.Unit(dx.size());
+	sfm *= sf;
+	pinvJo= Winv * Jotrans * (!(mul +sfm));
+
+   Matrix temp_dx;
+	temp_dx.SetSize(6,1);
+   for(int i = 0; i < dx.size(); i++){
+		temp_dx(i,0) = dx[i];
+	}
+	Matrix dq = pinvJo * temp_dx;
+
+   // claculate current predicted angle
+   vector<double> q(7); //current angle
+   for(int i=0; i < 7; i++){
+      q[i] = q_prev[i] + dq(i,0); //current angle = prev angle + delta angle
+   }
+
+
+	// Creating the gradient of the optimization function to avoid joint limits:
+   //Matrix dH;
+	dH.Null(7,1);
+
+	// JLA
+	for (int j=0; j<7; j++){
+		dH(j,0)=-0.25*pow((qmax(0,j)-qmin(0,j)),2)*(2*q[j]-qmax(0,j)-qmin(0,j))/(pow((qmax(0,j)-q[j]),2)*pow((q[j]-qmin(0,j)),2));
+		// Re-defining the weight in case the joint is moving away from it's limit or the joint limit was exceeded:
+		if (abs(dH(j,0)) < abs(dHo(j,0)) && q[j] < qmax(0,j) && q[j] > qmin(0,j)){
+			dH(j,0)=0;
+		}
+		else if (abs(dH(j,0)) < abs(dHo(j,0)) && (q[j] >= qmax(0,j) || q[j] <= qmin(0,j))){
+			dH(j,0)=inf;
+		}
+		else if (abs(dH(j,0)) > abs(dHo(j,0)) && (q[j] >= qmax(0,j) || q[j] <= qmin(0,j))){
+			dH(j,0)=0;
+		}
+	}
+	//KinematicOptimizer::dHo = dH;
+	//cout<<"dHo is \n\n"<<dHo<<"\n\n";
+	// The case when arm-only control is required with no wheelchair motion:
+
+	W.Null(7,7);
+	Winv.Null(7,7);
+
+
+	// #DEBUG - Weights (DELETE this comment)
+	// The weight matrix to be used for the Weighted Least Norm Solution with Joint Limit Avoidance:
+	
+	for (int j=0; j < 7; j++){
+		for (int k=0; k < 7; k++){
+			if (j==k){
+				W(j,k) = 1 + abs(dH(j,0));
+				Winv(j,k) = 1 / W(j,k);	   // The inverse of the diagonal weight matrix:				
+			}
+		}
+	}
+
+	KinematicOptimizer::weight_f << W(0,0) << "," << W(1,1) << "," << W(2,2) << "," << W(3,3) << "," << W(4,4) << "," << W(5,5) << "," << W(6,6) << endl;
+	
+
+	// Redefining the determinant based on the weight:
+
+	Jotrans = ~Jo;
+	mul = Jo * Winv * Jotrans;
+	detJo = sqrt(mul.Det());
+	KinematicOptimizer::manipulability << detJo << endl;
+
+	dof=dx.size();
+	// SR-Inverse and Weighted Least Norm Optimization:
+	// Calculating the variable scale factor, sf:
+	if (detJo<wo){
+		sf=ko*pow((1-detJo/wo),2);        // from eq. 9.79 page 268 of Nakamura's book.
+	}
+	else {
+		sf=0;
+	}
+	//	cout<<"sf is\n\n"<<sf<<"\n\n";
+	// Calculating the SR-Inverse of the Jacobian:
+
+	sfm.Unit(dx.size());
+	sfm*=sf;
+	pinvJo= Winv * Jotrans * (!(mul +sfm));
+
+	// Calculating the joint angle change optimized based on the Weighted Least Norm Solution:
+	// Here, dq of the wheels are translated from radians to distances travelled after using the Jacobian.
+
+	dq = pinvJo * temp_dx;
+
+
+   bool JLO = true;
+   if(JLO){
+      for (int k=0; k<7; k++){
+         if (q[k] >= qmax(0,k) || q[k] <= qmin(0,k)){
+            dq(k,0)=0;
+         }
+      }
+      Matrix dqmax(7,1);
+      for (int k=0; k<7; k++){
+         dqmax(k,0)=0.9;
+      }
+      dqmax*=(dt); 
+      for (int k=0; k<dq.RowNo(); k++){
+         if (abs(dq(k,0)) >= dqmax(k,0)){
+            dq(k,0)=sign(dq(k,0))*dqmax(k,0);
+         }
+      }
+   }
+
+   /** update DHo for next iteration with adjusted joint angles **/
+   for(int i=0; i < 7; i++){
+      q[i] = q_prev[i] + dq(i,0); //current angle = prev angle + delta angle
+      dH(i,0)=-0.25*pow((qmax(0,i)-qmin(0,i)),2)*(2*q[i]-qmax(0,i)-qmin(0,i))/(pow((qmax(0,i)-q[i]),2)*pow((q[i]-qmin(0,i)),2));
+   }   
+   KinematicOptimizer::dHo = dH;
+
+	return dq;
+}
 
 Matrix KinematicOptimizer::WMRA_Opt(Matrix Jo, double detJo, vector<double> dx, vector<double> q, double dt){
 
