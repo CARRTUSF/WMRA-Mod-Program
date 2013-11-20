@@ -13,6 +13,10 @@ Function Declaration:*/
 #include "matrix.h"  
 #include "Utility.h"
 #include "trajectory.h"
+
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
+
 using namespace std;
 using namespace math;
 
@@ -49,7 +53,7 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 		ky=0;
 		kz=0;
 	}
-	else if (a<PI/2+0.001){
+	else if (a < (M_PI/2) + 0.001){  //#debug is there a bug when a = PI/2?
 		kx=(R(2,1)-R(1,2))/(2*s);
 		ky=(R(0,2)-R(2,0))/(2*s);
 		kz=(R(1,0)-R(0,1))/(2*s);
@@ -163,7 +167,7 @@ vector<Matrix> WMRA_traj(int ind, Matrix Ti, Matrix Td, int numWayPoints){
 	/*//Rotational Trajectory:
 	// Single-angle Change:
 	
-	da=2*PI/(n-1);
+	da=2*M_PI/(n-1);
 	kx=1; 
 	ky=0;
 	kz=0;
@@ -300,8 +304,11 @@ Matrix WMRA_Linear(double qi, double qf, double n){
 
 	double *qttemp;
 	qttemp = new double[n];
-	for (i=1; i<n+1; i++){
-		qttemp[i-1]=qi+dq*(i-1);
+	//for (i=1; i<n+1; i++){
+	//	qttemp[i-1]=qi+dq*(i-1);
+	//}
+   for (i=0; i<n; i++){
+		qttemp[i]=qi+dq*(i);
 	}
 
 	qt.SetSize(n,1);

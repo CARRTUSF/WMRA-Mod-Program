@@ -14,6 +14,8 @@ Function Declaration:*/
 #include "kinematics.h"
 #include <vector>
 #include <time.h>
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
 
 #define PI 3.14159265
 
@@ -130,22 +132,22 @@ Matrix WMRA_DH(vector<double> q){
 
 	// Dimentions based on the actual physical arm:
 	float DHtemp[7][4]={
-		{-PI/2, 0,	120.4 /*102*/,	 q[0]},
-		{ PI/2, 0,	134.25 /*133*/,	 q[1]},  
-		{-PI/2, 0,  503.345 /*502*/,	 q[2]},
-		{ PI/2, 0,  133.2 /*135*/,		 q[3]},
-		{-PI/2, 0,  386.658 /*375+24*/,	 q[4]},
-		{ PI/2, 0,  -23.5,		 q[5]},
-		{-PI/2, 0,  172.5+205 /*360*//*161+70 *//*143*/, q[6]}};
+		{-M_PI/2, 0,	120.4 /*102*/,	 q[0]},
+		{ M_PI/2, 0,	134.25 /*133*/,	 q[1]},  
+		{-M_PI/2, 0,  503.345 /*502*/,	 q[2]},
+		{ M_PI/2, 0,  133.2 /*135*/,		 q[3]},
+		{-M_PI/2, 0,  386.658 /*375+24*/,	 q[4]},
+		{ M_PI/2, 0,  -23.5,		 q[5]},
+		{-M_PI/2, 0,  172.5+205 /*360*//*161+70 *//*143*/, q[6]}};
 
 		// Dimentions based on the Virtual Reality arm model:
-		/*  double DH[7][4]={{-PI/2, 0, 109.72, q(0,0)},
-		{ PI/2, 0, 118.66, q(1,0)},  
-		{-PI/2, 0, 499.67, q(2,0)},
-		{ PI/2, 0, 121.78, q(3,0)},
-		{-PI/2, 0, 235.67, q(4,0)},
-		{ PI/2, 0,   0,    q(5,0)},
-		{-PI/2, 0, 276.68, q(6,0)}};
+		/*  double DH[7][4]={{-M_PI/2, 0, 109.72, q(0,0)},
+		{ M_PI/2, 0, 118.66, q(1,0)},  
+		{-M_PI/2, 0, 499.67, q(2,0)},
+		{ M_PI/2, 0, 121.78, q(3,0)},
+		{-M_PI/2, 0, 235.67, q(4,0)},
+		{ M_PI/2, 0,   0,    q(5,0)},
+		{-M_PI/2, 0, 276.68, q(6,0)}};
 		*/
 		int i,j;
 		for (j=0; j < 4; j++){
@@ -261,10 +263,10 @@ Matrix WMRA_w2T(int ind, Matrix Tp, Matrix q){
 		Tgw.Unit(4);
 		Tgw(0,0)= cos(po+p);
 		Tgw(0,1)= -sin(po+p);
-		Tgw(0,3)= Tp(0,3)+sin(PI/2+po+p/2)*(r+L(0,0)/2)*sin(p)/cos(p/2);
+		Tgw(0,3)= Tp(0,3)+sin(M_PI/2+po+p/2)*(r+L(0,0)/2)*sin(p)/cos(p/2);
 		Tgw(1,0)= sin(po+p);
 		Tgw(1,1)= cos(po+p);
-		Tgw(1,3)= Tp(1,3)-cos(PI/2+po+p/2)*(r+L(0,0)/2)*sin(p)/cos(p/2);
+		Tgw(1,3)= Tp(1,3)-cos(M_PI/2+po+p/2)*(r+L(0,0)/2)*sin(p)/cos(p/2);
 		Tgw(2,3)= Tp(2,3);
 
 		T= Tgw * Twa;
@@ -334,17 +336,18 @@ WMRA::Pose TransfomationToPose(Matrix T){
    double x,y,z;
    if(T(2,0) != 1 || T(2,0) != -1 ){
       y = -asin(T(2,0));
+      //y = atan2( -1*T(2,0), sqrt( pow(T(0,0),2) + pow(T(1,0),2) ));
       x = atan2(T(2,1)/cos(y), T(2,2)/cos(y));
       z = atan2(T(1,0)/cos(y), T(0,0)/cos(y));
    }
    else{
       z = 0;
       if(T(2,0) == 1 ){
-         y = -PI/2;
+         y = -M_PI/2;
          x= z + atan2(-1* T(0,1), -1*T(0,2));
       }
       else{ //T(2,0) == -1 
-         y = PI/2;
+         y = M_PI/2;
          x= z + atan2(T(0,1), T(0,2));
       }
    }

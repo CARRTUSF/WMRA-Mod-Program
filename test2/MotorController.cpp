@@ -5,17 +5,18 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+
 #include "ConfigReader.h"
 #include "stringUtility.h"
 #include "MotorController.h"
-
 using namespace std;
 
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
 #define PI 3.14159265
 
 MotorController::MotorController()
 {
-	long int sum;
 	initialized = false;
 	motorLookup[0] = "A";
 	motorLookup[1] = "B";
@@ -560,7 +561,7 @@ bool MotorController::setDefaults()
 	reader.parseFile("settings_controller.conf");
 	reader.setSection("MOTOR_CONTROLLER_DEFAULTS");
 	if(reader.keyPresent("encoderPerRevolution1")){			
-		enc2Radian[0] = 2*PI/reader.getInt("encoderPerRevolution1"); //calculate conversion values
+		enc2Radian[0] = 2*M_PI/reader.getInt("encoderPerRevolution1"); //calculate conversion values
 		radian2Enc[0] = 1/enc2Radian[0];
 	}
 	else{
@@ -568,7 +569,7 @@ bool MotorController::setDefaults()
 		return 0;
 	}
 	if(reader.keyPresent("encoderPerRevolution2")){
-		enc2Radian[1] = 2*PI/reader.getInt("encoderPerRevolution2"); //calculate conversion values
+		enc2Radian[1] = 2*M_PI/reader.getInt("encoderPerRevolution2"); //calculate conversion values
 		radian2Enc[1] = 1/enc2Radian[1];
 	}
 	else{
@@ -577,7 +578,7 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution3"))
 	{
-		enc2Radian[2] = 2*PI/reader.getInt("encoderPerRevolution3"); //calculate conversion values
+		enc2Radian[2] = 2*M_PI/reader.getInt("encoderPerRevolution3"); //calculate conversion values
 		radian2Enc[2] = 1/enc2Radian[2];
 	}
 	else
@@ -587,7 +588,7 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution4"))
 	{
-		enc2Radian[3] = 2*PI/reader.getInt("encoderPerRevolution4"); //calculate conversion values
+		enc2Radian[3] = 2*M_PI/reader.getInt("encoderPerRevolution4"); //calculate conversion values
 		radian2Enc[3] = 1/enc2Radian[3];
 	}
 	else
@@ -597,7 +598,7 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution5"))
 	{
-		enc2Radian[4] = 2*PI/reader.getInt("encoderPerRevolution5"); //calculate conversion values
+		enc2Radian[4] = 2*M_PI/reader.getInt("encoderPerRevolution5"); //calculate conversion values
 		radian2Enc[4] = 1/enc2Radian[4];
 	}
 	else
@@ -608,7 +609,7 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution6"))
 	{
-		enc2Radian[5] = -2*PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
+		enc2Radian[5] = -2*M_PI/reader.getInt("encoderPerRevolution6"); //calculate conversion values
 		radian2Enc[5] = 1/enc2Radian[5];
 	}
 	else
@@ -619,7 +620,7 @@ bool MotorController::setDefaults()
 
 	if(reader.keyPresent("encoderPerRevolution7"))
 	{
-		enc2Radian[6] = 2*PI/reader.getInt("encoderPerRevolution7"); //calculate conversion values
+		enc2Radian[6] = 2*M_PI/reader.getInt("encoderPerRevolution7"); //calculate conversion values
 		radian2Enc[6] = 1/enc2Radian[6];
 	}
 	else
@@ -629,7 +630,7 @@ bool MotorController::setDefaults()
 	}
 	if(reader.keyPresent("encoderPerRevolution8")) //#Debug: encoderPerRevolution8 value is incorrect
 	{
-		enc2Radian[7] = 2*PI/reader.getInt("encoderPerRevolution8"); //calculate conversion values
+		enc2Radian[7] = 2*M_PI/reader.getInt("encoderPerRevolution8"); //calculate conversion values
 		radian2Enc[7] = 1/enc2Radian[7];
 	}
 	else

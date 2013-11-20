@@ -1,19 +1,23 @@
 
+
 #include <vector>
 #include <stdio.h>
 #include <iostream>
 #include "matrix.h" 
 #include "Utility.h"
 
-#define PI 3.14159265
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
+
+//#define PI 3.14159265
 
 using namespace std;
 
 double degToRad(double deg){
-   return deg *(PI/180);
+   return deg *(M_PI/180);
 }
 double radToDeg(double rad){
-   return rad *(180/PI);
+   return rad *(180/M_PI);
 }
 
 void dest(vector<double> &tgt, int val)
@@ -23,12 +27,12 @@ void dest(vector<double> &tgt, int val)
 
 	if(val == 1)
 	{
-		temp[0] = (PI/2)+0.1;
-		temp[1] = (PI/2);//-0.5;
+		temp[0] = (M_PI/2)+0.1;
+		temp[1] = (M_PI/2);//-0.5;
 		temp[2] = 0;//-(0.5);
-		temp[3] = (PI/2);//-0.5;
-		temp[4] = (PI/2);//+0.7;
-		temp[5] = -(PI/2);//-0.4;
+		temp[3] = (M_PI/2);//-0.5;
+		temp[4] = (M_PI/2);//+0.7;
+		temp[5] = -(M_PI/2);//-0.4;
 		temp[6] = 0;//.6;
 		temp[7] = 0;
 		temp[8] = 0;
@@ -36,12 +40,12 @@ void dest(vector<double> &tgt, int val)
 	}
 	else if(val == 2)
 	{
-		temp[0] = (PI/2);
-		temp[1] = (PI/2);
+		temp[0] = (M_PI/2);
+		temp[1] = (M_PI/2);
 		temp[2] = 0;
-		temp[3] = (PI/2);
-		temp[4] = (PI/2);
-		temp[5] = -(PI/2);
+		temp[3] = (M_PI/2);
+		temp[4] = (M_PI/2);
+		temp[5] = -(M_PI/2);
 		temp[6] = 0;
 		temp[7] = 0;
 		temp[8] = 0;
