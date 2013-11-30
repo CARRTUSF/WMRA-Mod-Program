@@ -16,6 +16,8 @@
 #include "jacobian.h"
 #include "Utility.h"
 #include "ConfigReader.h"
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
 
 using namespace std;
 using namespace math;
@@ -25,6 +27,14 @@ Arm::Arm(){
    xyz_sent.open("data/XYZ-sent.csv");
    xyz_cont.open("data/XYZ-cont.csv");
    jointVel.open("data/jointVel.csv");
+   //Initialize the gripper orientation wrt to arm base frame
+   gripperInitRotDiff.SetSize(4,4);
+   gripperInitRotDiff.Null();
+   gripperInitRotDiff(1,0) = -1;
+   gripperInitRotDiff(2,1) = -1;
+   gripperInitRotDiff(0,2) = 1;
+   gripperInitRotDiff(3,3) = 1;
+
 }
 
 bool Arm::openGripper(){
@@ -84,6 +94,17 @@ bool Arm::autonomous2(WMRA::Pose dest, WMRA::CordFrame cordFr){
    Matrix destLoc_T(4,4);
    if(cordFr == WMRA::ARM_FRAME_ABS){
       destLoc_T = pose2TfMat(dest);
+   }
+   else if( cordFr == WMRA::ARM_FRAME_MAPPED){
+      //destLoc_T = pose2TfMat(dest);
+      Matrix temp = pose2TfMat(dest); // convert to rot matrix
+      /* compensate for the gripper orintation difference compared to arm origin */
+      destLoc_T =  temp * gripperInitRotDiff;  
+      cout << destLoc_T << endl;
+      /* set x, y, z values of the matrix*/
+      destLoc_T(0,3) = dest.x;
+      destLoc_T(1,3) = dest.y;
+      destLoc_T(2,3) = dest.z;      
    }
    else if( cordFr == WMRA::ARM_FRAME_REL){
       destLoc_T = startLoc_T * WMRA_rotz(dest.yaw)*WMRA_roty(dest.pitch)*WMRA_rotx(dest.roll);;
@@ -572,7 +593,9 @@ void Arm::closeDebug(){
 
 bool Arm::toReady()
 {
-   vector<double> readyAng;
+   double angles[7] = {M_PI/2, M_PI/2,0, M_PI/2,M_PI/2,M_PI/3,0};
+   vector<double> readyAng(angles,angles+6);
+   
    vector<double> speeds;
    readyAng.push_back(1.570796327-controller.readPos(0));
    readyAng.push_back(1.570796327-controller.readPos(1));

@@ -43,6 +43,7 @@ private:
 	int control_ini; // Does the arm need to move from park to ready position; 0=no, 1=yes
 	int plt; // Debug: Not sure what this veriable is for, something to do with simulation results; 1 = no results
 
+   Matrix gripperInitRotDiff;
 	WMRA::JointValueSet readyPosition; //joint angles for ready position
 
 	std::ofstream xyz_way; // Waypoint XYZ values
