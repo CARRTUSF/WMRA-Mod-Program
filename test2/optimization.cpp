@@ -81,8 +81,8 @@ Matrix KinematicOptimizer::WMRA_Opt2(Matrix Jo, double detJo, vector<double> dx,
    // Calculating the variable scale factor, sf:   
  //  int wo=20000000;
 	//int ko=350000;
-   double wo = 5000000;
-   double ko = 30000;
+   double wo = 20000000;
+   double ko = 350000;
    double sf;
 	if (detJo<wo){
 		sf=ko*pow((1-detJo/wo),2);        // from eq. 9.79 page 268 of Nakamura's book.
@@ -95,6 +95,7 @@ Matrix KinematicOptimizer::WMRA_Opt2(Matrix Jo, double detJo, vector<double> dx,
 	sfm.Unit(dx.size());
 	sfm *= sf;
 	pinvJo= Winv * Jotrans * (!(mul +sfm));
+   //pinvJo = Winv * Jotrans * (!mul);  //#debug try this
 
    Matrix temp_dx;
 	temp_dx.SetSize(6,1);

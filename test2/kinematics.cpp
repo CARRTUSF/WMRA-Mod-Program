@@ -326,6 +326,7 @@ Matrix pose2TfMat(WMRA::Pose dest){
 	Matrix temp(4,4);
 	temp.Unit(4);
 	temp = WMRA_rotz(dest.yaw)*WMRA_roty(dest.pitch)*WMRA_rotx(dest.roll);
+   //temp = WMRA_rotx(dest.roll)  *WMRA_roty(dest.pitch)* WMRA_rotz(dest.yaw);
 	temp(0,3) = dest.x;
 	temp(1,3) = dest.y;
 	temp(2,3) = dest.z;
