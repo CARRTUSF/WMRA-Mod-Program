@@ -8,7 +8,7 @@
 #include "MotorController.h"
 #include "Arm.h"
 #include "Utility.h"
-//#include "autonomous.h"
+
 
 #define PI 3.14159265
 
@@ -70,7 +70,12 @@ int main()
             cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper 7=skip: " ; 
             cin >> cordframe; 
             if(cordframe== 1){
-               wmraArm.autonomous2(dest, WMRA::ARM_FRAME_ABS); // Moves arm
+               try{
+                  wmraArm.autonomous2(dest, WMRA::ARM_FRAME_MAPPED); // Moves arm
+               }
+               catch(...){
+                  cout << "haha" << endl;
+               }
             }
             else if(cordframe== 2){
                wmraArm.autonomous2(dest, WMRA::ARM_FRAME_REL); // Moves arm
