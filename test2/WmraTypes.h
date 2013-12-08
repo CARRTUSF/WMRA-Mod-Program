@@ -23,7 +23,7 @@ typedef matrix Matrix;
 
 namespace WMRA{
 
-   enum CordFrame { ARM_FRAME_ABS=0, ARM_FRAME_REL=1, GRIPPER_FRAME_REL=2, ARM_FRAME_MAPPED=3}; 
+   enum CordFrame { ARM_FRAME_ABS=0, ARM_FRAME_REL=1, GRIPPER_FRAME_REL=2, ARM_FRAME_PILOT_MODE=3}; 
 
    struct KinematicData{
       Matrix T01;

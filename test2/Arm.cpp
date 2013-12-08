@@ -95,7 +95,7 @@ bool Arm::autonomous2(WMRA::Pose dest, WMRA::CordFrame cordFr){
    if(cordFr == WMRA::ARM_FRAME_ABS){
       destLoc_T = pose2TfMat(dest);
    }
-   else if( cordFr == WMRA::ARM_FRAME_MAPPED){
+   else if( cordFr == WMRA::ARM_FRAME_PILOT_MODE){
       //destLoc_T = pose2TfMat(dest);
       Matrix temp = pose2TfMat(dest); // convert to rot matrix
       /* compensate for the gripper orintation difference compared to arm origin */
@@ -206,7 +206,9 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
          jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
             << speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
 
+         if(i == 1)controller.beginLI();
          controller.addLinearMotionSegment(currJointAng, speeds);
+         controller.endLIseq();
 
          //prevPosTF = currPosTF;
          prevPosTF = kinematics(prevJointAng);

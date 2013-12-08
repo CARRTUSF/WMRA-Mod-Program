@@ -71,7 +71,7 @@ int main()
             cin >> cordframe; 
             if(cordframe== 1){
                try{
-                  wmraArm.autonomous2(dest, WMRA::ARM_FRAME_MAPPED); // Moves arm
+                  wmraArm.autonomous2(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
                }
                catch(...){
                   cout << "haha" << endl;
