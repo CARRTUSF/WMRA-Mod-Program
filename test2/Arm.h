@@ -21,6 +21,8 @@ public:
    bool closeGripper();
 	void closeDebug();
 	bool toReady();
+	bool ready2Park();
+	bool park2Ready();
    WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
 
