@@ -71,29 +71,10 @@ WMRA::Pose Arm::getPose(){
    vector<double> jointAngles = controller.readPosAll();
    Matrix pos = kinematics(jointAngles);
    //in pilot mode
-   Matrix tempPose(3,3);
-   for(int i =0; i < 3 ; i++){
-      for(int j=0; j < 3; j++){
-         tempPose(i,j) = pos(i,j);   
-      }
-   }
-   cout << tempPose <<endl;
-   cout << "gripper rot diff" << endl;
-   cout << gripperInitRotDiff <<endl;
-   cout <<" gripper inv  " << endl;
-   cout << !gripperInitRotDiff << endl;
-   Matrix pilotPose = pos  * (!gripperInitRotDiff);
-   Matrix pilotTransform;
-   pilotTransform.Unit(4);
-   for(int i =0; i < 3 ; i++){ //copy rotation matrix
-      for(int j=0; j < 3; j++){
-         pilotTransform(i,j) = pilotPose(i,j);   
-      }
-   }
-   for(int i =0; i < 3 ; i++){ // copy translation from original
+   Matrix pilotTransform = pos  * (!gripperInitRotDiff); //calculated rotation part  
+   for(int i =0; i < 4 ; i++){ // copy translation from original
       pilotTransform(i,3) = pos(i,3); 
    }
-
    WMRA::Pose pose = TransfomationToPose(pilotTransform);
    return pose;
 }
