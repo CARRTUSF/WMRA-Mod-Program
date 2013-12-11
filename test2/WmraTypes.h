@@ -47,6 +47,10 @@ namespace WMRA{
       Pose(int _x =0, int _y =0, int _z=0, double _yaw=0, double _pitch=0, double _roll=0){
          x = _x; y = _y; z = _z; pitch = _pitch; yaw = _yaw ; roll = _roll;
       }
+      bool clear(){
+         x = 0; y =0; z=0; yaw=0; pitch=0; roll=0;
+         return true;
+      }
    };
 
    struct WheelChairPose{
