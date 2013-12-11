@@ -69,7 +69,7 @@ int main()
 	  cup.z = 450;
 	  cup.pitch = 0;
 	  cup.roll = 0;
-	  cup.yaw = -10;
+	  cup.yaw = degToRad(-10);
 
 
 	  cout << "go to park? 1=yes, 0=no" << endl;
@@ -86,9 +86,9 @@ int main()
 		  wmraArm.park2Ready();
 		  wmraArm.openGripper();
 		  wmraArm.autonomous2(cupInfront, WMRA::ARM_FRAME_PILOT_MODE);
-		  Sleep(8000);
+		  Sleep(6000);
 		  wmraArm.autonomous2(cup, WMRA::ARM_FRAME_PILOT_MODE);
-		  Sleep(4000);
+		  Sleep(3000);
 		  wmraArm.closeGripper();
 		  wmraArm.autonomous2(cupInfront, WMRA::ARM_FRAME_PILOT_MODE);
 		  Sleep(4000);
@@ -109,7 +109,8 @@ int main()
       cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
       cin >> option;
       if(option ==1){
-         wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_ABS);
+		  //wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_ABS);
+		  wmraArm.toReady();
          Sleep(10000);
       }
      

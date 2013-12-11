@@ -72,6 +72,8 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 	}
 	else
 		return 0;
+
+	controller.command("PT*=1");
 	return 1;
 }
 

@@ -38,15 +38,17 @@ Arm::Arm(){
 }
 
 bool Arm::openGripper(){
-	double pos = controller.readPos(7) + 2.0;
+	double pos = controller.readPos(7) - 3.0;
 	controller.positionControl(7,pos);
+	cout << "Opening Gripper" << endl; 
 	Sleep(3000);
    return true;
 }
 
 bool Arm::closeGripper(){
-	double pos = controller.readPos(7) - 2.0;
+	double pos = controller.readPos(7) + 3.0;
 	controller.positionControl(7,pos);
+	cout << "Closing Gripper" << endl;
 	Sleep(3000);
    return true;
 }
@@ -607,7 +609,7 @@ void Arm::closeDebug(){
 bool Arm::toReady()
 {
    double angles[7] = {M_PI/2, M_PI/2,0, M_PI/2,M_PI/2,M_PI/3,0};
-   vector<double> readyAng(angles,angles+6);
+   vector<double> readyAng; //(angles,angles+6);
    
    vector<double> speeds;
    readyAng.push_back(1.570796327-controller.readPos(0));
@@ -632,20 +634,24 @@ bool Arm::toReady()
 
 bool Arm::ready2Park()
 {
-	controller.positionControl(4, 3.14); //joint 4 moved down, parallel with link 3
-	Sleep(10000);
-	controller.positionControl(1, 0.0); //joint 1 moved back from ready by 90 degrees.
-	Sleep(10000);
+	controller.setMaxVelocity(0,1.3);
+	controller.setMaxVelocity(3,0.3);
+	controller.positionControl(3, degToRad(180)); //joint 4 moved down, parallel with link 3
+	Sleep(5000);
+	controller.positionControl(0, 0.0); //joint 1 moved back from ready by 90 degrees.
+	Sleep(20000);
 
 	return 1;
 }
 
 bool Arm::park2Ready()
 {
-	controller.positionControl(4, 1.57); //joint 4 moved down, parallel with link 3
-	Sleep(10000);
-	controller.positionControl(1, 1.57); //joint 1 moved back from ready by 90 degrees.
-	Sleep(10000);
+	controller.setMaxVelocity(0,1.3);
+	controller.setMaxVelocity(3,0.3);
+	controller.positionControl(0, degToRad(90)); //joint 4 moved down, parallel with link 3
+	Sleep(20000);
+	controller.positionControl(3, degToRad(90)); //joint 1 moved back from ready by 90 degrees.
+	Sleep(5000);
 
 	return 1;
 }
