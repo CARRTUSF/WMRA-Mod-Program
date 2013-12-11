@@ -38,10 +38,16 @@ Arm::Arm(){
 }
 
 bool Arm::openGripper(){
+   double position = controller.readPos(7) + 10;
+   controller.positionControl(7,position);
+   Sleep(5000);
    return true;
 }
 
 bool Arm::closeGripper(){
+   double position = controller.readPos(7) - 10;
+   controller.positionControl(7,position);
+   Sleep(5000);
    return true;
 }
 
@@ -120,6 +126,7 @@ bool Arm::autonomous2(WMRA::Pose dest, WMRA::CordFrame cordFr){
    }
    else if (cordFr == WMRA::GRIPPER_FRAME_REL){
       destLoc_T = startLoc_T * pose2TfMat(dest);
+
    }
    else{ // if an invalid cord frame is given, move in arm base absolute
       destLoc_T = pose2TfMat(dest);
