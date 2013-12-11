@@ -149,7 +149,7 @@ int main()
          cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
          cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
 
-         cout << "Select an option (0 = Exit  1 = Continue 2 = Go to Ready) : "; 
+         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready) : "; 
          cin >> option;
 
          if(option == 1){
@@ -180,6 +180,12 @@ int main()
             wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
             Sleep(10000);
          }
+		 else if(option == 3){
+			 wmraArm.ready2Park();
+		 }
+		 else if(option == 4){
+			 wmraArm.park2Ready();
+		 }
          else if(option == 0){
             wmraArm.closeDebug();
             endFlag = true;

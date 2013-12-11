@@ -38,16 +38,28 @@ Arm::Arm(){
 }
 
 bool Arm::openGripper(){
+<<<<<<< HEAD
    double position = controller.readPos(7) + 10;
    controller.positionControl(7,position);
    Sleep(5000);
+=======
+	double pos = controller.readPos(7) + 2.0;
+	controller.positionControl(7,pos);
+	Sleep(3000);
+>>>>>>> b8e6e86a702fb4f9486ce90b57ec2c45a1a7f318
    return true;
 }
 
 bool Arm::closeGripper(){
+<<<<<<< HEAD
    double position = controller.readPos(7) - 10;
    controller.positionControl(7,position);
    Sleep(5000);
+=======
+	double pos = controller.readPos(7) - 2.0;
+	controller.positionControl(7,pos);
+	Sleep(3000);
+>>>>>>> b8e6e86a702fb4f9486ce90b57ec2c45a1a7f318
    return true;
 }
 
