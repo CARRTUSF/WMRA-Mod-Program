@@ -633,9 +633,9 @@ bool Arm::toReady()
 
 bool Arm::ready2Park()
 {
-	controller.positionControl(4, 3.14); //joint 4 moved down, parallel with link 3
+	controller.positionControl(3, degToRad(180)); //joint 4 moved down, parallel with link 3
 	Sleep(10000);
-	controller.positionControl(1, 0.0); //joint 1 moved back from ready by 90 degrees.
+	controller.positionControl(0, 0.0); //joint 1 moved back from ready by 90 degrees.
 	Sleep(10000);
 
 	return 1;
@@ -643,9 +643,9 @@ bool Arm::ready2Park()
 
 bool Arm::park2Ready()
 {
-	controller.positionControl(4, 1.57); //joint 4 moved down, parallel with link 3
+	controller.positionControl(0, degToRad(90)); //joint 4 moved down, parallel with link 3
 	Sleep(10000);
-	controller.positionControl(1, 1.57); //joint 1 moved back from ready by 90 degrees.
+	controller.positionControl(3, degToRad(90)); //joint 1 moved back from ready by 90 degrees.
 	Sleep(10000);
 
 	return 1;
