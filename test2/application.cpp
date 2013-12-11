@@ -90,7 +90,7 @@ int main()
             Sleep(10000); // wait for motion end
          }
          else if(option == 2){
-            wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_ABS);
+            wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
             Sleep(10000);
          }
 		 else if(option == 3){

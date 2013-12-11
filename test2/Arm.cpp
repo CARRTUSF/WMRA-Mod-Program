@@ -38,10 +38,16 @@ Arm::Arm(){
 }
 
 bool Arm::openGripper(){
+	double pos = controller.readPos(7) + 2.0;
+	controller.positionControl(7,pos);
+	Sleep(3000);
    return true;
 }
 
 bool Arm::closeGripper(){
+	double pos = controller.readPos(7) - 2.0;
+	controller.positionControl(7,pos);
+	Sleep(3000);
    return true;
 }
 
