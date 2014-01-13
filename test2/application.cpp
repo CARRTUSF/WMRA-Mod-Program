@@ -141,7 +141,7 @@ int main()
       double temp;
       int option;
 
-      BCI_motion();
+      //BCI_motion();
 
       while(!endFlag){
          cout << "Current Position is :" << endl;
