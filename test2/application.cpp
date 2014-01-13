@@ -128,6 +128,54 @@ void BCI_motion(){
    }
 }
 
+void continuousSquare(WMRA::Pose curPos)
+{
+	//Request to begin test
+	
+	int length;
+	cout << "Length? " << endl;
+	cin >> length;
+
+	int loopCount;
+	cout << "Number of loops? " << endl;
+	cin >> loopCount;
+
+	int choice = 0;
+	cout << "Begin Square Test? 1=Yes 0=No" << endl;
+	cin >> choice;
+
+	WMRA::Pose dest1,dest2,dest3,dest4;
+	dest1 = dest2 = dest3 = dest4 = curPos;	
+	
+	dest2.x = dest1.x;
+	dest2.y = dest1.y+length;
+
+	dest3.x = dest2.x+length;
+	dest3.y = dest2.y;
+	
+	dest4.x = dest3.x;
+	dest4.y = dest3.y-length;
+
+	// Move arm to starting position (dest1)
+	wmraArm.autonomous2(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+	Sleep(6000); // wait for motion end
+
+	int delay = (int)(length/50 * 1000) + 20 ;
+
+	while(loopCount > 0 && choice==1)
+	{
+		cout << "Loop: " << loopCount << endl;
+		wmraArm.autonomous2(dest2, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+		Sleep(delay); // wait for motion end
+		wmraArm.autonomous2(dest3, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+		Sleep(delay); // wait for motion end
+		wmraArm.autonomous2(dest4, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+		Sleep(delay); // wait for motion end
+		wmraArm.autonomous2(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+		Sleep(delay); // wait for motion end
+		loopCount--;
+	}
+}
 
 int main()
 {
@@ -149,7 +197,7 @@ int main()
          cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
          cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
 
-         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready) : "; 
+         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square) : "; 
          cin >> option;
 
          if(option == 1){
@@ -185,6 +233,9 @@ int main()
 		 }
 		 else if(option == 4){
 			 wmraArm.park2Ready();
+		 }
+		 else if(option == 5){
+			 continuousSquare(wmraArm.getPose());
 		 }
          else if(option == 0){
             wmraArm.closeDebug();
