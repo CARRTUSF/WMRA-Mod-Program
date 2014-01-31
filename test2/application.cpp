@@ -215,8 +215,8 @@ int main()
       //set tooltip
       Matrix tooltip;
       tooltip.Unit(4);
-      tooltip(0,1) = -20;
-      tooltip(0,2) = -135;
+      tooltip(1,3) = -20;
+      tooltip(2,3) = -135;
       wmraArm.setTooltipTransform(tooltip);
       WMRA::Pose readyPose = wmraArm.getPose();
       int cordframe;
