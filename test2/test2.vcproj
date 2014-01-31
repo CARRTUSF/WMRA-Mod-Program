@@ -233,6 +233,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\tinythread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\trajectory.cpp"
 				>
 			</File>
@@ -284,6 +288,10 @@
 			</File>
 			<File
 				RelativePath=".\stringUtility.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tinythread.h"
 				>
 			</File>
 			<File

@@ -4,6 +4,8 @@
 #include <time.h>
 #include <vector>
 #include <Afxwin.h>
+#include "WmraTypes.h"
+#include "tinythread.h"
 #include "SockStream.h"
 #include "matrix.h" 
 #include "MotorController.h"
@@ -14,6 +16,7 @@
 #define PI 3.14159265
 
 using namespace std;
+using namespace tthread;
 
 char *tempChar; //temporary char pointer passed to thread
 Arm wmraArm;
@@ -23,6 +26,32 @@ sending_udpsocket socket1( "localhost:6001" );
 sockstream output_sock( socket1 );
 receiving_udpsocket socket2( "localhost:6000" );
 sockstream read_sock( socket2 );
+
+
+void socketComm(void * aArg){
+
+   receiving_udpsocket socket1( "localhost:7000" );
+   sockstream read_sock( socket1 );
+   sending_udpsocket socket2( "localhost:7001" );
+   sockstream output_sock( socket2 );
+   WMRA::Pose curPose;
+
+   if( !read_sock.is_open() ){
+      cerr << "Could not open read socket for reading." << endl;
+   }
+
+   cout << "hey thread started " << endl;
+   string temp_str_buf;
+   char temp_buf[200];
+   while(true){
+      do{
+         getline( read_sock, temp_str_buf );
+      } while( temp_str_buf.find("GETPOS")== string::npos ); // keep reading until message is received
+      //send position
+      curPose = wmraArm.getPose();
+      output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
+   }
+}
 
 int wait4Command(){
    /*  Sleep(5000);
@@ -71,7 +100,7 @@ void BCI_motion(){
 
    WMRA::Pose dest;
    WMRA::Pose readyPose = wmraArm.getPose();
-   int object_id =3;
+   int object_id = 3;
    while(true){
       //object_id = wait4Command(); // wait for object id from VisualBCI
       if(true/*object_id ==3*/){
@@ -102,9 +131,6 @@ void BCI_motion(){
 
          wmraArm.autonomous2(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
          wmraArm.closeGripper();
-        
-
-
 
          //goto user
          dest.x = 0;
@@ -184,24 +210,34 @@ int main()
    bool endFlag = false;
    if(wmraArm.initialize()){
       //cout << "Controller intialized in main" << endl;
+      thread t(socketComm, 0); // start the communication thread
+      //CreateThread(NULL, 0, &socketComm, (LPVOID*)NULL, 0, NULL);
+      //set tooltip
+      Matrix tooltip;
+      tooltip.Unit(4);
+      tooltip(0,1) = -20;
+      tooltip(0,2) = -135;
+      wmraArm.setTooltipTransform(tooltip);
       WMRA::Pose readyPose = wmraArm.getPose();
       int cordframe;
       double temp;
-      int option;
+      int option;  
 
-      //BCI_motion();
+   
+
+      // BCI_motion();
 
       while(!endFlag){
          cout << "Current Position is :" << endl;
          WMRA::Pose pose = wmraArm.getPose();
          cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
-         cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
+         cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl ;
 
          cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square) : "; 
          cin >> option;
 
          if(option == 1){
-            WMRA::Pose dest = getUserDest();            
+            WMRA::Pose dest = getUserDest(); 
             cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper 7=skip: " ; 
             cin >> cordframe; 
             if(cordframe== 1){
@@ -242,12 +278,13 @@ int main()
             endFlag = true;
          }
       } //end of while loop
-      cout << "About to exit program. WOuld you like to go to ready position? 1=Yes 0=No : " ;
+      cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
       cin >> option;
       if(option ==1){
          wmraArm.autonomous2(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
          Sleep(10000);
       }
+      //t.join();
 
    }
    else{
@@ -256,4 +293,6 @@ int main()
 
    cout << "Exiting Program..... Press any key to close this window." << endl;
    cin.get();
+   return 0;
+   
 }

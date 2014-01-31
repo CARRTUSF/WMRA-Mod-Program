@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <fstream>
+#include "SockStream.h"
+#include <windows.h> <WINDOWS.H>
+#include <strsafe.h> <STRSAFE.H>
 #include "WmraTypes.h"
 #include "MotorController.h"
 #include "optimization.h"
@@ -23,10 +26,19 @@ public:
 	bool toReady();
 	bool ready2Park();
 	bool park2Ready();
+   /// sets the transformation from end of kinematic chain to a
+   /// arbitary tooltip position. This method can be used to get the 
+   /// end the position of ponts on the arm other than the standard gripper
+   bool setTooltipTransform(Matrix t){
+      tooltipTf = t;
+      return true;
+   }
    WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
 
 private:
+
+
    bool autonomousMove(Matrix start, Matrix dest);
 	double dt;	// the default time between milestones
 	double dt_mod;	// the default time between milestones
@@ -46,6 +58,7 @@ private:
 	int plt; // Debug: Not sure what this veriable is for, something to do with simulation results; 1 = no results
 
    Matrix gripperInitRotDiff;
+   Matrix tooltipTf;
 	WMRA::JointValueSet readyPosition; //joint angles for ready position
 
 	std::ofstream xyz_way; // Waypoint XYZ values

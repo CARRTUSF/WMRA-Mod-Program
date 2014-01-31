@@ -1,14 +1,16 @@
 
 #include <cmath>
 #include <string>
+#include "Arm.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <time.h>
 #include <math.h>
-#include <windows.h>
+
+//#include <windows.h>
+
 #include "stringUtility.h"
-#include "Arm.h"
 #include "matrix.h" 
 #include "MotorController.h"
 #include "kinematics.h"
@@ -23,6 +25,8 @@ using namespace std;
 using namespace math;
 
 Arm::Arm(){
+
+
    xyz_way.open("data/XYZ-way.csv");
    xyz_sent.open("data/XYZ-sent.csv");
    xyz_cont.open("data/XYZ-cont.csv");
@@ -34,8 +38,14 @@ Arm::Arm(){
    gripperInitRotDiff(2,1) = -1;
    gripperInitRotDiff(0,2) = 1;
    gripperInitRotDiff(3,3) = 1;
+   //set the tooltip to unity;
+   tooltipTf.Unit(4);
 
 }
+
+
+
+
 
 bool Arm::openGripper(){
    double position = controller.readPos(7) + 10;
@@ -54,15 +64,15 @@ bool Arm::closeGripper(){
 bool Arm::initialize(){
    controller.initialize();
    if(!setDefaults())
-      return 0;
+      return false;
    else if(controller.isInitialized())  // If controller class is initialized
    {
-      initialized = 1;
+      initialized = true;
       readyPosition = getJointAngles();
-      return 1;
+      return true;
    }
    else
-      return 0;
+      return false;
 }
 
 WMRA::JointValueSet Arm::getJointAngles(){
@@ -75,7 +85,9 @@ WMRA::JointValueSet Arm::getJointAngles(){
 WMRA::Pose Arm::getPose(){
   
    vector<double> jointAngles = controller.readPosAll();
-   Matrix pos = kinematics(jointAngles);
+   Matrix pos1 = kinematics(jointAngles);
+   //final transformation for the tooltip. If there is no special tooltip tooltipTf should be an identity matrix
+   Matrix pos = pos1 * tooltipTf;
    //in pilot mode
    Matrix pilotTransform = pos  * (!gripperInitRotDiff); //calculated rotation part  
    for(int i =0; i < 4 ; i++){ // copy translation from original
@@ -650,6 +662,7 @@ bool Arm::park2Ready()
 
 	return 1;
 }
+
 
 bool Arm::setDefaults()
 {
