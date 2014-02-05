@@ -221,9 +221,7 @@ int main()
       WMRA::Pose readyPose = wmraArm.getPose();
       int cordframe;
       double temp;
-      int option;  
-
-   
+      int option;     
 
       // BCI_motion();
 
