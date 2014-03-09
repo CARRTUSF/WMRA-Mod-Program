@@ -177,6 +177,22 @@ void continuousSquare(WMRA::Pose curPos)
 	}
 }
 
+bool moveJoint()
+{
+	int choice, jointNum, angle;
+	
+	cout << "Which Joint? ";
+	cin >> jointNum;
+
+	cout << "abs=0, rel=1? ";
+	cin >> choice;
+
+	cout << "Angle? ";
+	cin >> angle;
+
+	return wmraArm.moveJoint(jointNum, angle, choice);
+}
+
 int main()
 {
 
@@ -197,7 +213,7 @@ int main()
          cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
          cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
 
-         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square) : "; 
+         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square, 6 = Move Joint) : "; 
          cin >> option;
 
          if(option == 1){
@@ -236,6 +252,9 @@ int main()
 		 }
 		 else if(option == 5){
 			 continuousSquare(wmraArm.getPose());
+		 }
+		 else if(option == 6){
+			 moveJoint();
 		 }
          else if(option == 0){
             wmraArm.closeDebug();

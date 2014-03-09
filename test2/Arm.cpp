@@ -135,6 +135,24 @@ bool Arm::autonomous2(WMRA::Pose dest, WMRA::CordFrame cordFr){
    return autonomousMove(startLoc_T, destLoc_T);
 }
 
+bool Arm::moveJoint(int jointNum, int angle, int ref)
+{
+	int tempJointVal;
+	if(ref==0) // absolute
+	{
+		controller.positionControl(jointNum, angle);
+		return 1;
+	}
+	else if(ref==1) // relative
+	{
+		tempJointVal = controller.readPos(jointNum);
+		tempJointVal = tempJointVal + angle;
+		controller.positionControl(jointNum, tempJointVal);
+		return 1;
+	}
+	return 0;
+}
+
 bool Arm::autonomousMove(Matrix start, Matrix dest){
    /** calculate angular distance **/
    Matrix startRot(3,3),destRot(3,3);
