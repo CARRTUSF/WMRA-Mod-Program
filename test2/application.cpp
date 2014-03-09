@@ -179,18 +179,22 @@ void continuousSquare(WMRA::Pose curPos)
 
 bool moveJoint()
 {
-	int choice, jointNum, angle;
+	int choice, jointNum;
+	double angle, angleRadians;
 	
 	cout << "Which Joint? ";
 	cin >> jointNum;
+	jointNum--;
 
 	cout << "abs=0, rel=1? ";
 	cin >> choice;
 
 	cout << "Angle? ";
 	cin >> angle;
+	angleRadians = degToRad(angle);
 
-	return wmraArm.moveJoint(jointNum, angle, choice);
+	wmraArm.moveJoint(jointNum, angleRadians, choice);
+	return 1;
 }
 
 int main()

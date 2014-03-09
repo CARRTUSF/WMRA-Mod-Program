@@ -23,7 +23,7 @@ public:
 	bool toReady();
 	bool ready2Park();
 	bool park2Ready();
-	bool moveJoint(int jointNum, int angle, int ref);
+	bool moveJoint(int jointNum, double angle, int ref);
    WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
 

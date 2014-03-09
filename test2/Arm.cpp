@@ -135,9 +135,11 @@ bool Arm::autonomous2(WMRA::Pose dest, WMRA::CordFrame cordFr){
    return autonomousMove(startLoc_T, destLoc_T);
 }
 
-bool Arm::moveJoint(int jointNum, int angle, int ref)
+bool Arm::moveJoint(int jointNum, double angle, int ref)
 {
-	int tempJointVal;
+	controller.setMotorMode(controller.POS_CONTROL);
+	long jointEnc;
+
 	if(ref==0) // absolute
 	{
 		controller.positionControl(jointNum, angle);
@@ -145,11 +147,14 @@ bool Arm::moveJoint(int jointNum, int angle, int ref)
 	}
 	else if(ref==1) // relative
 	{
-		tempJointVal = controller.readPos(jointNum);
+		double tempJointVal = controller.readPos(jointNum);
 		tempJointVal = tempJointVal + angle;
 		controller.positionControl(jointNum, tempJointVal);
 		return 1;
 	}
+
+	Sleep(1000);
+	controller.setMotorMode(controller.LINEAR);
 	return 0;
 }
 
