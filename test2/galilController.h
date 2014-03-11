@@ -2,8 +2,13 @@
 #define GALILCONTROLLER_H
 
 //#pragma once
+
+#include <iostream>
 #include <string>
 #include <fstream>
+
+#include "utility.h"
+#include "ConfigReader.h"
 
 class client_tcpsocket;
 

@@ -1,14 +1,20 @@
 #ifndef MOTORCONTROLLER_H
 #define MOTORCONTROLLER_H
 
-#include <exception>
+#define _USE_MATH_DEFINES  // for M_PI
+#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <stdio.h>
+#include <exception>
 #include <vector>
 #include <ctype.h>
 #include "WmraTypes.h"
 #include "galilController.h"
+#include "ConfigReader.h"
+#include "stringUtility.h"
 
 using namespace std;
 

@@ -1,19 +1,6 @@
-#define _USE_MATH_DEFINES
 
-#include <cmath>
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-
-#include "ConfigReader.h"
-#include "stringUtility.h"
 #include "MotorController.h"
 using namespace std;
-
-#define _USE_MATH_DEFINES  // for M_PI
-#include <math.h>
-#define PI 3.14159265
 
 MotorController::MotorController()
 {
@@ -86,7 +73,6 @@ bool MotorController::addLinearMotionSegment(vector<double> angles, vector<doubl
 			for(int i = 0; i < 7; i++)
 				curPosition[i] += angles[i];
 		}			
-		//cout << curPosition[0] << ", " << curPosition[1] << ", " << curPosition[2] << ", " << curPosition[3] << ", " << curPosition[4] << ", " << curPosition[5] <<  ", " << curPosition[6] <<  ", " << curPosition[7] << endl;
 		return true;
 	}
 	if(angles.size() == 7 && speeds.size() == 7)
@@ -242,10 +228,6 @@ bool MotorController::Stop(int motorNum) // emergancy stop a single motor
 		return false;
 	}
 }
-bool MotorController::setPID(int motorNum, int P, int I, int D){
-	return false;
-}
-
 
 double MotorController::readPos(int motorNum) // returns the current motor angle in radians
 {
@@ -431,16 +413,6 @@ bool MotorController::positionControl(int motorNum,double angle)
 				cout << s << endl;
 				cout << endl;
 			}
-			/*
-			string command2 = "BG " + motor;
-			try	{
-			controller.command(command2);
-			}
-			catch(string s){
-			cout << s << endl;
-			cout << endl;
-			}
-			*/
 			return true;            
 		}
 		else{
@@ -480,14 +452,9 @@ inline bool MotorController::isValidMotor(int motorNum){
 	else return false;
 }
 
-bool readSettings() // Returns 0 is no file found or error occured
-{
-	return true;
-}
-
 double MotorController::encToAng(int motorNum, long encCount) // #debug needs to be finished, Also need to check initialized
 {
-	if (motorNum < 9 && motorNum >= 0){
+	if (isValidMotor(motorNum)){
 		return encCount * enc2Radian[motorNum]; 
 	}
 	else{
@@ -498,7 +465,7 @@ double MotorController::encToAng(int motorNum, long encCount) // #debug needs to
 
 long MotorController::angToEnc(int motorNum, double encCount) // #debug needs to be finished, Also need to check initialized
 {
-	if (motorNum < 9 && motorNum >= 0){
+	if (isValidMotor(motorNum)){
 		return encCount * radian2Enc[motorNum]; 
 	}
 	else{
@@ -515,7 +482,6 @@ bool MotorController::setSmoothing(double value)
 	buffer1 << value;
 	motor = buffer1.str();
 	command1 = command1 + motor;
-
 	controller.command(command1);
 
 	return 1;

@@ -1,8 +1,5 @@
 #include "galilController.h"
 #include "SockStream.h"
-#include "utility.h"
-#include "ConfigReader.h"
-#include <iostream>
 
 using namespace std;
 
@@ -141,7 +138,7 @@ bool galilController::initializeSocket(std::string IP)
 {
 	//cout << "Initializing Socket" << endl;
 	const char * c = IP.c_str();
-	galilController::sock.open(c,23);
+	sock.open(c,23);
 	//cout << "After Opening Socket" << endl;
 	return galilController::sock.connected(); // #DEBUG - breaks if trying to setup sock while WMRA is off
 	//return sock.is_open();
