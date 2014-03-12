@@ -2,7 +2,6 @@
 #define ARM_H
 
 #define _USE_MATH_DEFINES  // for M_PI
-
 #include <math.h>
 #include <vector>
 #include <fstream>
@@ -12,9 +11,9 @@
 #include <sstream>
 #include <time.h>
 #include <math.h>
-#include <windows.h>
-#include "tinythread.h"
 
+#include "SockStream.h"
+#include "tinythread.h"
 #include "stringUtility.h"
 #include "matrix.h" 
 #include "MotorController.h"
@@ -27,6 +26,7 @@
 #include "MotorController.h"
 #include "optimization.h"
 
+using namespace tthread;
 
 class Arm{
 public:
@@ -46,6 +46,8 @@ public:
 	WMRA::JointValueSet getJointAngles();
 	void sendValues();
 	bool isInitialized();
+	static void sendData(void* aArg);
+	tthread::thread* t;
 
 private:
 	bool autonomousMove(Matrix start, Matrix dest);

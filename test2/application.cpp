@@ -3,41 +3,16 @@
 #include <string>
 #include <time.h>
 #include <vector>
-#include <Afxwin.h>
-#include "SockStream.h"
 #include "matrix.h" 
 #include "MotorController.h"
 #include "Arm.h"
 #include "Utility.h"
 
-
 #define PI 3.14159265
 
 using namespace std;
 
-char *tempChar; //temporary char pointer passed to thread
 Arm wmraArm;
-
-
-sending_udpsocket socket1( "localhost:6001" );
-sockstream output_sock( socket1 );
-receiving_udpsocket socket2( "localhost:6000" );
-sockstream read_sock( socket2 );
-
-int wait4Command(){
-   /*  Sleep(5000);
-   return;*/
-   char temp_buf[200]; 
-   int object_id = 0;
-   string temp_str_buf;
-   getline( read_sock, temp_str_buf );
-   while( temp_str_buf.find("OBJECT")== string::npos ){
-      getline( read_sock, temp_str_buf );
-      Sleep(20);
-   }
-   sscanf(temp_str_buf.c_str() , "%s %d",temp_buf, &object_id);
-   return object_id;
-}
 
 WMRA::Pose getUserDest(){
    WMRA::Pose dest;
@@ -63,70 +38,6 @@ WMRA::Pose getUserDest(){
    return dest;    
 }
 
-
-
-void BCI_motion(){
-
-   cout << " started BCI loop" << endl;
-
-   WMRA::Pose dest;
-   WMRA::Pose readyPose = wmraArm.getPose();
-   int object_id =3;
-   while(true){
-      //object_id = wait4Command(); // wait for object id from VisualBCI
-      if(true/*object_id ==3*/){
-         //goto object
-         dest.x = 650;
-         dest.y = -100;
-         dest.z = 475;
-         dest.roll = 0;
-         dest.pitch = 0;
-         dest.yaw = degToRad(10);
-
-         wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-         //Sleep(8000);
-
-         //bringback to user
-
- /*        dest.x = 850;
-         dest.y = -100;
-         dest.z = 450;
-         dest.roll = degToRad(0);
-         dest.pitch = degToRad(0);
-         dest.yaw = degToRad(10);*/
-
-         dest.clear();
-         dest.z=100;
-
-
-
-         wmraArm.autonomous(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
-         wmraArm.closeGripper();
-        
-
-
-
-         //goto user
-         dest.x = 0;
-         dest.y = -250;
-         dest.z = 480;
-         dest.roll = degToRad(0);
-         dest.pitch = degToRad(0);
-         dest.yaw = degToRad(-150);
-
-         wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-         Sleep(1000);
-         wmraArm.openGripper();
-
-         //got to ready
-
-         wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
-         Sleep(8000);
-
-         output_sock << "DONE" << endl;
-      }
-   }
-}
 
 void continuousSquare(WMRA::Pose curPos)
 {
@@ -269,7 +180,6 @@ int main()
          wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
          Sleep(10000);
       }
-
    }
    else{
       cout << "Controller initalizaition failed in main" << endl;

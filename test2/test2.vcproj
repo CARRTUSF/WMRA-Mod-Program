@@ -60,7 +60,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib snmpapi.lib"
 				AdditionalLibraryDirectories="&quot;$(OH_SDK_BASE)\lib\Win32\DebugAcademicEdition&quot;;&quot;$(OH_SDK_BASE)\utilities\lib\Win32\Debug&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -233,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\tinythread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\trajectory.cpp"
 				>
 			</File>
@@ -284,6 +287,10 @@
 			</File>
 			<File
 				RelativePath=".\stringUtility.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tinythread.h"
 				>
 			</File>
 			<File

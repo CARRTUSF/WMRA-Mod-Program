@@ -3,10 +3,9 @@
 using namespace std;
 using namespace math;
 
-
 Arm::Arm(){
-
 	initialized = 0;
+	t = new thread(sendData,this);
 
 	xyz_way.open("data/XYZ-way.csv");
 	xyz_sent.open("data/XYZ-sent.csv");
@@ -20,6 +19,34 @@ Arm::Arm(){
 	gripperInitRotDiff(2,1) = -1;
 	gripperInitRotDiff(0,2) = 1;
 	gripperInitRotDiff(3,3) = 1;
+}
+
+void Arm::sendData( void * aArg){
+	Arm* a = (Arm*)aArg;
+	sending_udpsocket socket1( "localhost:6000" );
+	sockstream output_sock( socket1 );
+	receiving_udpsocket socket2( "localhost:6001" );
+	sockstream read_sock( socket2 );
+
+	WMRA::JointValueSet joints;
+
+	if( !read_sock.is_open() ){
+		cerr << "Could not open read socket for reading." << endl;
+	}
+
+	while(!a->isInitialized()) {Sleep(100);}
+
+	string temp_str_buf;
+	char temp_buf[200];
+	while(true){
+		do{
+			getline( read_sock, temp_str_buf );
+		} while( temp_str_buf.find("GETPOS")== string::npos ); // keep reading until message is received
+		//send position
+		if(a->isInitialized())
+			joints = a->getJointAngles();
+		output_sock << "POSITION " << joints[0] << " " << joints[1] << " " << joints[2] << " " << joints[3] << " " << joints[4] << " " << joints[5] << " " << joints[6] << endl; 
+	}
 }
 
 bool Arm::openGripper(){
@@ -53,7 +80,7 @@ bool Arm::initialize(){
 WMRA::JointValueSet Arm::getJointAngles(){
    WMRA::JointValueSet joints;
    for(int i = 0; i < joints.size(); i++){		// Sets the current location to a 1x8 vector		
-      joints[i] = controller.readPos(i+1);
+      joints[i] = controller.readPos(i);
    }
    return joints;   
 }

@@ -44,8 +44,10 @@
 #define SOCK_STREAM_H
 
 
-# include <winsock2.h>
+
 #ifdef _WIN32
+#pragma comment( lib, "ws2_32.lib" )
+# include <winsock2.h>
 # include <winsock.h>
 #else
 # include <netinet/in.h>
