@@ -47,6 +47,7 @@ public:
 	void sendValues();
 	bool isInitialized();
 	static void sendData(void* aArg);
+	bool graspObject(WMRA::Pose objectPose, int openClose);
 	tthread::thread* t;
 
 private:
