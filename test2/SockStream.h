@@ -47,8 +47,8 @@
 
 #ifdef _WIN32
 #pragma comment( lib, "ws2_32.lib" )
-# include <winsock2.h>
-# include <winsock.h>
+#include <winsock2.h>
+//#include <winsock.h>
 #else
 # include <netinet/in.h>
 # define SOCKET int
@@ -270,8 +270,6 @@ class sockstream : public std::iostream
     explicit sockstream( streamsock& );
     virtual ~sockstream()
              {}
-    operator void*()
-             { return std::iostream::operator void*(); }
     void     set_timeout( int t )
              { buf.set_timeout( t ); }
     int      get_timeout() const
