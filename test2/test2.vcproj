@@ -243,6 +243,14 @@
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Wheelchair.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\wmraLJ.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -267,6 +275,10 @@
 			</File>
 			<File
 				RelativePath=".\kinematics.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\..\Program Files (x86)\LabJack\Drivers\LabJackUD.h"
 				>
 			</File>
 			<File
@@ -302,6 +314,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Wheelchair.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wmraLJ.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WmraTypes.h"
 				>
 			</File>
@@ -316,6 +336,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath="..\..\..\..\..\..\Program Files (x86)\LabJack\Drivers\LabJackUD.lib"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
