@@ -224,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PathFinder.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SockStream.cpp"
 				>
 			</File>
@@ -244,7 +248,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wheelchair.cpp"
+				RelativePath=".\WheelchairControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WheelchairUtility.cpp"
 				>
 			</File>
 			<File
@@ -294,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PathFinder.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SockStream.h"
 				>
 			</File>
@@ -314,7 +326,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Wheelchair.h"
+				RelativePath=".\WheelchairControl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WheelchairUtility.h"
 				>
 			</File>
 			<File
