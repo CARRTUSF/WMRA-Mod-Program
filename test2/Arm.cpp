@@ -19,6 +19,8 @@ Arm::Arm(){
 	gripperInitRotDiff(2,1) = -1;
 	gripperInitRotDiff(0,2) = 1;
 	gripperInitRotDiff(3,3) = 1;
+
+   gripperOpen = true;
 }
 
 void Arm::sendData( void * aArg){
@@ -49,33 +51,13 @@ void Arm::sendData( void * aArg){
 	}
 }
 
-bool Arm::graspObject(WMRA::Pose objectPose, int openClose) // This function assumes orientation to be 0,0,0
-{
-	WMRA::Pose prePose = objectPose;
-	prePose.x = prePose.x-100.0;
-	prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
 
-	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
-
-	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Move to object location
-
-	if(openClose == 0) // Open Gripper
-		openGripper();
-	else				// Close Gripper
-		closeGripper();
-
-	objectPose.z = objectPose.z + 100.0; // Raising object
-	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Raising object
-
-	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
-
-	return 1;
-}
 
 bool Arm::openGripper(){
    double position = controller.readPos(7) + 10;
    controller.positionControl(7,position);
    Sleep(5000);
+   gripperOpen = true;
    return true;
 }
 
@@ -83,7 +65,11 @@ bool Arm::closeGripper(){
    double position = controller.readPos(7) - 10;
    controller.positionControl(7,position);
    Sleep(5000);
+   gripperOpen = false;
    return true;
+}
+bool Arm::isGripperOpen(){
+   return gripperOpen;
 }
 
 bool Arm::initialize(){

@@ -39,6 +39,29 @@ WMRA::Pose getUserDest(){
 }
 
 
+bool graspObject(WMRA::Pose objectPose, int openClose=1) // This function assumes orientation to be 0,0,0
+{
+	WMRA::Pose prePose = objectPose;
+	prePose.x = prePose.x-100.0;
+	prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
+
+	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
+
+	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Move to object location
+
+	if(openClose == 0) // Open Gripper
+		openGripper();
+	else				// Close Gripper
+		closeGripper();
+
+	objectPose.z = objectPose.z + 100.0; // Raising object
+	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Raising object
+
+	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
+
+	return true;
+}
+
 void continuousSquare(WMRA::Pose curPos)
 {
 	//Request to begin test

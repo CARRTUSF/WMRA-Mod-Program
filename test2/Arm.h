@@ -37,6 +37,7 @@ public:
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME_REL);
 	bool openGripper();
 	bool closeGripper();
+   bool isGripperOpen();
 	void closeDebug();
 	bool toReady();
 	bool ready2Park();
@@ -47,7 +48,6 @@ public:
 	void sendValues();
 	bool isInitialized();
 	static void sendData(void* aArg);
-	bool graspObject(WMRA::Pose objectPose, int openClose);
 	tthread::thread* t;
 
 private:
@@ -65,6 +65,7 @@ private:
 	std::ofstream xyz_cont; // command XYZ values
 	std::ofstream jointVel; // joint velocity values
 	bool initialized;
+   bool gripperOpen;
 	MotorController controller; 
 };
 #endif;
