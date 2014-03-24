@@ -3,6 +3,7 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include "tinythread.h"
 #include "matrix.h" 
 #include "MotorController.h"
 #include "Arm.h"
@@ -11,6 +12,7 @@
 #define PI 3.14159265
 
 using namespace std;
+using namespace tthread;
 
 Arm wmraArm;
 
@@ -39,27 +41,102 @@ WMRA::Pose getUserDest(){
 }
 
 
-bool graspObject(WMRA::Pose objectPose, int openClose=1) // This function assumes orientation to be 0,0,0
+void socketComm(void * aArg){
+
+   receiving_udpsocket socket1( "localhost:7000" );
+   sockstream read_sock( socket1 );
+   sending_udpsocket socket2( "localhost:7001" );
+   sockstream output_sock( socket2 );
+   WMRA::Pose curPose;
+
+   if( !read_sock.is_open() ){
+      cerr << "Could not open read socket for reading." << endl;
+   }
+
+   cout << "hey thread started " << endl;
+   string temp_str_buf;
+   char temp_buf[200];
+   while(true){
+      do{
+         getline( read_sock, temp_str_buf );
+      } while( temp_str_buf.find("GETPOS")== string::npos ); // keep reading until message is received
+      //send position
+      curPose = wmraArm.getPose();
+      output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
+   }
+}
+
+
+
+bool graspObject(WMRA::Pose objectPose) // This function assumes orientation to be 0,0,0
 {
 	WMRA::Pose prePose = objectPose;
 	prePose.x = prePose.x-100.0;
 	prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
 
-	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
+   WMRA::Pose graspPose = objectPose;
+   graspPose.x = graspPose.x + 50;
 
-	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Move to object location
+   WMRA::Pose liftTable = graspPose;
+   liftTable.z = liftTable.z +100;
 
-	if(openClose == 0) // Open Gripper
-		openGripper();
-	else				// Close Gripper
-		closeGripper();
+   cout << "going to prepose" <<endl;
+	wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+   Sleep(2000);
+   cout << "Opening gripper " << endl;
+   wmraArm.openGripper();
+   Sleep(2000);
+   cout << "Going to grasp pose" << endl;
+	wmraArm.autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+   Sleep(2000);
+   cout << "Closing Gripper" <<endl;
+	wmraArm.closeGripper();
+   Sleep(2000);
 
-	objectPose.z = objectPose.z + 100.0; // Raising object
-	autonomous(objectPose, WMRA::ARM_FRAME_ABS); // Raising object
+	//objectPose.z = objectPose.z + 100.0; // Raising object
+   cout << "Raising Object" << endl;
+	wmraArm.autonomous(liftTable, WMRA::ARM_FRAME_PILOT_MODE); // Raising object
+   Sleep(10000);
 
-	autonomous(prePose, WMRA::ARM_FRAME_ABS); // Move to pre-pose
+   cout << "Going to prepose" << endl;
+	wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+   Sleep(10000);
 
 	return true;
+}
+
+/*
+* Allows to control the arm through a socket connection.
+* Parses GOTOPOSE x y z message and grasps a object at that pose
+*/
+void socketControl(void * aArg){
+
+   receiving_udpsocket socket1( "localhost:7000" );
+   sockstream read_sock( socket1 );
+   sending_udpsocket socket2( "localhost:7001" );
+   sockstream output_sock( socket2 );
+   WMRA::Pose curPose = wmraArm.getPose();
+
+   if( !read_sock.is_open() ){
+      cerr << "Could not open read socket for reading." << endl;
+   }
+
+   cout << "hey thread started " << endl;
+   string temp_str_buf;
+   char temp_buf[200];
+   while(true){
+      do{
+         getline( read_sock, temp_str_buf );
+      } while( temp_str_buf.find("PICKUP")== string::npos ); // keep reading until message is received
+      WMRA::Pose graspPose;
+      graspPose.clear();
+      sscanf(temp_str_buf.c_str(), "%s %lf %lf %lf", temp_buf, &graspPose.x, &graspPose.y, &graspPose.y);
+      graspObject(graspPose);
+      
+
+      output_sock << "DONE" << endl;
+      output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
+   }
 }
 
 void continuousSquare(WMRA::Pose curPos)
@@ -130,13 +207,18 @@ bool moveJoint()
 	return 1;
 }
 
+
+
 int main()
 {
    int velocity;				// Max velocity of the gripper in movement
    bool endFlag = false;
    if(wmraArm.initialize()){
+
+      //thread t(socketControl, 0); // start the communication thread
       //cout << "Controller intialized in main" << endl;
       WMRA::Pose readyPose = wmraArm.getPose();
+
       int cordframe;
       double temp;
       int option;
@@ -149,7 +231,7 @@ int main()
          cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
          cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
 
-         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square, 6 = Move Joint) : "; 
+         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square, 6 = Move Joint 8 = Grasp Object) : "; 
          cin >> option;
 
          if(option==1){
@@ -192,10 +274,14 @@ int main()
 		 else if(option==6){
 			 moveJoint();
 		 }
-         else if(option==0){
-            wmraArm.closeDebug();
-            endFlag = true;
-         }
+       else if(option==8){
+          WMRA::Pose dest = getUserDest();
+			 graspObject(dest);
+		 }
+      else if(option==0){
+         wmraArm.closeDebug();
+         endFlag = true;
+      }
       } //end of while loop
       cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
       cin >> option;
