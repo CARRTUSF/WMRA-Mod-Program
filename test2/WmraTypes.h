@@ -71,6 +71,12 @@ namespace WMRA{
       double& operator[](int i){
          if(i < Joint.size())  return Joint[i];
       }
+     /* std::string toString(){
+         std::string j;
+         for(i = 0 ; i Joint.size() ; ++i){
+            j = 
+         }
+      }*/
    };
 
    
