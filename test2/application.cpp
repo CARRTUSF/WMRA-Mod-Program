@@ -207,7 +207,44 @@ bool moveJoint()
 	return 1;
 }
 
+bool saveJointAngles(){
+   ofstream jointFile;
+   jointFile.open ("lastJointPositions.txt");
+   if (!jointFile.is_open()){
+      cerr << "Error opening input file" << endl;
+      return false;
+   }
+   //get joint angles
+   WMRA::JointValueSet jAng=  wmraArm.getJointAngles();
+   //write to stream
+   jointFile << jAng[0] << "," << jAng[1] << "," << jAng[2] << "," << jAng[3] << "," ;
+   jointFile << jAng[4] << "," << jAng[5] << "," << jAng[6] << endl;
+   jointFile.close();
+   return true;
+}
 
+bool readJointAnglesFromFiles(WMRA::JointValueSet &angles){
+   ifstream jointFile;
+   jointFile.open ("lastJointPositions.txt");
+   if (!jointFile.is_open()){
+      cerr << "Error opening input file" << endl;
+      return false;
+   }
+   double t[7] = {0};//temp 
+   std::string temp_in;
+   getline(jointFile, temp_in);
+   int num = sscanf(temp_in.c_str(), "%lf,%lf,%lf,%lf,%lf,%if,%lf",
+                        &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6] );
+   
+   jointFile.close(); // close file
+   if(num ==7){ //if all 7 joints angles are parsed correctly
+      for(int i=0; i < 7 ;++i){
+         angles[i] = t[i];  //write to JointValueSet
+      }
+      return true;
+   }
+   else return false;
+}
 
 int main()
 {
@@ -289,6 +326,7 @@ int main()
          wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
          Sleep(10000);
       }
+      saveJointAngles();
    }
    else{
       cout << "Controller initalizaition failed in main" << endl;
