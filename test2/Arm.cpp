@@ -93,6 +93,15 @@ WMRA::JointValueSet Arm::getJointAngles(){
    }
    return joints;   
 }
+
+bool Arm::setInitialJointAngles(WMRA::JointValueSet& joints){
+
+   for(int i = 0; i < joints.size();++i){		// set each joint position		
+      controller.definePosition(i,joints[i]);
+   }
+   return true ;  
+}
+
 WMRA::Pose Arm::getPose(){
   
    vector<double> jointAngles = controller.readPosAll();

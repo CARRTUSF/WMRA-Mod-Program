@@ -47,6 +47,7 @@ public:
 	WMRA::JointValueSet getJointAngles();
 	void sendValues();
 	bool isInitialized();
+   bool setInitialJointAngles(WMRA::JointValueSet& joints);
 	static void sendData(void* aArg);
 	tthread::thread* t;
 
