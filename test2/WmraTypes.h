@@ -8,8 +8,9 @@ Written by Indika Pathirage
 Distributed under GPL2 or higher
 
 **/
-
+#include <string>
 #include <vector>
+#include <sstream> 
 #include "matrix.h"
 
 using namespace math;
@@ -71,12 +72,15 @@ namespace WMRA{
       double& operator[](int i){
          if(i < Joint.size())  return Joint[i];
       }
-     /* std::string toString(){
-         std::string j;
-         for(i = 0 ; i Joint.size() ; ++i){
-            j = 
+      std::string toString(){
+         std::stringstream ss;
+         //add the firat n-1 elements with a comma
+         for(int i = 0 ; i < 6 ; ++i){
+            ss << Joint[i] << "," ;
          }
-      }*/
+         ss << Joint[6]; // add the last element witjout a comma
+         return ss.str();
+      }
    };
 
    
