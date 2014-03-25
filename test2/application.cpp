@@ -70,9 +70,9 @@ void socketComm(void * aArg){
 
 bool graspObject(WMRA::Pose objectPose) // This function assumes orientation to be 0,0,0
 {
-	WMRA::Pose prePose = objectPose;
-	prePose.x = prePose.x-100.0;
-	prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
+   WMRA::Pose prePose = objectPose;
+   prePose.x = prePose.x-100.0;
+   prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
 
    WMRA::Pose graspPose = objectPose;
    graspPose.x = graspPose.x + 50;
@@ -81,28 +81,28 @@ bool graspObject(WMRA::Pose objectPose) // This function assumes orientation to 
    liftTable.z = liftTable.z +100;
 
    cout << "going to prepose" <<endl;
-	wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+   wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
    Sleep(2000);
    cout << "Opening gripper " << endl;
    wmraArm.openGripper();
-   Sleep(2000);
+   Sleep(5000);
    cout << "Going to grasp pose" << endl;
-	wmraArm.autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+   wmraArm.autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
    Sleep(2000);
    cout << "Closing Gripper" <<endl;
-	wmraArm.closeGripper();
-   Sleep(2000);
+   wmraArm.closeGripper();
+   Sleep(5000);
 
-	//objectPose.z = objectPose.z + 100.0; // Raising object
+   //objectPose.z = objectPose.z + 100.0; // Raising object
    cout << "Raising Object" << endl;
-	wmraArm.autonomous(liftTable, WMRA::ARM_FRAME_PILOT_MODE); // Raising object
+   wmraArm.autonomous(liftTable, WMRA::ARM_FRAME_PILOT_MODE); // Raising object
    Sleep(10000);
 
    cout << "Going to prepose" << endl;
-	wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+   wmraArm.autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
    Sleep(10000);
 
-	return true;
+   return true;
 }
 
 /*
@@ -132,7 +132,7 @@ void socketControl(void * aArg){
       graspPose.clear();
       sscanf(temp_str_buf.c_str(), "%s %lf %lf %lf", temp_buf, &graspPose.x, &graspPose.y, &graspPose.y);
       graspObject(graspPose);
-      
+
 
       output_sock << "DONE" << endl;
       output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
@@ -141,73 +141,73 @@ void socketControl(void * aArg){
 
 void continuousSquare(WMRA::Pose curPos)
 {
-	//Request to begin test
-	int length;
-	cout << "Length? " << endl;
-	cin >> length;
+   //Request to begin test
+   int length;
+   cout << "Length? " << endl;
+   cin >> length;
 
-	int loopCount;
-	cout << "Number of loops? " << endl;
-	cin >> loopCount;
+   int loopCount;
+   cout << "Number of loops? " << endl;
+   cin >> loopCount;
 
-	int choice = 0;
-	cout << "Begin Square Test? 1=Yes 0=No" << endl;
-	cin >> choice;
+   int choice = 0;
+   cout << "Begin Square Test? 1=Yes 0=No" << endl;
+   cin >> choice;
 
-	WMRA::Pose dest1,dest2,dest3,dest4;
-	dest1 = dest2 = dest3 = dest4 = curPos;	
-	
-	dest2.x = dest1.x;
-	dest2.y = dest1.y+length;
+   WMRA::Pose dest1,dest2,dest3,dest4;
+   dest1 = dest2 = dest3 = dest4 = curPos;	
 
-	dest3.x = dest2.x+length;
-	dest3.y = dest2.y;
-	
-	dest4.x = dest3.x;
-	dest4.y = dest3.y-length;
+   dest2.x = dest1.x;
+   dest2.y = dest1.y+length;
 
-	// Move arm to starting position (dest1)
-	wmraArm.autonomous(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-	Sleep(6000); // wait for motion end
+   dest3.x = dest2.x+length;
+   dest3.y = dest2.y;
 
-	int delay = (int)(length/50 * 1000) + 20 ;
+   dest4.x = dest3.x;
+   dest4.y = dest3.y-length;
 
-	while(loopCount > 0 && choice==1)
-	{
-		cout << "Loop: " << loopCount << endl;
-		wmraArm.autonomous(dest2, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-		Sleep(delay); // wait for motion end
-		wmraArm.autonomous(dest3, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-		Sleep(delay); // wait for motion end
-		wmraArm.autonomous(dest4, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-		Sleep(delay); // wait for motion end
-		wmraArm.autonomous(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-		Sleep(delay); // wait for motion end
-		loopCount--;
-	}
+   // Move arm to starting position (dest1)
+   wmraArm.autonomous(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+   Sleep(6000); // wait for motion end
+
+   int delay = (int)(length/50 * 1000) + 20 ;
+
+   while(loopCount > 0 && choice==1)
+   {
+      cout << "Loop: " << loopCount << endl;
+      wmraArm.autonomous(dest2, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+      Sleep(delay); // wait for motion end
+      wmraArm.autonomous(dest3, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+      Sleep(delay); // wait for motion end
+      wmraArm.autonomous(dest4, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+      Sleep(delay); // wait for motion end
+      wmraArm.autonomous(dest1, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+      Sleep(delay); // wait for motion end
+      loopCount--;
+   }
 }
 
 bool moveJoint()
 {
-	int choice, jointNum;
-	double angle, angleRadians;
-	
-	cout << "Which Joint? ";
-	cin >> jointNum;
-	jointNum--;
+   int choice, jointNum;
+   double angle, angleRadians;
 
-	cout << "abs=0, rel=1? ";
-	cin >> choice;
+   cout << "Which Joint? ";
+   cin >> jointNum;
+   jointNum--;
 
-	cout << "Angle? ";
-	cin >> angle;
-	angleRadians = degToRad(angle);
+   cout << "abs=0, rel=1? ";
+   cin >> choice;
 
-	wmraArm.moveJoint(jointNum, angleRadians, choice);
-	return 1;
+   cout << "Angle? ";
+   cin >> angle;
+   angleRadians = degToRad(angle);
+
+   wmraArm.moveJoint(jointNum, angleRadians, choice);
+   return 1;
 }
 
-bool saveJointAngles(){
+bool saveJointAngles(WMRA::JointValueSet &jAng){
    ofstream jointFile;
    jointFile.open ("lastJointPositions.txt");
    if (!jointFile.is_open()){
@@ -215,7 +215,7 @@ bool saveJointAngles(){
       return false;
    }
    //get joint angles
-   WMRA::JointValueSet jAng=  wmraArm.getJointAngles();
+   //WMRA::JointValueSet jAng=  wmraArm.getJointAngles();
    //write to stream
    jointFile << jAng[0] << "," << jAng[1] << "," << jAng[2] << "," << jAng[3] << "," ;
    jointFile << jAng[4] << "," << jAng[5] << "," << jAng[6] << endl;
@@ -233,9 +233,9 @@ bool readJointAnglesFromFiles(WMRA::JointValueSet &angles){
    double t[7] = {0};//temp 
    std::string temp_in;
    getline(jointFile, temp_in);
-   int num = sscanf(temp_in.c_str(), "%lf,%lf,%lf,%lf,%lf,%if,%lf",
-                        &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6] );
-   
+   int num = sscanf(temp_in.c_str(), "%lf,%lf,%lf,%lf,%lf,%lf,%lf",
+      &t[0],&t[1],&t[2],&t[3],&t[4],&t[5],&t[6] );
+
    jointFile.close(); // close file
    if(num ==7){ //if all 7 joints angles are parsed correctly
       for(int i=0; i < 7 ;++i){
@@ -251,82 +251,114 @@ int main()
    int velocity;				// Max velocity of the gripper in movement
    bool endFlag = false;
    if(wmraArm.initialize()){
+      try{
 
-      //thread t(socketControl, 0); // start the communication thread
-      //cout << "Controller intialized in main" << endl;
-      WMRA::Pose readyPose = wmraArm.getPose();
+         //thread t(socketControl, 0); // start the communication thread
+         //cout << "Controller intialized in main" << endl;
+         WMRA::Pose readyPose = wmraArm.getPose();
 
-      int cordframe;
-      double temp;
-      int option;
+         int cordframe;
+         double temp;
+         int option;
 
-      //BCI_motion();
+         //test save and read joint angle functions.
+       /*  WMRA::JointValueSet j = wmraArm.getJointAngles();
+         cout << "Current joint angles are: " << endl;;
+         cout  << j.toString() << endl; 
+         saveJointAngles(j);*/
 
-      while(!endFlag){
-         cout << "Current Position is :" << endl;
-         WMRA::Pose pose = wmraArm.getPose();
-         cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
-         cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
-
-         cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square, 6 = Move Joint 8 = Grasp Object) : "; 
+         cout << "would you like to load Joint angles from file ? yes=1 no=0 :" ;
          cin >> option;
-
-         if(option==1){
-            WMRA::Pose dest = getUserDest();            
-            cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper, 7=skip: "; 
-            cin >> cordframe; 
-            if(cordframe==1){
-               try{
-                  wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-               }
-               catch(...){
-                  cout << "haha" << endl;
-               }
-            }
-            else if(cordframe==2){
-               wmraArm.autonomous(dest, WMRA::ARM_FRAME_REL); // Moves arm
-            }
-            else if(cordframe==3){
-               wmraArm.autonomous(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
+         WMRA::JointValueSet initialJointAngles;
+         if(option ==1){         
+            if( readJointAnglesFromFiles(initialJointAngles)){
+               cout << "Joint angles read from : " << endl;
+               cout << initialJointAngles.toString() << endl;
+               cout << "Seting joint angles on Arm. " << endl;
             }
             else{
-               cout << "skipping motion..." << endl;
-               continue;
+               cout << "Read Joint angle failed" << endl;
             }
-            Sleep(10000); // wait for motion end
          }
-         else if(option==2){
+
+
+
+         while(!endFlag){
+            cout << "Current Position is :" << endl;
+            WMRA::Pose pose = wmraArm.getPose();
+            cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
+            cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
+
+            cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = square, 6 = Move Joint 8 = Grasp Object) : "; 
+            cin >> option;
+
+            if(option==1){
+               WMRA::Pose dest = getUserDest();            
+               cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper, 7=skip: "; 
+               cin >> cordframe; 
+               if(cordframe==1){
+                  try{
+                     wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+                  }
+                  catch(...){
+                     cout << "haha" << endl;
+                  }
+               }
+               else if(cordframe==2){
+                  wmraArm.autonomous(dest, WMRA::ARM_FRAME_REL); // Moves arm
+               }
+               else if(cordframe==3){
+                  wmraArm.autonomous(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
+               }
+               else{
+                  cout << "skipping motion..." << endl;
+                  continue;
+               }
+               Sleep(10000); // wait for motion end
+            }
+            else if(option==2){
+               wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
+               Sleep(10000);
+            }
+            else if(option==3){
+               wmraArm.ready2Park();
+            }
+            else if(option==4){
+               wmraArm.park2Ready();
+            }
+            else if(option==5){
+               continuousSquare(wmraArm.getPose());
+            }
+            else if(option==6){
+               moveJoint();
+            }
+            else if(option==8){
+               WMRA::Pose dest = getUserDest();
+               graspObject(dest);
+            }
+            else if(option==0){
+               wmraArm.closeDebug();
+               endFlag = true;
+            }
+            WMRA::JointValueSet j = wmraArm.getJointAngles();
+            saveJointAngles(j); // save position at the end of every loop
+         } //end of while loop
+         cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
+         cin >> option;
+         if(option ==1){
             wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
             Sleep(10000);
          }
-		 else if(option==3){
-			 wmraArm.ready2Park();
-		 }
-		 else if(option==4){
-			 wmraArm.park2Ready();
-		 }
-		 else if(option==5){
-			 continuousSquare(wmraArm.getPose());
-		 }
-		 else if(option==6){
-			 moveJoint();
-		 }
-       else if(option==8){
-          WMRA::Pose dest = getUserDest();
-			 graspObject(dest);
-		 }
-      else if(option==0){
-         wmraArm.closeDebug();
-         endFlag = true;
+         //saveJointAngles();
       }
-      } //end of while loop
-      cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
-      cin >> option;
-      if(option ==1){
-         wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
-         Sleep(10000);
+      catch (exception& e){
+         cerr << e.what() << endl;
+         //try to save wmra joint angles
+         WMRA::JointValueSet j = wmraArm.getJointAngles();
+         cout << "Current joint angles are: " << endl;;
+         cout  << j.toString() << endl; 
+         saveJointAngles(j);
       }
-      saveJointAngles();
    }
    else{
       cout << "Controller initalizaition failed in main" << endl;
