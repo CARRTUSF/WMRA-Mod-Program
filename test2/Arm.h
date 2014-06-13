@@ -37,7 +37,7 @@ public:
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr=WMRA::ARM_FRAME_REL);
 	bool openGripper();
 	bool closeGripper();
-   bool isGripperOpen();
+    bool isGripperOpen();
 	void closeDebug();
 	bool toReady();
 	bool ready2Park();
@@ -47,7 +47,7 @@ public:
 	WMRA::JointValueSet getJointAngles();
 	void sendValues();
 	bool isInitialized();
-   bool setInitialJointAngles(WMRA::JointValueSet& joints);
+	bool setInitialJointAngles(WMRA::JointValueSet& joints);
 	static void sendData(void* aArg);
 	tthread::thread* t;
 
