@@ -130,7 +130,12 @@ void socketControl(void * aArg){
       } while( temp_str_buf.find("PICKUP")== string::npos ); // keep reading until message is received
       WMRA::Pose graspPose;
       graspPose.clear();
-      sscanf(temp_str_buf.c_str(), "%s %lf %lf %lf", temp_buf, &graspPose.x, &graspPose.y, &graspPose.y);
+      double pos[3] = {0};
+      int numRead = sscanf(temp_str_buf.c_str(), "%s %lf %lf %lf", temp_buf, &pos[0], &pos[1], &pos[2]);
+
+      graspPose.x = pos[0];
+      graspPose.y = pos[1];
+      graspPose.z = pos[2];
       graspObject(graspPose);
 
 
@@ -253,9 +258,9 @@ int main()
    if(wmraArm.initialize()){
       try{
 
-         //thread t(socketControl, 0); // start the communication thread
-         //cout << "Controller intialized in main" << endl;
-         WMRA::Pose readyPose = wmraArm.getPose();
+         thread t(socketControl, 0); // start the communication thread
+         cout << "Controller intialized in main" << endl;
+        
 
          int cordframe;
          double temp;
@@ -281,6 +286,7 @@ int main()
             }
          }
 
+          WMRA::Pose readyPose = wmraArm.getPose();
 
 
          while(!endFlag){
@@ -340,9 +346,11 @@ int main()
                wmraArm.closeDebug();
                endFlag = true;
             }
+            // save position at the end of every loop
             WMRA::JointValueSet j = wmraArm.getJointAngles();
-            saveJointAngles(j); // save position at the end of every loop
+            saveJointAngles(j); 
          } //end of while loop
+
          cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
          cin >> option;
          if(option ==1){
