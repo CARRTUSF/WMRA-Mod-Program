@@ -107,11 +107,13 @@
     <ClCompile Include="kinematics.cpp" />
     <ClCompile Include="MotorController.cpp" />
     <ClCompile Include="optimization.cpp" />
+    <ClCompile Include="SocketControl.cpp" />
     <ClCompile Include="SockStream.cpp" />
     <ClCompile Include="stringUtility.cpp" />
     <ClCompile Include="tinythread.cpp" />
     <ClCompile Include="trajectory.cpp" />
     <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="WMRArobot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arm.h" />
@@ -122,11 +124,13 @@
     <ClInclude Include="matrix.h" />
     <ClInclude Include="MotorController.h" />
     <ClInclude Include="optimization.h" />
+    <ClInclude Include="SocketControl.h" />
     <ClInclude Include="SockStream.h" />
     <ClInclude Include="stringUtility.h" />
     <ClInclude Include="tinythread.h" />
     <ClInclude Include="trajectory.h" />
     <ClInclude Include="Utility.h" />
+    <ClInclude Include="WMRArobot.h" />
     <ClInclude Include="WmraTypes.h" />
     <ClInclude Include="WmraUtilities.h" />
   </ItemGroup>

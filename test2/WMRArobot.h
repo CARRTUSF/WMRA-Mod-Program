@@ -1,8 +1,11 @@
 #pragma once
-class WMRArobot
-{
-public:
-	WMRArobot(void);
-	~WMRArobot(void);
+
+namespace WMRA{
+	class WMRArobot
+	{
+	public:
+		WMRArobot(void);
+		~WMRArobot(void);
+	};
 };
 
