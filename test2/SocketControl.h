@@ -23,7 +23,11 @@ private :
 	Arm* robotArm;
 	static void socketListenReply(void * aArg);
 	string selectAction(string cmd);
-	bool graspObject(string cmd) ;
+	bool pickupObject(string cmd);
+	bool trashObject(string cmd);
+	bool pourObject(string cmd);
+	bool bringObject(string cmd);
+	bool cameraViewGripper(string cmd);
 };
 
 #endif
