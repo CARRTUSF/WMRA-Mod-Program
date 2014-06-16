@@ -39,9 +39,9 @@ namespace WMRA{
 
    class Pose{
    public:
-      int x;
-      int y;
-      int z;
+      double x;
+      double y;
+      double z;
       double yaw;
       double pitch;
       double roll;    

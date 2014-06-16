@@ -8,6 +8,7 @@
 #include "MotorController.h"
 #include "Arm.h"
 #include "Utility.h"
+#include "SocketControl.h"
 
 #define PI 3.14159265
 
@@ -258,10 +259,13 @@ int main()
    if(wmraArm.initialize()){
       try{
 
-         thread t(socketControl, 0); // start the communication thread
-         cout << "Controller intialized in main" << endl;
+         //thread t(socketControl, 0); // start the communication thread
+         //cout << "Controller intialized in main" << endl;
         
-
+		 SocketControl BCIrobotControler(&wmraArm);
+		 while(true){
+			 Sleep(20);
+		 }
          int cordframe;
          double temp;
          int option;

@@ -9,6 +9,7 @@
 
 class Arm;
 
+#include <string>
 #include "tinythread.h"
 #include "WmraTypes.h"
 
@@ -21,7 +22,8 @@ private :
 	tthread::thread* t;
 	Arm* robotArm;
 	static void socketListenReply(void * aArg);
-	bool graspObject(WMRA::Pose objectPose) ;
+	string selectAction(string cmd);
+	bool graspObject(string cmd) ;
 };
 
 #endif

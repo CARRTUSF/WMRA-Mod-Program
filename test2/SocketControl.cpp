@@ -19,11 +19,11 @@ void SocketControl::socketListenReply(void * aArg){
 
 
    SocketControl* self = (SocketControl*)aArg ;
-   receiving_udpsocket socket1( "localhost:7000" );
+   receiving_udpsocket socket1( "0.0.0.0:7500" );
    sockstream read_sock( socket1 );
-   sending_udpsocket socket2( "localhost:7001" );
+   sending_udpsocket socket2( "localhost:7501" );
    sockstream output_sock( socket2 );
-   WMRA::Pose curPose = self->robotArm->getPose();
+   
 
    if( !read_sock.is_open() ){
       cerr << "Could not open read socket for reading." << endl;
@@ -35,25 +35,43 @@ void SocketControl::socketListenReply(void * aArg){
    while(true){
       do{
          getline( read_sock, temp_str_buf );
-      } while( temp_str_buf.find("PICKUP")== string::npos ); // keep reading until message is received
-      WMRA::Pose graspPose;
-      graspPose.clear();
-      double pos[3] = {0};
-      int numRead = sscanf(temp_str_buf.c_str(), "%s %lf %lf %lf", temp_buf, &pos[0], &pos[1], &pos[2]);
-
-      graspPose.x = pos[0];
-      graspPose.y = pos[1];
-      graspPose.z = pos[2];
+      } while( temp_str_buf.find("COMMAND")== string::npos ); // keep reading until message is received
+	  self->selectAction(temp_str_buf);// selcts the action and calls appropriate function
+     
       //graspObject(graspPose);
 
 
       output_sock << "DONE" << endl;
-      output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
+      //output_sock << "POSITION " << curPose.x << " " << curPose.y << " " << curPose.z << endl; 
    }
 }
 
-bool SocketControl::graspObject(WMRA::Pose objectPose) // This function assumes orientation to be 0,0,0
+string SocketControl::selectAction(string cmd){
+	//
+	cmd.erase(0,8); //erase "COMMAND " from the begining
+	if(cmd.find("PICKUP") != string::npos){
+		graspObject(cmd);
+	}
+	return "DONE";
+}
+
+bool SocketControl::graspObject(string cmd) // This function assumes orientation to be 0,0,0
 {
+
+	
+	double pos[3] = {0};
+	char temp_buf[200];
+	int numRead = sscanf(cmd.c_str(), "%s %lf %lf %lf", temp_buf, &pos[0], &pos[1], &pos[2]);
+
+
+	WMRA::Pose objectPose;
+	objectPose.clear();
+	objectPose.x = pos[0];
+	objectPose.y = pos[1];
+	objectPose.z = pos[2];
+
+
+   WMRA::Pose curPose = robotArm->getPose();
    WMRA::Pose prePose = objectPose;
    prePose.x = prePose.x-100.0;
    prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
