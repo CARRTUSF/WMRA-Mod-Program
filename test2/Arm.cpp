@@ -53,7 +53,7 @@ void Arm::sendData( void * aArg){
 
 
 
-bool Arm::openGripper(){
+bool Arm::openGripper(bool blocking){
    double position = controller.readPos(7) - 10;
    controller.positionControl(7,position);
    Sleep(5000);
@@ -61,7 +61,7 @@ bool Arm::openGripper(){
    return true;
 }
 
-bool Arm::closeGripper(){
+bool Arm::closeGripper(bool blocking){
    double position = controller.readPos(7) + 10;
    controller.positionControl(7,position);
    Sleep(5000);
@@ -115,7 +115,9 @@ WMRA::Pose Arm::getPose(){
    return pose;
 }
 
-bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr){
+
+//This function blocks by default
+bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
    if(!controller.isInitialized()){
       return false;
    }  
@@ -295,7 +297,7 @@ void Arm::closeDebug(){
    jointVel.close();
 }
 
-bool Arm::toReady()
+bool Arm::toReady(bool blocking)
 {
    double angles[7] = {M_PI/2, M_PI/2,0, M_PI/2,M_PI/2,M_PI/3,0};
    vector<double> readyAng(angles,angles+6);
@@ -321,7 +323,7 @@ bool Arm::toReady()
    return true;
 }
 
-bool Arm::ready2Park()
+bool Arm::ready2Park(bool blocking)
 {
 	controller.positionControl(3, degToRad(180)); //joint 4 moved down, parallel with link 3
 	Sleep(10000);
@@ -331,7 +333,7 @@ bool Arm::ready2Park()
 	return 1;
 }
 
-bool Arm::park2Ready()
+bool Arm::park2Ready(bool blocking)
 {
 	controller.positionControl(0, degToRad(90)); //joint 4 moved down, parallel with link 3
 	Sleep(10000);
