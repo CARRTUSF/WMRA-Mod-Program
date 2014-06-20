@@ -28,6 +28,7 @@ private :
 	bool pourObject(string cmd);
 	bool bringObject(string cmd);
 	bool cameraViewGripper(string cmd);
+	bool moveArmTo(string cmd);
 };
 
 #endif
