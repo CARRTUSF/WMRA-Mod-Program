@@ -271,7 +271,10 @@ class sockstream : public std::iostream
     virtual ~sockstream()
              {}
     operator void*()
-             { return std::iostream::operator void*(); }
+	{
+		return (void*)this;
+		//return std::iostream::operator void*();
+	}
     void     set_timeout( int t )
              { buf.set_timeout( t ); }
     int      get_timeout() const

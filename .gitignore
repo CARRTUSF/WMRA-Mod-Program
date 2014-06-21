@@ -170,3 +170,4 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+tools/UDPTester/.idea/

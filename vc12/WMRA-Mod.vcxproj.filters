@@ -13,105 +13,111 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\SockStream">
+      <UniqueIdentifier>{9e3f46aa-297f-4b6e-9524-800cb5ccd0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SockStream">
+      <UniqueIdentifier>{cfae38b8-6923-4c41-8a14-4f160216bdea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="application.cpp">
+    <ClCompile Include="..\src\application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Arm.cpp">
+    <ClCompile Include="..\src\Arm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigReader.cpp">
+    <ClCompile Include="..\src\ConfigReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="galilController.cpp">
+    <ClCompile Include="..\src\galilController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jacobian.cpp">
+    <ClCompile Include="..\src\jacobian.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kinematics.cpp">
+    <ClCompile Include="..\src\kinematics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MotorController.cpp">
+    <ClCompile Include="..\src\MotorController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="optimization.cpp">
+    <ClCompile Include="..\src\optimization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SockStream.cpp">
+    <ClCompile Include="..\src\SocketControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stringUtility.cpp">
+    <ClCompile Include="..\src\stringUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tinythread.cpp">
+    <ClCompile Include="..\src\tinythread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="trajectory.cpp">
+    <ClCompile Include="..\src\trajectory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utility.cpp">
+    <ClCompile Include="..\src\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WMRArobot.cpp">
+    <ClCompile Include="..\src\WMRArobot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SocketControl.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\3rdparty\SockStream\src\SockStream.cpp">
+      <Filter>Source Files\SockStream</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Arm.h">
+    <ClInclude Include="..\include\Arm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigReader.h">
+    <ClInclude Include="..\include\ConfigReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="galilController.h">
+    <ClInclude Include="..\include\galilController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jacobian.h">
+    <ClInclude Include="..\include\jacobian.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="kinematics.h">
+    <ClInclude Include="..\include\kinematics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.h">
+    <ClInclude Include="..\include\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MotorController.h">
+    <ClInclude Include="..\include\MotorController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="optimization.h">
+    <ClInclude Include="..\include\optimization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SockStream.h">
+    <ClInclude Include="..\include\SocketControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stringUtility.h">
+    <ClInclude Include="..\include\stringUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tinythread.h">
+    <ClInclude Include="..\include\tinythread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="trajectory.h">
+    <ClInclude Include="..\include\trajectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.h">
+    <ClInclude Include="..\include\Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WmraTypes.h">
+    <ClInclude Include="..\include\WMRArobot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WmraUtilities.h">
+    <ClInclude Include="..\include\WmraTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WMRArobot.h">
+    <ClInclude Include="..\include\WmraUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SocketControl.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\3rdparty\SockStream\include\SockStream.h">
+      <Filter>Header Files\SockStream</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
