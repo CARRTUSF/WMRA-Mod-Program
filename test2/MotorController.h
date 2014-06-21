@@ -146,6 +146,8 @@ public:
 	*/
 	bool definePosition(int motorNum, double angle);
 
+	std::vector<double> getLastKnownPos();
+
 	/// \Turns motors on
 	bool motorsOn();
 
@@ -175,6 +177,7 @@ private:
 	bool isValidMotor(int motorNum);
 
 	vector<double> curPosition;
+	vector<double> lastKnownPos;
 };
 
 #endif;

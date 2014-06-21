@@ -267,7 +267,12 @@ std::vector<double> MotorController::readPosAll()
 	{
 		tgt[i] = encToAng(i, pos[i]); 
 	}
+	lastKnownPos = tgt;
 	return tgt;       
+}
+
+std::vector<double> MotorController::getLastKnownPos(){
+	return lastKnownPos;
 }
 
 double MotorController::readPosErr(int motorNum) // returns the error in  
