@@ -49,6 +49,9 @@ public:
 	bool isInitialized();
 	bool setInitialJointAngles(WMRA::JointValueSet& joints);
 	static void sendData(void* aArg);
+	WMRA::JointValueSet getLastKnownJointPosition();
+		
+
 	tthread::thread* t;
 
 private:
@@ -60,6 +63,7 @@ private:
 	
 	Matrix gripperInitRotDiff;
 	WMRA::JointValueSet readyPosition; //joint angles for ready position
+	WMRA::JointValueSet lastKnownJointPos;
 
 	std::ofstream xyz_way; // Waypoint XYZ values
 	std::ofstream xyz_sent; // command XYZ values

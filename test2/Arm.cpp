@@ -1,4 +1,5 @@
 #include "Arm.h"
+#include <assert.h>
 
 using namespace std;
 using namespace math;
@@ -88,8 +89,10 @@ bool Arm::initialize(){
 
 WMRA::JointValueSet Arm::getJointAngles(){
    WMRA::JointValueSet joints;
+   std::vector<double> pos = controller.readPosAll();
+   assert(pos.size() >= 7);
    for(int i = 0; i < joints.size(); i++){		// Sets the current location to a 1x8 vector		
-      joints[i] = controller.readPos(i);
+      joints[i] = pos[i];
    }
    return joints;   
 }
@@ -262,8 +265,9 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
          jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
             << speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
 
-         if(i == 1)controller.beginLI();
+         
          controller.addLinearMotionSegment(currJointAng, speeds);
+		 if(i == 1)controller.beginLI();
          controller.endLIseq();
 
          //prevPosTF = currPosTF;
@@ -281,8 +285,8 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
          xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;        
          Sleep(1000* dt_mod);
       }
+	  cout << "all motion commands sent..." << endl;
    }
-
    else{
       return false;
    }
@@ -297,10 +301,19 @@ void Arm::closeDebug(){
    jointVel.close();
 }
 
+WMRA::JointValueSet Arm::getLastKnownJointPosition(){
+   WMRA::JointValueSet joints;
+   std::vector<double> pos = controller.getLastKnownPos();
+   for(int i = 0; i < joints.size(); i++){		// Sets the current location to a 1x8 vector		
+      joints[i] = pos[i];
+   }
+   return joints; 
+}
+
 bool Arm::toReady(bool blocking)
 {
    double angles[7] = {M_PI/2, M_PI/2,0, M_PI/2,M_PI/2,M_PI/3,0};
-   vector<double> readyAng(angles,angles+6);
+   vector<double> readyAng;
    
    vector<double> speeds;
    readyAng.push_back(1.570796327-controller.readPos(0));
