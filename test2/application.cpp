@@ -3,6 +3,7 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include <limits>
 #include "tinythread.h"
 #include "matrix.h" 
 #include "MotorController.h"
@@ -11,34 +12,37 @@
 #include "SocketControl.h"
 
 #define PI 3.14159265
-
+#undef max
 using namespace std;
 using namespace tthread;
 
 Arm wmraArm;
 
-WMRA::Pose getUserDest(){
-   WMRA::Pose dest;
-   double temp;
-   cout << "\n\nSelect a destination" << endl;
-   cout << "dx = ";
-   cin >> dest.x;
-   cout << "dy = ";
-   cin >> dest.y;
-   cout << "dz = ";
-   cin >> dest.z;
-   cout << "Pitch = ";
-   cin >> temp;
-   dest.pitch = degToRad(temp);
-   cout << "Roll = ";
-   cin >> temp;
-   dest.roll = degToRad(temp);
-   cout << "Yaw = ";
-   cin >> temp;
-   dest.yaw = degToRad(temp);
-   cout << endl;
+bool getUserDest(WMRA::Pose& dest){
+   //WMRA::Pose dest;
+   double temp[6];
+   char buf[200];
+   string response;
+   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
+   cout << "\n\nEnter destination (x y z r p y): " << endl;
+   cin.getline(buf,200);
 
-   return dest;    
+   int num = sscanf(buf,"%lf %lf %lf %lf %lf %lf", 
+	   &temp[0],&temp[1], &temp[2], &temp[3], &temp[4], &temp[5]);
+   if(num == 6){
+	   dest.x = temp[0];
+	   dest.y = temp[1];
+	   dest.z = temp[2];
+	   dest.roll = degToRad(temp[3]);
+	   dest.pitch = degToRad(temp[4]);
+	   dest.yaw = degToRad(temp[5]);
+	   return true;
+   }
+   else{
+	   cout << "Invalid input" << endl;
+	   return false;
+   }
+   
 }
 
 
@@ -198,13 +202,16 @@ bool moveJoint()
    int choice, jointNum;
    double angle, angleRadians;
 
+   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "Which Joint? ";
    cin >> jointNum;
    jointNum--;
 
+   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "abs=0, rel=1? ";
    cin >> choice;
 
+   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "Angle? ";
    cin >> angle;
    angleRadians = degToRad(angle);
@@ -252,6 +259,17 @@ bool readJointAnglesFromFiles(WMRA::JointValueSet &angles){
    else return false;
 }
 
+bool gotoReadyPosition(Arm& arm, WMRA::Pose& ready){
+	arm.autonomous(ready, WMRA::ARM_FRAME_PILOT_MODE);
+	cout << "Would you like to set joint angles to 90 90 0 90 90 60 0 ? ( yes = 1 no = 2) :";
+	int temp = -1;
+	cin >> temp;
+	if(temp == 1){
+		arm.toReady(true);
+	}
+	return true;	
+}
+
 int main()
 {
    int velocity;				// Max velocity of the gripper in movement
@@ -276,18 +294,21 @@ int main()
 
 		 WMRA::Pose readyPose = wmraArm.getPose();
 
-         cout << "would you like to load Joint angles from file ? yes=1 no=0 :" ;
+		 
+         //cin.clear();
+		 //cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
+		 cout << "would you like to load Joint angles from file ? yes=1 no=0 :" ;
          cin >> option;
          WMRA::JointValueSet initialJointAngles;
          if(option ==1){         
             if( readJointAnglesFromFiles(initialJointAngles)){
-               cout << "Joint angles read from : " << endl;
+               cout << ">> Joint angles read from file are : ";
                cout << initialJointAngles.toString() << endl;
-               cout << "Seting joint angles on Arm. " << endl;
+               cout << ">> Seting joint angles on Arm... " << endl;
 			   wmraArm.setInitialJointAngles(initialJointAngles);
             }
             else{
-               cout << "Read Joint angle failed" << endl;
+               cout << ">> Read Joint angle failed" << endl;
             }
          }          
 
@@ -295,38 +316,45 @@ int main()
          while(!endFlag){
             cout << "Current Position is :" << endl;
             WMRA::Pose pose = wmraArm.getPose();
-            cout << "x = " << pose.x << ", y = " << pose.y << ", z = " << pose.z ; 
-            cout << " ,yaw= " << radToDeg(pose.yaw) << " ,pitch= " << radToDeg(pose.pitch) << " ,roll= " << radToDeg(pose.roll) <<endl;
+            cout << " x = " << pose.x << " y = " << pose.y << " z = " << pose.z  << endl; 
+            cout << " roll = " << radToDeg(pose.roll) << " pitch = " << radToDeg(pose.pitch) << " yaw = " << radToDeg(pose.yaw)  <<endl;
 
-            cout << "Select an option (0 = Exit, 1 = Continue, 2 = Go to Ready, 3 = ready to park, 4 = park to ready, 5 = save joint position, 6 = move joint 8 = Grasp Object 9 = close gripper, 10 = open gripper) : "; 
+			//cin.clear();
+			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
+            cout << "\nAvaialble options: \n 0 = Exit \n 1 = Move Arm \n 2 = Go to Ready \n 3 = ready to park ";
+			cout << "\n 4 = park to ready \n 5 = save joint position \n 6 = move joint \n 8 = Grasp Object \n 9 = close gripper \n 10 = open gripper \n"; 
+			cout << "Enter option : "; 
+			cout.flush();
             cin >> option;
 
-            if(option==1){
-               WMRA::Pose dest = getUserDest();            
-               cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper, 7=skip: "; 
-               cin >> cordframe; 
-               if(cordframe==1){
-                  try{
-                     wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
-                  }
-                  catch(...){
-                     cout << "haha" << endl;
-                  }
-               }
-               else if(cordframe==2){
-                  wmraArm.autonomous(dest, WMRA::ARM_FRAME_REL); // Moves arm
-               }
-               else if(cordframe==3){
-                  wmraArm.autonomous(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
-               }
-               else{
-                  cout << "skipping motion..." << endl;
-                  continue;
-               }
-               //Sleep(10000); // wait for motion end
-            }
+			if(option==1){
+				WMRA::Pose dest;
+				if(getUserDest(dest)){ 
+					//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "Which cordinate frame? 1=ABS, 2=REL, 3=Gripper, 7=skip: "; 					
+					cin >> cordframe; 
+					if(cordframe==1){
+						try{
+							cout <<">> moving arm..." << endl;
+							wmraArm.autonomous(dest, WMRA::ARM_FRAME_PILOT_MODE); // Moves arm
+						}
+						catch(...){
+							cout << "haha" << endl;
+						}
+					} else if(cordframe==2){
+						wmraArm.autonomous(dest, WMRA::ARM_FRAME_REL); // Moves arm
+					} else if(cordframe==3){
+						wmraArm.autonomous(dest, WMRA::GRIPPER_FRAME_REL); // Moves arm
+					} else{
+						cout << "skipping motion..." << endl;
+						continue;
+					}
+				}
+				//Sleep(10000); // wait for motion end
+			}
             else if(option==2){
-               wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
+			   gotoReadyPosition(wmraArm, readyPose);
+               
                //Sleep(10000);
             }
             else if(option==3){
@@ -336,14 +364,19 @@ int main()
                wmraArm.park2Ready();
             }
             else if(option==5){
+
+				saveJointAngles(wmraArm.getLastKnownJointPosition());
+				cout << ">> Joint values saved" << endl;
                //continuousSquare(wmraArm.getPose());
             }
             else if(option==6){
                moveJoint();
             }
             else if(option==8){
-               WMRA::Pose dest = getUserDest();
-               graspObject(dest);
+               WMRA::Pose dest;
+			   if (getUserDest(dest) ){
+					graspObject(dest);
+			   }
             }
 			 else if(option==9){
 				 wmraArm.closeGripper(true); //block until done
@@ -352,7 +385,7 @@ int main()
 			else if(option==10){
 				  wmraArm.openGripper(true); //block until done
             }
-            else if(option==0){
+            else if(option== 0){
                wmraArm.closeDebug();
                endFlag = true;
             }
@@ -361,8 +394,8 @@ int main()
 			}
             // save position at the end of every loop
 			cout << "Saving Joint angles to file for recovery" << endl;
-            WMRA::JointValueSet j = wmraArm.getJointAngles();
-            saveJointAngles(j); 
+            saveJointAngles(wmraArm.getLastKnownJointPosition());
+
          } //end of while loop
 
          cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
@@ -376,7 +409,7 @@ int main()
       catch (exception& e){
          cerr << e.what() << endl;
          //try to save wmra joint angles
-         WMRA::JointValueSet j = wmraArm.getJointAngles();
+		 WMRA::JointValueSet j = wmraArm.getLastKnownJointPosition();
          cout << "Current joint angles are: " << endl;;
          cout  << j.toString() << endl; 
          saveJointAngles(j);

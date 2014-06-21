@@ -25,7 +25,7 @@ void SocketControl::socketListenReply(void * aArg) {
 		cerr << "Could not open read socket for reading." << endl;
 	}
 
-	cout << "hey thread started " << endl;
+	cout << ">> Socket Controller thread started " << endl;
 	string temp_str_buf;
 	char temp_buf[200];
 	while(true) {
