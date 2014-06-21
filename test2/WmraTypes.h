@@ -70,8 +70,14 @@ namespace WMRA{
          return (int)Joint.size();
       }
       double& operator[](int i){
-         if(i < Joint.size())  return Joint[i];
+		  if(i < 0 && i > 6) 
+			  throw std::out_of_range("index out of range of JointValueset");
+		  else 
+			  return Joint[i];
       }
+	  operator std::vector<double>(){
+		  return Joint;
+	  }
       std::string toString(){
          std::stringstream ss;
          //add the firat n-1 elements with a comma
