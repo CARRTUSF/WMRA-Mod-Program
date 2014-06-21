@@ -202,15 +202,18 @@ bool moveJoint()
    int choice, jointNum;
    double angle, angleRadians;
 
+   cin.clear();
    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "Which Joint? ";
    cin >> jointNum;
    jointNum--;
 
+   cin.clear();
    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "abs=0, rel=1? ";
    cin >> choice;
 
+   cin.clear();
    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
    cout << "Angle? ";
    cin >> angle;
