@@ -29,6 +29,10 @@ private :
 	bool bringObject(string cmd);
 	bool cameraViewGripper(string cmd);
 	bool moveArmTo(string cmd);
+
+private:
+	WMRA::Pose waitingPose;
+	WMRA::Pose intermediateWaitingPose;
 };
 
 #endif

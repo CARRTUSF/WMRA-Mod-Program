@@ -6,6 +6,8 @@ SocketControl::SocketControl(Arm* robot)
 {
 	robotArm = robot;
 	t = new thread(socketListenReply,this);
+	waitingPose = WMRA::Pose(0, 200, 650, 0, 0, 0);
+	intermediateWaitingPose = WMRA::Pose(400, -150, 480, 0, 0, 0);
 }
 
 
@@ -93,39 +95,56 @@ bool SocketControl::pickupObject(string cmd) // This function assumes orientatio
 	objectPose.y = pos[1];
 	objectPose.z = pos[2];
 
-
 	WMRA::Pose curPose = robotArm->getPose();
 	WMRA::Pose prePose = objectPose;
 	prePose.x = prePose.x-100.0;
-	prePose.z = prePose.z+100.0; // Prepose will always be higher than grasping position
 
 	WMRA::Pose graspPose = objectPose;
 	graspPose.x = graspPose.x + 50;
 
 	WMRA::Pose liftTable = graspPose;
-	liftTable.z = liftTable.z +100;
+	liftTable.z = liftTable.z + 100;
+
+	cout << "going to intermediate pose" << endl;
+	robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+	//Sleep(2000);
 
 	cout << "going to prepose" <<endl;
 	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
 	//Sleep(2000);
+
 	cout << "Opening gripper " << endl;
 	robotArm->openGripper();
 	//Sleep(5000);
+
 	cout << "Going to grasp pose" << endl;
 	robotArm->autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
 	//Sleep(2000);
+
 	cout << "Closing Gripper" <<endl;
 	robotArm->closeGripper();
-	//Sleep(5000);
+	Sleep(2000);
 
 	//objectPose.z = objectPose.z + 100.0; // Raising object
 	cout << "Raising Object" << endl;
 	robotArm->autonomous(liftTable, WMRA::ARM_FRAME_PILOT_MODE); // Raising object
-	//Sleep(10000);
+	//Sleep(2000);
 
-	cout << "Going to prepose" << endl;
-	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
-	//Sleep(10000);
+	cout << "Going to grasp Pose Again" << endl;
+	robotArm->autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to graspPose
+	//Sleep(2000);
+	
+	cout << "Opening gripper " << endl;
+	robotArm->openGripper();
+	Sleep(2000);
+
+	cout << "Going back to pre Pose" << endl;
+	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre Pose
+	//Sleep(2000);
+
+	cout << "Going back to waiting Pose" << endl;
+	robotArm->autonomous(waitingPose, WMRA::ARM_FRAME_PILOT_MODE); //Return to Waiting Pose
+	//Sleep(2000);
 
 	return true;
 }
@@ -141,7 +160,6 @@ bool SocketControl::trashObject(string cmd) {
 		&trashPos[0], &trashPos[1], &trashPos[2]);
 
 	return true;
-
 }
 
 bool SocketControl::pourObject(string cmd) {
@@ -151,10 +169,13 @@ bool SocketControl::pourObject(string cmd) {
 	double destRot[3] = {0};
 	cmd.erase(0, 5);
 	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", 
-		&objPos[0], &objPos[1], &objPos[2],
-		&objRot[0], &objRot[1], &objRot[2], 
-		&destPos[0], &destPos[1], &destPos[2],
-		&destRot[0], &destRot[1], &destRot[2]);
+						&objPos[0], &objPos[1], &objPos[2],
+						&objRot[0], &objRot[1], &objRot[2], 
+						&destPos[0], &destPos[1], &destPos[2],
+						&destRot[0], &destRot[1], &destRot[2]);
+
+
+
 	return true;
 }
 
@@ -163,8 +184,11 @@ bool SocketControl::bringObject(string cmd) {
 	double objRot[3] = {0};
 	cmd.erase(0, 14);
 	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf", 
-		&objPos[0], &objPos[1], &objPos[2],
-		&objRot[0], &objRot[1], &objRot[2]);
+						&objPos[0], &objPos[1], &objPos[2],
+						&objRot[0], &objRot[1], &objRot[2]);
+
+
+
 	return true;
 }
 

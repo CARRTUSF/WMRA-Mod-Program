@@ -39,7 +39,8 @@ void KinematicOptimizer::WMRA_Jlimit(Matrix& qmin, Matrix& qmax){
 
 	//double qmintemp[7]= {-360*M_PI/180,-360*M_PI/180,-360*M_PI/180,-360*M_PI/180,-360*M_PI/180,-90*M_PI/180,-360*M_PI/180};
    //double qmintemp[7]= {-170*M_PI/180,-170*M_PI/180,-170*M_PI/180,-170*M_PI/180,-170*M_PI/180,-79*M_PI/180,-200*M_PI/180};
-   double qmintemp[7]= {-10*M_PI/180,-15*M_PI/180,-170*M_PI/180,-170*M_PI/180,-170*M_PI/180,-90*M_PI/180,-200*M_PI/180};
+   //double qmintemp[7]= {-10*M_PI/180,-15*M_PI/180,-170*M_PI/180,-170*M_PI/180,-170*M_PI/180,-90*M_PI/180,-200*M_PI/180};
+   double qmintemp[7]= {-10*M_PI/180,-15*M_PI/180,-170*M_PI/180,-170*M_PI/180,-170*M_PI/180, 05*M_PI/180,-200*M_PI/180};
    
    //double qmaxtemp[7] = {360*M_PI/180,360*M_PI/180,360*M_PI/180,360*M_PI/180,360*M_PI/180,90*M_PI/180,360*M_PI/180};
 	//double qmaxtemp[7] = {170*M_PI/180,170*M_PI/180,170*M_PI/180,170*M_PI/180,170*M_PI/180,79*M_PI/180,200*M_PI/180};
