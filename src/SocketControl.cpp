@@ -64,6 +64,7 @@ string SocketControl::selectAction(string cmd) {
 	return "DONE";
 }
 
+//Move Arm To
 bool SocketControl::moveArmTo(string cmd){
 	double objPos[3] = {0};
 	char temp_buf[200];
@@ -82,7 +83,7 @@ bool SocketControl::moveArmTo(string cmd){
 	return true;
 }
 
-//Pickup Object
+//Pickup Object [DONE]
 bool SocketControl::pickupObject(string cmd) // This function assumes orientation to be 0,0,0
 {
 	double objPos[3] = {0};
@@ -148,7 +149,7 @@ bool SocketControl::pickupObject(string cmd) // This function assumes orientatio
 	return true;
 }
 
-//Trash Object
+//Trash Object [DONE]
 bool SocketControl::trashObject(string cmd) {
 	double objPos[3] = {0};
 	double objRot[3] = {0};
@@ -165,9 +166,15 @@ bool SocketControl::trashObject(string cmd) {
 	objectPose.x = objPos[0];
 	objectPose.y = objPos[1];
 	objectPose.z = objPos[2];
+	objectPose.roll = objRot[0];
+	objectPose.pitch = objRot[1];
+	objectPose.yaw = objRot[2];
 
 	WMRA::Pose prePose = objectPose;
-	prePose.x = prePose.x-100.0;
+	prePose.x = prePose.x - 100.0;
+
+	WMRA::Pose liftPose = objectPose;
+	liftPose.z = liftPose.z + 100.0;
 
 	//Create Pose for Trash Position
 	WMRA::Pose trashPose;
@@ -195,6 +202,10 @@ bool SocketControl::trashObject(string cmd) {
 	cout << "Closing Gripper" <<endl;
 	robotArm->closeGripper();
 	Sleep(2000);
+
+	cout << "Going to lift Pose" << endl;
+	robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to trash location
+	//Sleep(2000);
 
 	cout << "Going to trash Pose" << endl;
 	robotArm->autonomous(trashPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to trash location
