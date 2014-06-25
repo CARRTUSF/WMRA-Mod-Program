@@ -31,8 +31,9 @@ private :
 	bool moveArmTo(string cmd);
 
 private:
-	WMRA::Pose waitingPose;
 	WMRA::Pose intermediateWaitingPose;
+	WMRA::Pose userPose;
+	WMRA::Pose waitingPose;
 };
 
 #endif

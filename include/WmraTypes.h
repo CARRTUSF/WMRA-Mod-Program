@@ -44,8 +44,10 @@ namespace WMRA{
       double z;
       double yaw;
       double pitch;
-      double roll;    
-      Pose(int _x =0, int _y =0, int _z=0, double _yaw=0, double _pitch=0, double _roll=0){
+      double roll; 
+	  Pose():x(0),y(0),z(0),yaw(0),pitch(0),roll(0){
+	  }
+      Pose(int _x , int _y , int _z, double _yaw, double _pitch, double _roll){
          x = _x; y = _y; z = _z; pitch = _pitch; yaw = _yaw ; roll = _roll;
       }
       bool clear(){
