@@ -29,6 +29,7 @@ private :
 	bool bringObject(string cmd);
 	bool cameraViewGripper(string cmd);
 	bool moveArmTo(string cmd);
+	bool goToWaiting(string cmd);
 
 private:
 	WMRA::Pose intermediateWaitingPose;

@@ -60,9 +60,25 @@ string SocketControl::selectAction(string cmd) {
 		cameraViewGripper(cmd);
 	} else if(cmd.find("MOVE_ARM_TO")!= string::npos) {
 		moveArmTo(cmd);
+	} else if(cmd.find("GO_TO_WAITING")!= string::npos) {
+		moveArmTo(cmd);
 	}
 
 	return "DONE";
+}
+
+//Move Arm To
+bool SocketControl::goToWaiting(string cmd){
+
+	cout << "moving arm to intermediateWaitingPose ...."  << endl;
+	robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE, true); // Move to object location
+
+	cout << "moving arm to waiting pose..." << endl;
+	robotArm->autonomous(waitingPose, WMRA::ARM_FRAME_PILOT_MODE, true); // Move to object location
+
+	Sleep(2000);
+
+	return true;
 }
 
 //Move Arm To
