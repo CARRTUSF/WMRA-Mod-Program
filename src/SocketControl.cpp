@@ -61,7 +61,7 @@ string SocketControl::selectAction(string cmd) {
 	} else if(cmd.find("MOVE_ARM_TO")!= string::npos) {
 		moveArmTo(cmd);
 	} else if(cmd.find("GO_TO_WAITING")!= string::npos) {
-		moveArmTo(cmd);
+		goToWaiting(cmd);
 	}
 
 	return "DONE";
