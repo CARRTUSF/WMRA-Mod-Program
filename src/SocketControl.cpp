@@ -250,12 +250,13 @@ bool SocketControl::trashObject(string cmd) {
 bool SocketControl::pourObject(string cmd) {
 	double objPos[3] = {0};
 	double objRot[3] = {0};
+	double objHeight = 0;
 	double destPos[3] = {0};
 	double destRot[3] = {0};
 	cmd.erase(0, 5);
-	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", 
+	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", 
 		&objPos[0], &objPos[1], &objPos[2],
-		&objRot[0], &objRot[1], &objRot[2], 
+		&objRot[0], &objRot[1], &objRot[2], &objHeight 
 		&destPos[0], &destPos[1], &destPos[2],
 		&destRot[0], &destRot[1], &destRot[2]);
 
