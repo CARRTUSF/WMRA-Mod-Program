@@ -42,6 +42,7 @@ public:
 	bool toReady(bool blocking = true);
 	bool ready2Park(bool blocking = true);
 	bool park2Ready(bool blocking = true);
+	bool motionComplete();
 	bool moveJoint(int jointNum, double angle, int ref);
 	WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
@@ -50,8 +51,7 @@ public:
 	bool setInitialJointAngles(WMRA::JointValueSet& joints);
 	static void sendData(void* aArg);
 	WMRA::JointValueSet getLastKnownJointPosition();
-		
-
+	
 	tthread::thread* t;
 
 private:
@@ -70,7 +70,7 @@ private:
 	std::ofstream xyz_cont; // command XYZ values
 	std::ofstream jointVel; // joint velocity values
 	bool initialized;
-   bool gripperOpen;
+    bool gripperOpen;
 	MotorController controller; 
 };
 #endif;

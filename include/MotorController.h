@@ -67,6 +67,9 @@ public:
 	/// \brief return true if debug mode is true
 	bool isDebug();
 
+	/// \brief return true if motion has finished
+	bool motionFinished();
+
 	/// \brief sends the default values to the galil controller
 	bool wmraSetup();
 

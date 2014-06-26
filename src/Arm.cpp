@@ -52,8 +52,6 @@ void Arm::sendData( void * aArg){
 	}
 }
 
-
-
 bool Arm::openGripper(bool blocking){
    double position = controller.readPos(7) - 8;
    controller.positionControl(7,position);
@@ -157,6 +155,10 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
    }
    /**call autonomousMove with start and dest transformation matrices **/
    return autonomousMove(startLoc_T, destLoc_T);
+}
+
+bool Arm::motionComplete() {
+	return controller.motionFinished();
 }
 
 bool Arm::moveJoint(int jointNum, double angle, int ref)
