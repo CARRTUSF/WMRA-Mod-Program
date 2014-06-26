@@ -154,7 +154,7 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
       destLoc_T = pose2TfMat(dest);
    }
    /**call autonomousMove with start and dest transformation matrices **/
-   return autonomousMove(startLoc_T, destLoc_T);
+   return autonomousMove(startLoc_T, destLoc_T, blocking);
 }
 
 bool Arm::motionComplete() {
@@ -184,7 +184,7 @@ bool Arm::moveJoint(int jointNum, double angle, int ref)
 	return 0;
 }
 
-bool Arm::autonomousMove(Matrix start, Matrix dest){
+bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
    /** calculate angular distance **/
    Matrix startRot(3,3),destRot(3,3);
    for ( int i=0 ; i < 3 ; i++ ) {  //deep copy rotation portion
@@ -282,12 +282,20 @@ bool Arm::autonomousMove(Matrix start, Matrix dest){
 
       controller.beginLI();
       controller.endLIseq();
-      for(int k = 0; k < (numWayPoints+10); k++){
+	  cout << "all motion commands sent..." << endl;
+	  /* wait for motion to complete */
+	  if(blocking){
+		  while(!motionComplete()){
+			  getJointAngles();
+			  Sleep(200);
+		  }
+	  }
+    /*  for(int k = 0; k < (numWayPoints+10); k++){
          debugPos_T = kinematics(controller.readPosAll());
          xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;        
          Sleep(1000* dt_mod);
-      }
-	  cout << "all motion commands sent..." << endl;
+      }*/
+	  
    }
    else{
       return false;

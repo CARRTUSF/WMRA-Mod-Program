@@ -55,7 +55,7 @@ public:
 	tthread::thread* t;
 
 private:
-	bool autonomousMove(Matrix start, Matrix dest);
+	bool autonomousMove(Matrix start, Matrix dest, bool blocking = true);
 	double dt;	// the default time between milestones
 	double dt_mod;	// the default time between milestones
 	double maxAngularVelocity;
