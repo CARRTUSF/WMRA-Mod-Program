@@ -404,8 +404,8 @@ int main()
          cout << "About to exit program. Would you like to go to ready position? 1=Yes 0=No : " ;
          cin >> option;
          if(option ==1){
-            wmraArm.autonomous(readyPose, WMRA::ARM_FRAME_PILOT_MODE);
-            Sleep(10000);
+            gotoReadyPosition(wmraArm, readyPose);
+            Sleep(1000);
          }
          //saveJointAngles();
       }
