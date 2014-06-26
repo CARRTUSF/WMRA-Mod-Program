@@ -256,7 +256,7 @@ bool SocketControl::pourObject(string cmd) {
 	cmd.erase(0, 5);
 	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", 
 		&objPos[0], &objPos[1], &objPos[2],
-		&objRot[0], &objRot[1], &objRot[2], &objHeight 
+		&objRot[0], &objRot[1], &objRot[2], &objHeight, 
 		&destPos[0], &destPos[1], &destPos[2],
 		&destRot[0], &destRot[1], &destRot[2]);
 
