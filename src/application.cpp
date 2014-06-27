@@ -322,8 +322,8 @@ int main()
             cout << " x = " << pose.x << " y = " << pose.y << " z = " << pose.z  << endl; 
             cout << " roll = " << radToDeg(pose.roll) << " pitch = " << radToDeg(pose.pitch) << " yaw = " << radToDeg(pose.yaw)  <<endl;
 
-			//cin.clear();
-			//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
+			cin.clear();
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear input buffer
             cout << "\nAvaialble options: \n 0 = Exit \n 1 = Move Arm \n 2 = Go to Ready \n 3 = ready to park ";
 			cout << "\n 4 = park to ready \n 5 = save joint position \n 6 = move joint \n 8 = Grasp Object \n 9 = close gripper \n 10 = open gripper \n"; 
 			cout << "Enter option : "; 
