@@ -9,7 +9,8 @@ SocketControl::SocketControl(Arm* robot)
 	t = new thread(socketListenReply,this);
 	intermediateWaitingPose = WMRA::Pose(400, -150, 480, 0, 0, 0);
 	userPose = WMRA::Pose(0, -250, 480, -90, 0, 0);
-	waitingPose = WMRA::Pose(0, 200, 650, 0, 0, 0);
+	waitingPose = WMRA::Pose(0, 200, 600, 0, 0, 0);
+	//intermediateWaitingPose = WMRA::Pose(200, 100, 550,-10, 0, 0);
 }
 
 //Destructor
@@ -314,11 +315,11 @@ bool SocketControl::bringObject(string cmd) {
 
 		cout << "Going to user Pose" << endl;
 		robotArm->autonomous(userPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to user location
-		Sleep(3000);
+		//Sleep(3000);
 
 		cout << "Opening gripper " << endl;
 		robotArm->openGripper();
-		Sleep(1000);
+		//Sleep(1000);
 
 		cout << "Going back to waiting Pose" << endl;
 		robotArm->autonomous(waitingPose, WMRA::ARM_FRAME_PILOT_MODE); //Return to Waiting Pose
@@ -338,21 +339,22 @@ bool SocketControl::cameraViewGripper(string cmd) {
 		&objPose[3], &objPose[4], &objPose[5]);
 
 	if(numRead == 7){
+		//goto intermediate pose
+		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE, true);
 		//calculate the destination position for the arm to get a better look at the object
 		// minus x direction and look down towards the object from about 20 cm away.
 		WMRA::Pose objectPose;
-		objectPose.clear();
-		objectPose.x = objPose[0] -30 ; // minus 30 in x direction ( x is forward dir of the wheelchair)
+		objectPose.x = objPose[0] - 120 ; // minus 120mm in x direction ( x is forward dir of the wheelchair)
 		objectPose.y = objPose[1]; 
 		objectPose.z = objPose[2];
 		objectPose.roll = objPose[3];
 		objectPose.pitch = objPose[4];
-		objectPose.yaw = objPose[4];
+		objectPose.yaw = objPose[5];
 
 		//maybe rotate +10 in pitch
-
+		
 		cout << "Going to pose" << endl;
-		robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+		robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE, true); // Move to object location
 		return true;
 	}
 	else{
