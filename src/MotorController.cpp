@@ -232,8 +232,8 @@ bool MotorController::Stop(int motorNum) // emergancy stop a single motor
 bool MotorController::motionFinished() {
 	string result = controller.command("LM?");
 	int availableSpaces = 0;
-	sscanf(result.c_str(), "%d", availableSpaces);
-	if (availableSpaces == 512) {
+	sscanf(result.c_str(), "%d", &availableSpaces);
+	if (availableSpaces == 511) {
 		return true;
 	} else {
 		return false;
