@@ -282,14 +282,16 @@ bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
 
       controller.beginLI();
       controller.endLIseq();
-	  cout << "all motion commands sent..." << endl;
+	  cout << ">> All motion commands sent" << endl;
 	  /* wait for motion to complete */
 	  if(blocking){
 		  while(!motionComplete()){
 			  getJointAngles();
-			  Sleep(200);
+			  Sleep(30);
 		  }
+		  cout << ">> Motion complete" << endl;
 	  }
+	  
     /*  for(int k = 0; k < (numWayPoints+10); k++){
          debugPos_T = kinematics(controller.readPosAll());
          xyz_cont << debugPos_T(0,3) << "," << debugPos_T(1,3) << "," << debugPos_T(2,3) << endl;        
