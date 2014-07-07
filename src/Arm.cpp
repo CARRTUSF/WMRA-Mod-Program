@@ -55,7 +55,7 @@ void Arm::sendData( void * aArg){
 bool Arm::openGripper(bool blocking){
    double position = controller.readPos(7) - 8;
    controller.positionControl(7,position);
-   Sleep(5000);
+   Sleep(7000);
    gripperOpen = true;
    return true;
 }
@@ -63,7 +63,7 @@ bool Arm::openGripper(bool blocking){
 bool Arm::closeGripper(bool blocking){
    double position = controller.readPos(7) + 8;
    controller.positionControl(7,position);
-   Sleep(5000);
+   Sleep(7000);
    gripperOpen = false;
    return true;
 }

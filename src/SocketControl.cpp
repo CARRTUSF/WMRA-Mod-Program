@@ -1,5 +1,6 @@
 #include "SocketControl.h"
 #include "SockStream.h"
+#include "Utility.h"
 #include "Arm.h"
 
 //Constructor
@@ -8,8 +9,9 @@ SocketControl::SocketControl(Arm* robot)
 	robotArm = robot;
 	t = new thread(socketListenReply,this);
 	intermediateWaitingPose = WMRA::Pose(400, -150, 480, 0, 0, 0);
-	userPose = WMRA::Pose(0, -250, 480, -90, 0, 0);
-	waitingPose = WMRA::Pose(0, 200, 600, 0, 0, 0);
+	userPose = WMRA::Pose(-100, -300, 500, 0, 0, 0);
+	userPose.yaw = degToRad(-90)
+	;waitingPose = WMRA::Pose(50, 200, 600, 0, 0, 0);
 	//intermediateWaitingPose = WMRA::Pose(200, 100, 550,-10, 0, 0);
 }
 
@@ -34,6 +36,7 @@ void SocketControl::socketListenReply(void * aArg) {
 	char temp_buf[200];
 	while(true) {
 		do{
+			Sleep(20);
 			getline( read_sock, temp_str_buf );
 		} while(temp_str_buf.find("COMMAND") == string::npos); // keep reading until message is received
 		cout << "\n received command: " << string(temp_str_buf) << endl;
@@ -106,11 +109,11 @@ bool SocketControl::pickupObject(string cmd) // This function assumes orientatio
 {
 	double objPos[3] = {0};
 	char temp_buf[200];
-	cmd.erase(0, 8);
-	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf",
+	//cmd.erase(0, 8);
+	int numRead = sscanf(cmd.c_str(), "%s %lf %lf %lf", temp_buf,
 		&objPos[0], &objPos[1], &objPos[2]);
 
-	if (numRead == 3) {
+	if (numRead == 4) {
 		//Create Pose for Object Position
 		WMRA::Pose objectPose;
 		objectPose.clear();
@@ -124,8 +127,8 @@ bool SocketControl::pickupObject(string cmd) // This function assumes orientatio
 		WMRA::Pose liftTable = objectPose;
 		liftTable.z = liftTable.z + 100;
 
-		cout << "going to intermediate pose" << endl;
-		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+/*		cout << "going to intermediate pose" << endl;
+		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE);*/ // Move to pre-pose
 		//Sleep(2000);
 
 		cout << "going to prepose" << endl;
@@ -176,13 +179,15 @@ bool SocketControl::trashObject(string cmd) {
 	double objPos[3] = {0};
 	double objRot[3] = {0};
 	double trashPos[3] = {0};
-	cmd.erase(0, 6);
-	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf", 
+	char temp_buf[200];
+	//cmd.erase(0, 6);
+	int numRead = sscanf(cmd.c_str(), "%s %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+		temp_buf,
 		&objPos[0], &objPos[1], &objPos[2],
 		&objRot[0], &objRot[1], &objRot[2], 
 		&trashPos[0], &trashPos[1], &trashPos[2]);
 
-	if (numRead == 9) {
+	if (numRead == 10) {
 		//Create Pose for Object Position
 		WMRA::Pose objectPose;
 		objectPose.clear();
@@ -206,9 +211,9 @@ bool SocketControl::trashObject(string cmd) {
 		trashPose.y = trashPos[1];
 		trashPose.z = trashPos[2];
 
-		cout << "going to intermediate pose" << endl;
-		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
-		//Sleep(2000);
+		//cout << "going to intermediate pose" << endl;
+		//robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+		////Sleep(2000);
 
 		cout << "going to prepose" << endl;
 		robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
@@ -264,15 +269,67 @@ bool SocketControl::pourObject(string cmd) {
 	return true;
 }
 
+bool SocketControl::graspObject(WMRA::Pose objectPose){
+	//assume arm is in camera view pose
+	WMRA::Pose prePose = objectPose;
+	prePose.x = prePose.x - 100.0;
+
+	cout << "going to prepose" << endl;
+	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+	//Sleep(2000);
+
+	cout << "Opening gripper " << endl;
+	robotArm->openGripper();
+	//Sleep(5000);
+
+	cout << "Going to object Pose" << endl;
+	robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+	//Sleep(2000);
+
+	cout << "Closing Gripper" << endl;
+	robotArm->closeGripper();
+
+
+	WMRA::Pose liftPose = objectPose;
+	liftPose.z = liftPose.z + 100.0;
+
+	cout << "Going to lift Pose" << endl;
+	robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); 
+
+	return true;
+}
+
+bool SocketControl::releaseGrasp(WMRA::Pose objectPose){
+
+	//
+	WMRA::Pose prePose = objectPose;
+	prePose.x = prePose.x - 100.0;
+
+	WMRA::Pose liftPose = objectPose;
+	liftPose.z = liftPose.z + 100.0;
+
+	cout << "Going to lift Pose" << endl;
+	robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); 
+	cout << "Going to object Pose" << endl;
+	robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE);
+	cout << "Opening gripper " << endl;
+	robotArm->openGripper();
+	cout << "going to prepose" << endl;
+	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+	return true;
+}
+
 bool SocketControl::bringObject(string cmd) {
 	double objPos[3] = {0};
 	double objRot[3] = {0};
-	cmd.erase(0, 14);
-	int numRead = sscanf(cmd.c_str(), "%lf %lf %lf %lf %lf %lf", 
+	//cmd.erase(0, 14);
+	char temp_buf[200];
+	int numRead = sscanf(cmd.c_str(), "%s %lf %lf %lf %lf %lf %lf", 
+		temp_buf,
 		&objPos[0], &objPos[1], &objPos[2],
 		&objRot[0], &objRot[1], &objRot[2]);
 
-	if (numRead == 6) {
+	if (numRead == 7) {
 		//Create Pose for Object Position
 		WMRA::Pose objectPose;
 		objectPose.clear();
@@ -283,43 +340,38 @@ bool SocketControl::bringObject(string cmd) {
 		objectPose.pitch = objRot[1];
 		objectPose.yaw = objRot[2];
 
-		WMRA::Pose prePose = objectPose;
-		prePose.x = prePose.x - 100.0;
 
-		WMRA::Pose liftPose = objectPose;
-		liftPose.z = liftPose.z + 100.0;
+		
 
-		cout << "going to intermediate pose" << endl;
+
+		graspObject(objectPose);
+
+
+	    cout << "going to intermediate pose" << endl;
 		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
-		//Sleep(2000);
 
-		cout << "going to prepose" << endl;
-		robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
-		//Sleep(2000);
-
-		cout << "Opening gripper " << endl;
-		robotArm->openGripper();
-		//Sleep(5000);
-
-		cout << "Going to object Pose" << endl;
-		robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
-		//Sleep(2000);
-
-		cout << "Closing Gripper" << endl;
-		robotArm->closeGripper();
-		Sleep(4000);
-
-		cout << "Going to lift Pose" << endl;
-		robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to lift location
-		//Sleep(2000);
+		WMRA::Pose waypoint1(0,-350,500,0,0,0);
+		waypoint1.yaw = degToRad(-90);
+		cout << "Going to way point 1" << endl;
+		robotArm->autonomous(waypoint1, WMRA::ARM_FRAME_PILOT_MODE);
 
 		cout << "Going to user Pose" << endl;
 		robotArm->autonomous(userPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to user location
-		//Sleep(3000);
 
-		cout << "Opening gripper " << endl;
-		robotArm->openGripper();
-		//Sleep(1000);
+		//tilt gripper
+		WMRA::Pose gripper_tilt;
+		gripper_tilt.yaw = degToRad(30);
+		
+		//putting it back
+		cout << ">> Putting back.." << endl;
+		cout << "Going to way point 1" << endl;
+		robotArm->autonomous(waypoint1, WMRA::ARM_FRAME_PILOT_MODE);
+
+		cout << "going to intermediate pose" << endl;
+		robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+	    
+		releaseGrasp(objectPose); // opposite of grasp object
+		
 
 		cout << "Going back to waiting Pose" << endl;
 		robotArm->autonomous(waitingPose, WMRA::ARM_FRAME_PILOT_MODE); //Return to Waiting Pose

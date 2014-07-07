@@ -542,6 +542,7 @@ bool MotorController::setDefaults()
 	ConfigReader reader;
 	reader.parseFile("settings_controller.conf");
 	reader.setSection("MOTOR_CONTROLLER_DEFAULTS");
+
 	if(reader.keyPresent("encoderPerRevolution1")){			
 		enc2Radian[0] = 2*M_PI/reader.getInt("encoderPerRevolution1"); //calculate conversion values
 		radian2Enc[0] = 1/enc2Radian[0];

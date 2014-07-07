@@ -32,6 +32,8 @@ private :
 	bool goToWaiting(string cmd);
 
 private:
+	bool graspObject(WMRA::Pose objectPose);
+	bool releaseGrasp(WMRA::Pose objectPose);
 	WMRA::Pose intermediateWaitingPose;
 	WMRA::Pose userPose;
 	WMRA::Pose waitingPose;
