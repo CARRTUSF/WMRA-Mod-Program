@@ -1,3 +1,3 @@
-# HELLO WORLD
+# UDP Tester
 
--![alt text](http://i.imgur.com/WWLYo.gif "O HAI!")
+This utility can be used to test the socket command functionality of the WMRA
