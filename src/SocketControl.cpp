@@ -215,25 +215,27 @@ bool SocketControl::trashObject(string cmd) {
 		//robotArm->autonomous(intermediateWaitingPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
 		////Sleep(2000);
 
-		cout << "going to prepose" << endl;
-		robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
-		//Sleep(2000);
+		//cout << "going to prepose" << endl;
+		//robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
+		////Sleep(2000);
 
-		cout << "Opening gripper " << endl;
-		robotArm->openGripper();
-		//Sleep(5000);
+		//cout << "Opening gripper " << endl;
+		//robotArm->openGripper();
+		////Sleep(5000);
 
-		cout << "Going to object Pose" << endl;
-		robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
-		//Sleep(2000);
+		//cout << "Going to object Pose" << endl;
+		//robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+		////Sleep(2000);
 
-		cout << "Closing Gripper" << endl;
-		robotArm->closeGripper();
-		Sleep(3000);
+		//cout << "Closing Gripper" << endl;
+		//robotArm->closeGripper();
+		//Sleep(3000);
 
-		cout << "Going to lift Pose" << endl;
-		robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to trash location
-		//Sleep(2000);
+		//cout << "Going to lift Pose" << endl;
+		//robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to trash location
+		////Sleep(2000);
+
+		graspObject(objectPose);
 
 		cout << "Going to trash Pose" << endl;
 		robotArm->autonomous(trashPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to trash location
@@ -273,6 +275,8 @@ bool SocketControl::graspObject(WMRA::Pose objectPose){
 	//assume arm is in camera view pose
 	WMRA::Pose prePose = objectPose;
 	prePose.x = prePose.x - 100.0;
+	WMRA::Pose graspPose = objectPose;
+	graspPose.x = graspPose.x + 100;
 
 	cout << "going to prepose" << endl;
 	robotArm->autonomous(prePose, WMRA::ARM_FRAME_PILOT_MODE); // Move to pre-pose
@@ -282,8 +286,8 @@ bool SocketControl::graspObject(WMRA::Pose objectPose){
 	robotArm->openGripper();
 	//Sleep(5000);
 
-	cout << "Going to object Pose" << endl;
-	robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
+	cout << "Going to grasp Pose" << endl;
+	robotArm->autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE); // Move to object location
 	//Sleep(2000);
 
 	cout << "Closing Gripper" << endl;
@@ -308,10 +312,13 @@ bool SocketControl::releaseGrasp(WMRA::Pose objectPose){
 	WMRA::Pose liftPose = objectPose;
 	liftPose.z = liftPose.z + 100.0;
 
+	WMRA::Pose graspPose = objectPose;
+	graspPose.x = graspPose.x +40;
+
 	cout << "Going to lift Pose" << endl;
 	robotArm->autonomous(liftPose, WMRA::ARM_FRAME_PILOT_MODE); 
 	cout << "Going to object Pose" << endl;
-	robotArm->autonomous(objectPose, WMRA::ARM_FRAME_PILOT_MODE);
+	robotArm->autonomous(graspPose, WMRA::ARM_FRAME_PILOT_MODE);
 	cout << "Opening gripper " << endl;
 	robotArm->openGripper();
 	cout << "going to prepose" << endl;

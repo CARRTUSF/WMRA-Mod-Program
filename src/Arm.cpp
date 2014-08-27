@@ -6,7 +6,7 @@ using namespace math;
 
 Arm::Arm(){
 	initialized = 0;
-	t = new thread(sendData,this);
+	//t = new thread(sendData,this);
 
 	xyz_way.open("data/XYZ-way.csv");
 	xyz_sent.open("data/XYZ-sent.csv");
@@ -184,6 +184,34 @@ bool Arm::moveJoint(int jointNum, double angle, int ref)
 	return 0;
 }
 
+bool  Arm::teleOperationMove(Matrix start, Matrix dest, bool blocking){
+	if(controller.isInitialized())	// If WMRA controller connection has been initialized start motion
+    { 
+	  KinematicOptimizer opt; // WMRA kinematics optimizer functionality
+      Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+      Matrix Joa;
+      double detJoa;
+      std::vector<double> currJointAng(7), delta(8), speeds(7);
+      //get the initial Arm position
+      std::vector<double> startJointAng = controller.readPosAll() ;
+      //set previous position to current before the loop
+      std::vector<double> prevJointAng = startJointAng;
+      Matrix prevPosTF =  kinematics(startJointAng);
+      Matrix currPosTF; 
+      Matrix jointAng_Mat;
+
+	  //do the motion
+	  kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+	  // Calculating the 6X7 Jacobian of the arm in frame 0:
+      WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
+
+	  currPosTF = dest;
+	  WMRA_delta(delta, prevPosTF , currPosTF);
+	  jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
+	}
+	return true;
+}
+
 bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
    /** calculate angular distance **/
    Matrix startRot(3,3),destRot(3,3);
@@ -193,6 +221,7 @@ bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
          destRot(i,j)=dest(i,j);
       }
    }
+
    Matrix R = (~startRot) * destRot; //delta rotation from start to dest
    double singleAngleDist = atan2(sqrt(pow((R(2,1)-R(1,2)),2)+pow((R(0,2)-R(2,0)),2)+pow((R(1,0)-R(0,1)),2)),(R(0,0)+R(1,1)+R(2,2)-1));
    double angularDist = singleAngleDist;
@@ -251,7 +280,7 @@ bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
          jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
 
          for(int j = 0; j < 7; j++){
-            currJointAng[j] = jointAng_Mat(j,0);
+            currJointAng[j] = jointAng_Mat(j,0); // currJointAng[j] is delta angles
             prevJointAng[j] += currJointAng[j];
          }
 

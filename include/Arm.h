@@ -35,6 +35,7 @@ public:
 	bool initialize();
 	bool setDefaults();
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking = true);
+	bool teleOperation(WMRA::Pose deltaPose, WMRA::CordFrame crodFr, bool blocking = true);
 	bool openGripper(bool blocking = true);
 	bool closeGripper(bool blocking = true);
     bool isGripperOpen();
@@ -56,6 +57,7 @@ public:
 
 private:
 	bool autonomousMove(Matrix start, Matrix dest, bool blocking = true);
+	bool teleOperationMove(Matrix start, Matrix dest, bool blocking = true);
 	double dt;	// the default time between milestones
 	double dt_mod;	// the default time between milestones
 	double maxAngularVelocity;
