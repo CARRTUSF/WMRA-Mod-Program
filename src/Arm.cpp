@@ -170,106 +170,118 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
    return autonomousMove(startLoc_T, destLoc_T, blocking);
 }
 
+//
+//bool Arm::teleoperation(WMRA::Pose data){
+//
+//	if(controller.getMotorMode() != 2){
+////		controller.prevPosition = controller.readPosAll(); // first update of last known position
+//		controller.setMotorMode(MotorController::VELOCITY);
+//	}
+//
+//
+//
+//	vector<int> joint_speed(8);
+//	vector<int> joint_position(8);
+//	KinematicOptimizer opt; // WMRA kinematics optimizer functionality
+//	Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+//	Matrix Joa;
+//	double detJoa;
+//	vector<double> delta(8),currJointAng(7);
+//	
+//	vector<double> prevJointAng = controller.prevPosition;
+//	
+//	Matrix prevPosTF =  kinematics(prevJointAng);
+//	Matrix curT  = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+//         
+//	// Calculating the 6X7 Jacobian of the arm in frame 0:
+//    WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
+//
+//	controller.prevPosition = controller.readPosAll();
+//	Matrix currPosTF = kinematics(controller.prevPosition);
+//
+//    WMRA_delta(delta, prevPosTF , currPosTF);
+//
+//    Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
+//
+//	joint_speed[0] = (int)jointAng_Mat(0,0);
+//	joint_speed[1] = (int)jointAng_Mat(1,0);
+//	joint_speed[2] = (int)jointAng_Mat(2,0);
+//	joint_speed[3] = (int)jointAng_Mat(3,0);
+//	joint_speed[4] = (int)jointAng_Mat(4,0);
+//	joint_speed[5] = -(int)jointAng_Mat(5,0);
+//	joint_speed[6] = (int)jointAng_Mat(6,0);
+//
+//	joint_position = controller.readPosAll_raw();
+//
+//	joint_speed[0] = joint_speed_limit(1, joint_limit_avoidance(1, joint_position[0], joint_speed[0]));
+//	joint_speed[1] = joint_speed_limit(2, joint_limit_avoidance(2, joint_position[1], joint_speed[1]));
+//	joint_speed[2] = joint_speed_limit(3, joint_limit_avoidance(3, joint_position[2], joint_speed[2]));
+//	joint_speed[3] = joint_speed_limit(4, joint_limit_avoidance(4, joint_position[3], joint_speed[3]));
+//	joint_speed[4] = joint_speed_limit(5, joint_limit_avoidance(5, joint_position[4], joint_speed[4]));
+//	joint_speed[5] = joint_speed_limit(6, joint_limit_avoidance(6, joint_position[5], joint_speed[5]));
+//	joint_speed[6] = joint_speed_limit(7, joint_limit_avoidance(7, joint_position[6], joint_speed[6]));
+//	joint_speed[7] = joint_speed_limit(8, joint_limit_avoidance(8, joint_position[7], joint_speed[7]));
+//
+//	
+//	controller.setJointLimits(joint_position);
+//	controller.sendJog(joint_speed);
+//
+//	//vector<int> joint_speed(8);
+//	//vector<int> joint_position(8);
+//	//KinematicOptimizer opt; // WMRA kinematics optimizer functionality
+//	//Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+//	//Matrix Joa;
+//	//double detJoa;
+//	//vector<double> delta(8),currJointAng(7);
+//	//
+//	//vector<double> prevJointAng = controller.prevPosition;
+//	//
+//	//Matrix prevPosTF =  kinematics(prevJointAng);
+//	//Matrix curT  = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
+// //        
+//	//// Calculating the 6X7 Jacobian of the arm in frame 0:
+// //   WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
+//
+//	//controller.prevPosition = controller.readPosAll();
+//	//Matrix currPosTF = kinematics(controller.prevPosition);
+//
+// //   WMRA_delta(delta, prevPosTF , currPosTF);
+//
+// //   Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
+//
+//	//joint_speed[0] = (int)jointAng_Mat(0,0);
+//	//joint_speed[1] = (int)jointAng_Mat(1,0);
+//	//joint_speed[2] = (int)jointAng_Mat(2,0);
+//	//joint_speed[3] = (int)jointAng_Mat(3,0);
+//	//joint_speed[4] = (int)jointAng_Mat(4,0);
+//	//joint_speed[5] = -(int)jointAng_Mat(5,0);
+//	//joint_speed[6] = (int)jointAng_Mat(6,0);
+//
+//	//joint_position = controller.readPosAll_raw();
+//
+//	//joint_speed[0] = joint_speed_limit(1, joint_limit_avoidance(1, joint_position[0], joint_speed[0]));
+//	//joint_speed[1] = joint_speed_limit(2, joint_limit_avoidance(2, joint_position[1], joint_speed[1]));
+//	//joint_speed[2] = joint_speed_limit(3, joint_limit_avoidance(3, joint_position[2], joint_speed[2]));
+//	//joint_speed[3] = joint_speed_limit(4, joint_limit_avoidance(4, joint_position[3], joint_speed[3]));
+//	//joint_speed[4] = joint_speed_limit(5, joint_limit_avoidance(5, joint_position[4], joint_speed[4]));
+//	//joint_speed[5] = joint_speed_limit(6, joint_limit_avoidance(6, joint_position[5], joint_speed[5]));
+//	//joint_speed[6] = joint_speed_limit(7, joint_limit_avoidance(7, joint_position[6], joint_speed[6]));
+//	//joint_speed[7] = joint_speed_limit(8, joint_limit_avoidance(8, joint_position[7], joint_speed[7]));
+//
+//	//controller.sendJog(joint_speed);
+//}
 
-bool Arm::teleoperation(WMRA::Pose data){
+
+bool Arm::teleoperation(WMRA::Pose current, WMRA::Pose destination){
 
 	if(controller.getMotorMode() != 2){
 //		controller.prevPosition = controller.readPosAll(); // first update of last known position
 		controller.setMotorMode(MotorController::VELOCITY);
 	}
-
-
-
-	vector<int> joint_speed(8);
-	vector<int> joint_position(8);
-	KinematicOptimizer opt; // WMRA kinematics optimizer functionality
-	Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
-	Matrix Joa;
-	double detJoa;
-	vector<double> delta(8),currJointAng(7);
-	
-	vector<double> prevJointAng = controller.prevPosition;
-	
-	Matrix prevPosTF =  kinematics(prevJointAng);
-	Matrix curT  = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
-         
-	// Calculating the 6X7 Jacobian of the arm in frame 0:
-    WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
-
-	controller.prevPosition = controller.readPosAll();
-	Matrix currPosTF = kinematics(controller.prevPosition);
-
-    WMRA_delta(delta, prevPosTF , currPosTF);
-
-    Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
-
-	joint_speed[0] = (int)jointAng_Mat(0,0);
-	joint_speed[1] = (int)jointAng_Mat(1,0);
-	joint_speed[2] = (int)jointAng_Mat(2,0);
-	joint_speed[3] = (int)jointAng_Mat(3,0);
-	joint_speed[4] = (int)jointAng_Mat(4,0);
-	joint_speed[5] = -(int)jointAng_Mat(5,0);
-	joint_speed[6] = (int)jointAng_Mat(6,0);
-
-	joint_position = controller.readPosAll_raw();
-
-	joint_speed[0] = joint_speed_limit(1, joint_limit_avoidance(1, joint_position[0], joint_speed[0]));
-	joint_speed[1] = joint_speed_limit(2, joint_limit_avoidance(2, joint_position[1], joint_speed[1]));
-	joint_speed[2] = joint_speed_limit(3, joint_limit_avoidance(3, joint_position[2], joint_speed[2]));
-	joint_speed[3] = joint_speed_limit(4, joint_limit_avoidance(4, joint_position[3], joint_speed[3]));
-	joint_speed[4] = joint_speed_limit(5, joint_limit_avoidance(5, joint_position[4], joint_speed[4]));
-	joint_speed[5] = joint_speed_limit(6, joint_limit_avoidance(6, joint_position[5], joint_speed[5]));
-	joint_speed[6] = joint_speed_limit(7, joint_limit_avoidance(7, joint_position[6], joint_speed[6]));
-	joint_speed[7] = joint_speed_limit(8, joint_limit_avoidance(8, joint_position[7], joint_speed[7]));
-
-	
-	controller.setJointLimits(joint_position);
-	controller.sendJog(joint_speed);
-
-	//vector<int> joint_speed(8);
-	//vector<int> joint_position(8);
-	//KinematicOptimizer opt; // WMRA kinematics optimizer functionality
-	//Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
-	//Matrix Joa;
-	//double detJoa;
-	//vector<double> delta(8),currJointAng(7);
-	//
-	//vector<double> prevJointAng = controller.prevPosition;
-	//
-	//Matrix prevPosTF =  kinematics(prevJointAng);
-	//Matrix curT  = kinematics(prevJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);	
- //        
-	//// Calculating the 6X7 Jacobian of the arm in frame 0:
- //   WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
-
-	//controller.prevPosition = controller.readPosAll();
-	//Matrix currPosTF = kinematics(controller.prevPosition);
-
- //   WMRA_delta(delta, prevPosTF , currPosTF);
-
- //   Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, prevJointAng, dt_mod);
-
-	//joint_speed[0] = (int)jointAng_Mat(0,0);
-	//joint_speed[1] = (int)jointAng_Mat(1,0);
-	//joint_speed[2] = (int)jointAng_Mat(2,0);
-	//joint_speed[3] = (int)jointAng_Mat(3,0);
-	//joint_speed[4] = (int)jointAng_Mat(4,0);
-	//joint_speed[5] = -(int)jointAng_Mat(5,0);
-	//joint_speed[6] = (int)jointAng_Mat(6,0);
-
-	//joint_position = controller.readPosAll_raw();
-
-	//joint_speed[0] = joint_speed_limit(1, joint_limit_avoidance(1, joint_position[0], joint_speed[0]));
-	//joint_speed[1] = joint_speed_limit(2, joint_limit_avoidance(2, joint_position[1], joint_speed[1]));
-	//joint_speed[2] = joint_speed_limit(3, joint_limit_avoidance(3, joint_position[2], joint_speed[2]));
-	//joint_speed[3] = joint_speed_limit(4, joint_limit_avoidance(4, joint_position[3], joint_speed[3]));
-	//joint_speed[4] = joint_speed_limit(5, joint_limit_avoidance(5, joint_position[4], joint_speed[4]));
-	//joint_speed[5] = joint_speed_limit(6, joint_limit_avoidance(6, joint_position[5], joint_speed[5]));
-	//joint_speed[6] = joint_speed_limit(7, joint_limit_avoidance(7, joint_position[6], joint_speed[6]));
-	//joint_speed[7] = joint_speed_limit(8, joint_limit_avoidance(8, joint_position[7], joint_speed[7]));
-
-	//controller.sendJog(joint_speed);
+	this->teleoperationMove(pose2TfMat(current),pose2TfMat(destination));
+	return 1;
 }
+
 
 
 bool Arm::teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr){

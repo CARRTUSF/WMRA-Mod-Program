@@ -564,10 +564,10 @@ bool MotorController::setBrushedMotors()
 	return 1;
 }
 
-bool MotorController::sendJog(vector<int> value)
+bool MotorController::sendJog(vector<double> value)
 {
 	ostringstream os;
-	os << value[0] << "," << value[1] << "," << value[2] << "," << value[3] << "," << value[4] << "," << value[5] << "," << value[6] << "," << value[7];
+	os << angToEnc(0,value[0]) << "," << angToEnc(1,value[1]) << "," << angToEnc(2,value[2]) << "," << angToEnc(3,value[3]) << "," << angToEnc(4,value[4]) << "," << angToEnc(5,value[5]) << "," << angToEnc(6,value[6]) << "," << angToEnc(7,value[7]);
 	string str="JG"+os.str();
 	controller.command(str);
 	return 1;
@@ -614,6 +614,7 @@ bool MotorController::setJointLimits()
 	this->setBackwardLimit("G",  joint_position[6]-temp);
 	this->setBackwardLimit("H",  joint_position[7]-temp);
 	//cout<<"end protection"<<endl;
+	return 1;
 }
 
 bool MotorController::setDefaults()

@@ -25,9 +25,9 @@ bool WMRA_module::teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr)
 	return arm.teleoperation(dest, cordFr);
 }
 
-bool WMRA_module::teleoperation(WMRA::Pose data)
+bool WMRA_module::teleoperation(WMRA::Pose current, WMRA::Pose destination)
 {
-	return arm.teleoperation(data);
+	return arm.teleoperation(current, destination);
 }
 
 bool WMRA_module::openGripper(bool blocking)

@@ -163,7 +163,7 @@ public:
 
 	
 	/// \Sends Jof command for velocity control
-	bool sendJog(vector<int> value);
+	bool sendJog(vector<double> value);
 
 	bool setJointLimits();
 
