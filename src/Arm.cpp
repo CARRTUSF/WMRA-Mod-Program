@@ -507,10 +507,8 @@ bool Arm::teleoperationMove(Matrix start, Matrix dest){
 		jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
 		<< speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
 
-		controller.clearLI();
-		controller.addLinearMotionSegment(currJointAng, speeds);
-		controller.beginLI();
-		controller.endLIseq();  
+		controller.setJointLimits();
+		controller.sendJog(speeds);
 	}
 	else{
 		return false;

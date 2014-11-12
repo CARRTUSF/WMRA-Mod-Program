@@ -591,8 +591,9 @@ bool MotorController::setBackwardLimit(std::string axis, double value)
 	return 1;
 }
 
-bool MotorController::setJointLimits(vector<int> joint_position)
+bool MotorController::setJointLimits()
 {
+	vector<int> joint_position = this->readPosAll_raw();
 	const int temp = 100000;
 	//cout<<"start protection"<<endl;
 	this->setForwardLimit("A",  joint_position[0] +temp);
