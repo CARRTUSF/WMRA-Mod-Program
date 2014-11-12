@@ -62,10 +62,10 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 		motorMode = mode;
 	}
 	else if(mode == MotorController::VELOCITY) {
-		controller.command("STABCDEFGH");		
-		controller.command("JG0.0,0.0,0.0,0.0,0.0,0.0,0.0");
-		controller.command("STABCDEFGH");	
-		controller.command("BGABCDEFGH");	
+		controller.command("ST ABCDEFGH");		
+		controller.command("JG 0.0,0.0,0.0,0.0,0.0,0.0,0.0");
+		controller.command("ST ABCDEFGH");	
+		controller.command("BG ABCDEFGH");	
 		motorMode = mode;
 	}
 	else
@@ -571,6 +571,48 @@ bool MotorController::sendJog(vector<int> value)
 	string str="JG"+os.str();
 	controller.command(str);
 	return 1;
+}
+
+bool MotorController::setForwardLimit(std::string axis, double value)
+{
+	ostringstream os;
+	os << value;
+	string str="FL"+axis+"="+os.str();
+	controller.command(str);
+	return 1;
+}
+
+bool MotorController::setBackwardLimit(std::string axis, double value)
+{
+	ostringstream os;
+	os << value;
+	string str="BL"+axis+"="+os.str();
+	controller.command(str);
+	return 1;
+}
+
+bool MotorController::setJointLimits(vector<int> joint_position)
+{
+	const int temp = 100000;
+	//cout<<"start protection"<<endl;
+	this->setForwardLimit("A",  joint_position[0] +temp);
+	this->setForwardLimit("B",  joint_position[1] +temp);
+	this->setForwardLimit("C",  joint_position[2] +temp);
+	this->setForwardLimit("D",  joint_position[3]+temp);
+	this->setForwardLimit("E",  joint_position[4]+temp);
+	this->setForwardLimit("F", -joint_position[5]+temp);
+	this->setForwardLimit("G",  joint_position[6]+temp);
+	this->setForwardLimit("H",  joint_position[7]+temp);
+
+	this->setBackwardLimit("A",  joint_position[0] -temp);
+	this->setBackwardLimit("B",  joint_position[1] -temp);
+	this->setBackwardLimit("C",  joint_position[2] -temp);
+	this->setBackwardLimit("D",  joint_position[3]-temp);
+	this->setBackwardLimit("E",  joint_position[4]-temp);
+	this->setBackwardLimit("F", -joint_position[5]-temp);
+	this->setBackwardLimit("G",  joint_position[6]-temp);
+	this->setBackwardLimit("H",  joint_position[7]-temp);
+	//cout<<"end protection"<<endl;
 }
 
 bool MotorController::setDefaults()

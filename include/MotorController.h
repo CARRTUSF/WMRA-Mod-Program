@@ -165,6 +165,8 @@ public:
 	/// \Sends Jof command for velocity control
 	bool sendJog(vector<int> value);
 
+	bool setJointLimits(vector<int> joint_position);
+
 
 	vector<double> prevPosition;
 private:
@@ -188,6 +190,8 @@ private:
 	string motorLookup[8];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
+	bool setForwardLimit(std::string axis, double value);
+	bool setBackwardLimit(std::string axis, double value);
 	
 	vector<double> curPosition;
 	vector<double> lastKnownPos;
