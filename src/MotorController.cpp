@@ -1,6 +1,10 @@
 
+#include "ConfigReader.h"
+#include "stringUtility.h"
 #include "MotorController.h"
 using namespace std;
+
+
 
 MotorController::MotorController()
 {
@@ -36,7 +40,7 @@ bool MotorController::initialize(){
 	return true;
 }
 
-bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking, 1=Linear Interpolation
+bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking, 1=Linear Interpolation, 2=velocity control
 {
 	/*gripper will always be in position control mode*/
 	controller.command("PTH=1");
@@ -54,7 +58,14 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 	}
 	else if(mode == MotorController::LINEAR){ //linear control mode
 		/* galil manual pg.88 (pdf pg.98) */
-		controller.command("LM ABCDEFG");	
+		controller.command("LM ABCDEFG");
+		motorMode = mode;
+	}
+	else if(mode == MotorController::VELOCITY) {
+		controller.command("STABCDEFGH");		
+		controller.command("JG0.0,0.0,0.0,0.0,0.0,0.0,0.0");
+		controller.command("STABCDEFGH");	
+		controller.command("BGABCDEFGH");	
 		motorMode = mode;
 	}
 	else
@@ -120,6 +131,13 @@ bool MotorController::beginLI()
 {
 	//controller.command("LE"); // Linear End, for smooth stopping
 	controller.command("BGS"); // Begin Sequence
+	return true;
+}
+
+bool MotorController::clearLI()
+{
+	//controller.command("LE"); // Linear End, for smooth stopping
+	controller.command("CS"); // Begin Sequence
 	return true;
 }
 
@@ -280,6 +298,15 @@ std::vector<double> MotorController::readPosAll()
 	}
 	lastKnownPos = tgt;
 	return tgt;       
+}
+
+std::vector<int> MotorController::readPosAll_raw()
+{
+	vector<int> pos(8);
+	string result = controller.command( "TP");	
+	sscanf(result.c_str(), "%d,%d,%d,%d,%d,%d,%d,%d", &pos[0],&pos[1],&pos[2],&pos[3],&pos[4],&pos[5],&pos[6],&pos[7]);
+
+	return pos;       
 }
 
 std::vector<double> MotorController::getLastKnownPos(){
@@ -534,6 +561,15 @@ bool MotorController::setBrushedMotors()
 	setBrushedMode(5, brushedMotors[5]);
 	setBrushedMode(6, brushedMotors[6]);
 	setBrushedMode(7, brushedMotors[7]);
+	return 1;
+}
+
+bool MotorController::sendJog(vector<int> value)
+{
+	ostringstream os;
+	os << value[0] << "," << value[1] << "," << value[2] << "," << value[3] << "," << value[4] << "," << value[5] << "," << value[6] << "," << value[7];
+	string str="JG"+os.str();
+	controller.command(str);
 	return 1;
 }
 

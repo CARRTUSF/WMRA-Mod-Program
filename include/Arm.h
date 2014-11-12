@@ -11,22 +11,11 @@
 #include <sstream>
 #include <time.h>
 #include <math.h>
-
-#include "SockStream.h"
-#include "tinythread.h"
-#include "stringUtility.h"
 #include "matrix.h" 
+#include "tinythread.h"
 #include "MotorController.h"
-#include "kinematics.h"
-#include "trajectory.h"
-#include "jacobian.h"
-#include "Utility.h"
-#include "ConfigReader.h"
-#include "WmraTypes.h"
-#include "MotorController.h"
-#include "optimization.h"
+#include "SockStream.h"
 
-using namespace tthread;
 
 class Arm{
 public:
@@ -35,6 +24,8 @@ public:
 	bool initialize();
 	bool setDefaults();
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking = true);
+	bool teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr);
+	bool teleoperation(WMRA::Pose data);
 	bool openGripper(bool blocking = true);
 	bool closeGripper(bool blocking = true);
     bool isGripperOpen();
@@ -56,12 +47,15 @@ public:
 
 private:
 	bool autonomousMove(Matrix start, Matrix dest, bool blocking = true);
+	bool teleoperationMove(Matrix start, Matrix dest);
+	int joint_limit_avoidance(int joint_name, int encoder_count, int speed);
+	int joint_max_speed(int joint_name);
+	int joint_speed_limit(int joint_name, int speed);
 	double dt;	// the default time between milestones
 	double dt_mod;	// the default time between milestones
 	double maxAngularVelocity;
 	int control_velocity;
 	
-	Matrix gripperInitRotDiff;
 	WMRA::JointValueSet readyPosition; //joint angles for ready position
 	WMRA::JointValueSet lastKnownJointPos;
 
@@ -72,5 +66,6 @@ private:
 	bool initialized;
     bool gripperOpen;
 	MotorController controller; 
+	Matrix gripperInitRotDiff;
 };
 #endif;

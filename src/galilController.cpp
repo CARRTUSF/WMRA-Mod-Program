@@ -1,5 +1,7 @@
 #include "galilController.h"
 #include "SockStream.h"
+#include "utility.h"
+#include "ConfigReader.h"
 
 using namespace std;
 

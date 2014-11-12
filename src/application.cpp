@@ -10,6 +10,7 @@
 #include "Arm.h"
 #include "Utility.h"
 #include "SocketControl.h"
+#include "SockStream.h"
 
 #define PI 3.14159265
 #undef max

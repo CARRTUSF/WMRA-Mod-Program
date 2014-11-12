@@ -2,12 +2,15 @@
 #include "SockStream.h"
 #include "Utility.h"
 #include "Arm.h"
+#include "tinythread.h"
+
+//using namespace tthread;
 
 //Constructor
 SocketControl::SocketControl(Arm* robot)
 {
 	robotArm = robot;
-	t = new thread(socketListenReply,this);
+	t = new tthread::thread(socketListenReply,this);
 	intermediateWaitingPose = WMRA::Pose(400, -150, 480, 0, 0, 0);
 	userPose = WMRA::Pose(-100, -300, 500, 0, 0, 0);
 	userPose.yaw = degToRad(-90)

@@ -13,14 +13,12 @@
 #include <ctype.h>
 #include "WmraTypes.h"
 #include "galilController.h"
-#include "ConfigReader.h"
-#include "stringUtility.h"
 
 using namespace std;
 
 class MotorController {
 public:
-	enum motorControlMode  {POS_CONTROL = 0, LINEAR};
+	enum motorControlMode  {POS_CONTROL = 0, LINEAR, VELOCITY};
 	MotorController();
 	~MotorController();
 
@@ -54,6 +52,9 @@ public:
 
 	/// \brief starts the linear interpolation movement that is stored on the galil controller. sends to galil controller
 	bool beginLI();
+
+	/// \brief starts the linear interpolation movement that is stored on the galil controller. sends to galil controller
+	bool clearLI();
 
 	/// \brief  waits until all waypoints are finished. blocking.
 	bool waitLinearMotionEnd(); 
@@ -90,6 +91,9 @@ public:
 
 	/// \brief returns all of the current motor angle in radians. reads from galil controller
 	std::vector<double> readPosAll();
+
+	/// \brief returns all of the current motor angle in radians. reads from galil controller
+	std::vector<int> readPosAll_raw();
 
 	/// \brief returns the error in
 	double readPosErr(int motorNum); 
@@ -157,6 +161,12 @@ public:
 	/// \Turns motors off
 	bool MotorsOFF();
 
+	
+	/// \Sends Jof command for velocity control
+	bool sendJog(vector<int> value);
+
+
+	vector<double> prevPosition;
 private:
 	galilController controller;
 	bool setDefaults(); // set defaults
@@ -178,7 +188,7 @@ private:
 	string motorLookup[8];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
-
+	
 	vector<double> curPosition;
 	vector<double> lastKnownPos;
 };
