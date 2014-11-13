@@ -42,6 +42,7 @@ bool MotorController::initialize(){
 
 bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking, 1=Linear Interpolation, 2=velocity control
 {
+	this->Stop();
 	/*gripper will always be in position control mode*/
 	controller.command("PTH=1");
 
@@ -58,14 +59,16 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 	}
 	else if(mode == MotorController::LINEAR){ //linear control mode
 		/* galil manual pg.88 (pdf pg.98) */
+		cout << "SETTING TO LINEAR MODE" << endl;
 		controller.command("LM ABCDEFG");
 		motorMode = mode;
 	}
 	else if(mode == MotorController::VELOCITY) {
+		cout << "SETTING TO VELOCITY MODE" << endl;
 		controller.command("ST ABCDEFGH");		
 		controller.command("JG 0.0,0.0,0.0,0.0,0.0,0.0,0.0");
-		controller.command("ST ABCDEFGH");	
-		controller.command("BG ABCDEFGH");	
+		controller.command("ST ABCDEFG");	
+		controller.command("BG ABCDEFG");	
 		motorMode = mode;
 	}
 	else
@@ -580,17 +583,18 @@ bool MotorController::sendJog(vector<double> value)
 {
 	if(this->isInitialized() == true)
 	{
-		this->setJointLimits();
+		//this->setJointLimits();
 		ostringstream os;
-		os << angToEnc(0,value[0]) << "," << angToEnc(1,value[1]) << "," << angToEnc(2,value[2]) << "," << angToEnc(3,value[3]) << "," << angToEnc(4,value[4]) << "," << angToEnc(5,value[5]) << "," << angToEnc(6,value[6]) << "," << angToEnc(7,value[7]);
-		string str="JG"+os.str();
+		os << angToEnc(0,value[0]) << "," << angToEnc(1,value[1]) << "," << angToEnc(2,value[2]) << "," << angToEnc(3,value[3]) << "," << angToEnc(4,value[4]) << "," << angToEnc(5,(-1*value[5])) << "," << angToEnc(6,value[6]);
+		string str="JG "+os.str();
+		cout << str << endl;
 		controller.command(str);
 		return 1;
 	}
 	return 0;
 }
 
-bool MotorController::setForwardLimit(std::string axis, double value)
+bool MotorController::setForwardLimit(std::string axis, long value)
 {
 	ostringstream os;
 	os << value;
@@ -599,7 +603,7 @@ bool MotorController::setForwardLimit(std::string axis, double value)
 	return 1;
 }
 
-bool MotorController::setBackwardLimit(std::string axis, double value)
+bool MotorController::setBackwardLimit(std::string axis, long value)
 {
 	ostringstream os;
 	os << value;

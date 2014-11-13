@@ -60,9 +60,6 @@
     <ClCompile Include="..\src\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WMRArobot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\3rdparty\SockStream\src\SockStream.cpp">
       <Filter>Source Files\SocketStream</Filter>
     </ClCompile>
@@ -108,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\WMRArobot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\WmraTypes.h">

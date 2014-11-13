@@ -153,7 +153,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdparty\SockStream\src\SockStream.cpp" />
-    <ClCompile Include="..\src\application.cpp" />
     <ClCompile Include="..\src\Arm.cpp" />
     <ClCompile Include="..\src\ConfigReader.cpp" />
     <ClCompile Include="..\src\galilController.cpp" />

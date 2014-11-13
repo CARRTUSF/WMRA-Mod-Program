@@ -189,7 +189,7 @@ bool Arm::teleoperation(WMRA::Pose deltaPose, double deltaTime){
 		Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
 		Matrix Joa;
 		double detJoa;
-		std::vector<double> currJointAng(7), delta(8), speeds(7);
+		std::vector<double> currJointAng(7), delta(8), speeds(8);
 
 		/*current joint angles */
 		std::vector<double> startJointAng = controller.readPosAll() ;		
@@ -213,13 +213,16 @@ bool Arm::teleoperation(WMRA::Pose deltaPose, double deltaTime){
 		}
 
 		for(int k = 0; k < startJointAng.size(); k++){
-			speeds[k] = abs(startJointAng[k])/deltaTime; // #DEBUG - should this be the absolute value
+			speeds[k] = (startJointAng[k])/deltaTime; 
+			//speeds[k] = abs(startJointAng[k])/deltaTime; // #DEBUG - should this be the absolute value
 		}
 
 		jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
 		<< speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
-
+		
 		controller.sendJog(speeds);
+		
+		return true;
 	}
 	else{
 		return false;
@@ -492,6 +495,12 @@ WMRA::JointValueSet Arm::getLastKnownJointPosition(){
 
 bool Arm::toReady(bool blocking)
 {
+	controller.Stop();
+	Sleep(1000);
+	if(controller.getMotorMode() != 1){
+		controller.setMotorMode(MotorController::POS_CONTROL);
+		controller.setMotorMode(MotorController::LINEAR);
+	}
    double angles[7] = {M_PI/2, M_PI/2,0, M_PI/2,M_PI/2,M_PI/3,0};
    vector<double> readyAng;
    
@@ -513,6 +522,7 @@ bool Arm::toReady(bool blocking)
    controller.addLinearMotionSegment(readyAng, speeds);
    controller.beginLI();
    controller.endLIseq();
+   cout << "Moving to ready position" << endl;
    return true;
 }
 

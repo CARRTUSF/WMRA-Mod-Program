@@ -162,7 +162,7 @@ public:
 	bool MotorsOFF();
 
 	
-	/// \Sends Jof command for velocity control
+	/// \Sends Jog command for velocity control
 	bool sendJog(vector<double> value);
 
 	bool setJointLimits();
@@ -190,8 +190,8 @@ private:
 	string motorLookup[8];
 	bool setPID(int motorNum, int P, int I, int D);
 	bool isValidMotor(int motorNum);
-	bool setForwardLimit(std::string axis, double value);
-	bool setBackwardLimit(std::string axis, double value);
+	bool setForwardLimit(std::string axis, long value);
+	bool setBackwardLimit(std::string axis, long value);
 	
 	vector<double> curPosition;
 	vector<double> lastKnownPos;

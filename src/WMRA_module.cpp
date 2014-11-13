@@ -23,11 +23,6 @@ bool WMRA_module::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool block
 	return arm.autonomous(dest, crodFr, blocking);
 }
 
-bool WMRA_module::teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr)
-{
-	return arm.teleoperation(dest, cordFr);
-}
-
 bool WMRA_module::teleoperation(WMRA::Pose deltaPose)
 {
 	return arm.teleoperation(deltaPose);
@@ -36,6 +31,11 @@ bool WMRA_module::teleoperation(WMRA::Pose deltaPose)
 bool WMRA_module::teleoperation(WMRA::Pose deltaPose, double dt)
 {
 	return arm.teleoperation(deltaPose,dt);
+}
+
+bool WMRA_module::teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr)
+{
+	return arm.teleoperation(dest, cordFr);
 }
 
 bool WMRA_module::openGripper(bool blocking)

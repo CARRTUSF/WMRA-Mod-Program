@@ -126,7 +126,6 @@
     <ClCompile Include="..\src\tinythread.cpp" />
     <ClCompile Include="..\src\trajectory.cpp" />
     <ClCompile Include="..\src\Utility.cpp" />
-    <ClCompile Include="..\src\WMRArobot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdparty\SockStream\include\SockStream.h" />
@@ -143,7 +142,6 @@
     <ClInclude Include="..\include\tinythread.h" />
     <ClInclude Include="..\include\trajectory.h" />
     <ClInclude Include="..\include\Utility.h" />
-    <ClInclude Include="..\include\WMRArobot.h" />
     <ClInclude Include="..\include\WmraTypes.h" />
     <ClInclude Include="..\include\WmraUtilities.h" />
   </ItemGroup>
