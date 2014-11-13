@@ -198,12 +198,12 @@ bool Arm::teleoperation(WMRA::Pose deltaPose, double deltaTime){
 		Matrix startPosTF =  kinematics(startJointAng);
 		Matrix destPosTF = startPosTF * pose2TfMat(deltaPose);
 
+		// Calculating the transformation matrix of each joint
 		kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
 		
 		// Calculating the 6X7 Jacobian of the arm in frame 0:
 		WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
 
-		
 		WMRA_delta(delta, startPosTF , destPosTF);
 
 		Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, startJointAng, deltaTime);
@@ -213,7 +213,7 @@ bool Arm::teleoperation(WMRA::Pose deltaPose, double deltaTime){
 		}
 
 		for(int k = 0; k < startJointAng.size(); k++){
-			speeds[k] = abs(startJointAng[k])/deltaTime;
+			speeds[k] = abs(startJointAng[k])/deltaTime; // #DEBUG - should this be the absolute value
 		}
 
 		jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
