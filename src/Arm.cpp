@@ -161,7 +161,6 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
    }
    else if (cordFr == WMRA::GRIPPER_FRAME_REL){
       destLoc_T = startLoc_T * pose2TfMat(dest);
-
    }
    else{ // if an invalid cord frame is given, move in arm base absolute
       destLoc_T = pose2TfMat(dest);
