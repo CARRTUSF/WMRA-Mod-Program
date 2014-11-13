@@ -33,6 +33,11 @@ bool WMRA_module::teleoperation(WMRA::Pose deltaPose)
 	return arm.teleoperation(deltaPose);
 }
 
+bool WMRA_module::teleoperation(WMRA::Pose deltaPose, double dt)
+{
+	return arm.teleoperation(deltaPose,dt);
+}
+
 bool WMRA_module::openGripper(bool blocking)
 {
 	return arm.openGripper(blocking);
