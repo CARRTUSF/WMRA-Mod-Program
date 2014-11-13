@@ -24,8 +24,9 @@ public:
 	bool initialize();
 	bool setDefaults();
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking = true);
-	bool teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr);
 	bool teleoperation(WMRA::Pose deltaPose);
+	bool teleoperation(WMRA::Pose deltaPose, double deltaTime);
+	bool teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr);
 	bool openGripper(bool blocking = true);
 	bool closeGripper(bool blocking = true);
     bool isGripperOpen();
