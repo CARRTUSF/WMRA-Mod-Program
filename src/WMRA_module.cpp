@@ -7,12 +7,15 @@ Arm arm;
 
 WMRA_module::WMRA_module(void)
 {
-	//arm.initialize();
+	arm.initialize();
 }
 
 bool WMRA_module::initialize()
 {
-	return arm.initialize();
+	if(this->isInitialized() == true)
+		return 1;
+	else
+		return arm.initialize();
 }
 
 bool WMRA_module::autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking)
@@ -25,9 +28,9 @@ bool WMRA_module::teleoperation(WMRA::Pose dest, WMRA::CordFrame cordFr)
 	return arm.teleoperation(dest, cordFr);
 }
 
-bool WMRA_module::teleoperation(WMRA::Pose current, WMRA::Pose destination)
+bool WMRA_module::teleoperation(WMRA::Pose deltaPose)
 {
-	return arm.teleoperation(current, destination);
+	return arm.teleoperation(deltaPose);
 }
 
 bool WMRA_module::openGripper(bool blocking)

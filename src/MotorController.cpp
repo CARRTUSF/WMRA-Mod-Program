@@ -165,6 +165,9 @@ bool MotorController::isDebug() // return simulation flag from controller
 
 bool MotorController::wmraSetup() //WMRA setup
 {
+	/*stop all motors*/
+	this->Stop();
+
 	/*update current position vector array size*/
 	curPosition.resize(8);
 
@@ -173,6 +176,9 @@ bool MotorController::wmraSetup() //WMRA setup
 
 	/*set all 7 arm joints to LI mode, and gripper to PT mode*/
 	setMotorMode(motorMode);
+
+	/*stop all motors*/
+	this->Stop();
 
 	/*set all velocities with default values*/
 	setMaxVelocity(0, motorVelocity[0]);
@@ -220,11 +226,17 @@ bool MotorController::wmraSetup() //WMRA setup
 	for(int i = 0 ; i<8; i++)
 		curPosition[i] = readyPosition[i];
 
+	/*stop all motors*/
+	this->Stop();
+
 	/*turn motors on*/
 	motorsOn();
 
 	/*set initialization value*/
 	initialized = true;
+
+	/*stop all motors*/
+	this->Stop();
 
 	return 1;
 }
@@ -566,11 +578,16 @@ bool MotorController::setBrushedMotors()
 
 bool MotorController::sendJog(vector<double> value)
 {
-	ostringstream os;
-	os << angToEnc(0,value[0]) << "," << angToEnc(1,value[1]) << "," << angToEnc(2,value[2]) << "," << angToEnc(3,value[3]) << "," << angToEnc(4,value[4]) << "," << angToEnc(5,value[5]) << "," << angToEnc(6,value[6]) << "," << angToEnc(7,value[7]);
-	string str="JG"+os.str();
-	controller.command(str);
-	return 1;
+	if(this->isInitialized() == true)
+	{
+		this->setJointLimits();
+		ostringstream os;
+		os << angToEnc(0,value[0]) << "," << angToEnc(1,value[1]) << "," << angToEnc(2,value[2]) << "," << angToEnc(3,value[3]) << "," << angToEnc(4,value[4]) << "," << angToEnc(5,value[5]) << "," << angToEnc(6,value[6]) << "," << angToEnc(7,value[7]);
+		string str="JG"+os.str();
+		controller.command(str);
+		return 1;
+	}
+	return 0;
 }
 
 bool MotorController::setForwardLimit(std::string axis, double value)

@@ -272,14 +272,56 @@ bool Arm::autonomous(WMRA::Pose dest, WMRA::CordFrame cordFr, bool blocking){
 //}
 
 
-bool Arm::teleoperation(WMRA::Pose current, WMRA::Pose destination){
+bool Arm::teleoperation(WMRA::Pose deltaPose){
 
-	if(controller.getMotorMode() != 2){
-//		controller.prevPosition = controller.readPosAll(); // first update of last known position
-		controller.setMotorMode(MotorController::VELOCITY);
+   if(controller.isInitialized())	// If WMRA controller connection has been initialized start loop
+   {
+		if(controller.getMotorMode() != 2){
+			controller.setMotorMode(MotorController::VELOCITY);
+		}
+
+		KinematicOptimizer opt; // WMRA kinematics optimizer functionality
+		
+		Matrix Ta(4,4), T01(4,4), T12(4,4), T23(4,4), T34(4,4), T45(4,4), T56(4,4), T67(4,4);
+		Matrix Joa;
+		double detJoa;
+		std::vector<double> currJointAng(7), delta(8), speeds(7);
+
+		
+		double dt_mod = this->dt;
+		std::vector<double> startJointAng = controller.readPosAll() ;		
+		
+		/*set start and destination transformation matrix based on current position and delta pose */
+		Matrix startPosTF =  kinematics(startJointAng);
+		Matrix destPosTF = startPosTF * pose2TfMat(deltaPose);
+
+		kinematics(startJointAng,Ta,T01,T12,T23,T34,T45,T56,T67);
+		
+		// Calculating the 6X7 Jacobian of the arm in frame 0:
+		WMRA_J07(T01, T12, T23, T34, T45, T56, T67, Joa, detJoa);
+
+		
+		WMRA_delta(delta, startPosTF , destPosTF);
+
+		Matrix jointAng_Mat = opt.WMRA_Opt2(Joa, detJoa, delta, startJointAng, dt_mod);
+
+		for(int j = 0; j < 7; j++){
+			startJointAng[j] = jointAng_Mat(j,0);
+		}
+
+		for(int k = 0; k < startJointAng.size(); k++){
+			speeds[k] = abs(startJointAng[k])/dt_mod;
+		}
+
+		jointVel << speeds[0] << "," << speeds[1] << "," << speeds[2] << "," << speeds[3] << "," 
+		<< speeds[4] << "," << speeds[5] << "," << speeds[6] << endl;
+
+		controller.sendJog(speeds);
 	}
-	this->teleoperationMove(pose2TfMat(current),pose2TfMat(destination));
-	return 1;
+	else{
+		return false;
+	}
+	return true;
 }
 
 
@@ -475,10 +517,10 @@ bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
 bool Arm::teleoperationMove(Matrix start, Matrix dest){
 
    dt_mod = Arm::dt;
+
    /** get trajectory **/
    std::vector<Matrix> wayPoints = WMRA_traj(3, start, dest, 2);
-
-
+   
    if(controller.isInitialized())	// If WMRA controller connection has been initialized start loop
    { 
 		KinematicOptimizer opt; // WMRA kinematics optimizer functionality
