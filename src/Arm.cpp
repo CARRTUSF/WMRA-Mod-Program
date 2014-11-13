@@ -297,6 +297,11 @@ bool Arm::moveJoint(int jointNum, double angle, int ref)
 	return 0;
 }
 
+
+bool Arm::stop(){
+	return controller.Stop();
+}
+
 bool Arm::autonomousMove(Matrix start, Matrix dest, bool blocking){
    /** calculate angular distance **/
    Matrix startRot(3,3),destRot(3,3);

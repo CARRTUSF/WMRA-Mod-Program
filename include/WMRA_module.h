@@ -2,7 +2,6 @@
 
 namespace WMRA{
 	class Pose;
-	class Omni_data;
 	class JointValueSet;
 	enum CordFrame;
 };
@@ -26,9 +25,9 @@ namespace WMRA{
 		bool park2Ready(bool blocking = true);
 		bool motionComplete();
 		bool moveJoint(int jointNum, double angle, int ref);
+		bool stop();
 		WMRA::Pose getPose();
 		WMRA::JointValueSet getJointAngles();
-		/*void sendValues();*/
 		bool isInitialized();
 		bool setInitialJointAngles(WMRA::JointValueSet& joints);
 		static void sendData(void* aArg);

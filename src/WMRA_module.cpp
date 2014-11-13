@@ -78,6 +78,13 @@ bool WMRA_module::moveJoint(int jointNum, double angle, int ref)
 	return arm.moveJoint(jointNum, angle, ref);
 }
 
+bool WMRA_module::stop()
+{
+	return arm.stop();
+}
+
+
+
 WMRA::Pose WMRA_module::getPose()
 {
 	return arm.getPose();

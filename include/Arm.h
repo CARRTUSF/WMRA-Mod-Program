@@ -20,7 +20,6 @@
 class Arm{
 public:
 	Arm();
-	//WMRA::Pose getPosition();
 	bool initialize();
 	bool setDefaults();
 	bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking = true);
@@ -36,6 +35,7 @@ public:
 	bool park2Ready(bool blocking = true);
 	bool motionComplete();
 	bool moveJoint(int jointNum, double angle, int ref);
+	bool stop();
 	WMRA::Pose getPose();
 	WMRA::JointValueSet getJointAngles();
 	void sendValues();
