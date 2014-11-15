@@ -9,8 +9,6 @@
 #define _USE_MATH_DEFINES  // for M_PI
 #include <math.h>
 
-//#define PI 3.14159265
-
 using namespace std;
 
 double degToRad(double deg){
@@ -133,19 +131,4 @@ void cross(vector<double> &tgt, vector<double> a, vector<double> b)
   r[1] = a[2]*b[0]-a[0]*b[2];
   r[2] = a[0]*b[1]-a[1]*b[0];
   tgt = r;
-}
-
-vector<double> OMNI_Control(vector<double> omni_inputs)
-{
-	vector<double> tgt = omni_inputs;
-	if(omni_inputs.size() == 6)
-	{
-		// Mapping Position
-		vector<double>  Position_velocity_maping_ratio;
-		Position_velocity_maping_ratio[0] = 0.9;
-		Position_velocity_maping_ratio[1] = 0.9;
-		Position_velocity_maping_ratio[2] = 0.5;
-	}
-	return tgt;
-
 }

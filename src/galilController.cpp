@@ -1,6 +1,5 @@
 #include "galilController.h"
 #include "SockStream.h"
-#include "utility.h"
 #include "ConfigReader.h"
 
 using namespace std;
@@ -14,20 +13,17 @@ using namespace std;
 client_tcpsocket galilController::sock;
 
 galilController::galilController(){
-
 	debugFile.open("data/GalilDebug.log");
 	initialized = false;
 }
 
-/*
 galilController::~galilController(){
 	debugFile.close();
-	sock.~client_tcpsocket();
-}*/
+	sock.close();
+}
 
-bool galilController::initialize() // return initialized
+bool galilController::initialize()
 {
-	//cout << "Galil: set defaults" << endl;
 	initialized = setDefaults();
 	if(initialized)
 	{
@@ -38,7 +34,6 @@ bool galilController::initialize() // return initialized
 		}
 		else
 		{
-			//cout << "Galil: initialize connection" << endl;
 			initialized = initializeSocket(galilController::IP);
 		}
 	}
@@ -80,7 +75,6 @@ std::string galilController::command(std::string Command)
 {
 	if(simulation)
 	{
-		//cout << "Sim Mode: " << Command <<  endl;
 		return "0";
 	}
 	else
@@ -107,7 +101,6 @@ bool galilController::setDefaults()
 	if(reader.keyPresent("IP"))
 	{
 		galilController::IP = reader.getString("IP");
-		//cout << "IP: " << galilController::IP << endl;
 	}
 	else
 	{
@@ -138,12 +131,9 @@ bool galilController::setDefaults()
 
 bool galilController::initializeSocket(std::string IP)
 {
-	//cout << "Initializing Socket" << endl;
 	const char * c = IP.c_str();
 	sock.open(c,23);
-	//cout << "After Opening Socket" << endl;
 	return galilController::sock.connected(); // #DEBUG - breaks if trying to setup sock while WMRA is off
-	//return sock.is_open();
 }
 
 int galilController::commandGalil(char* Command, char* Response, int ResponseSize) //returns the number of bytes read

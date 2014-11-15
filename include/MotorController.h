@@ -20,7 +20,6 @@ class MotorController {
 public:
 	enum motorControlMode  {POS_CONTROL = 0, LINEAR, VELOCITY};
 	MotorController();
-	~MotorController();
 
 	/**
 	* \brief Initializes the GalilController and sets the default variables in the Galil Controller.

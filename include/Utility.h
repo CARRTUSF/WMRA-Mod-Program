@@ -15,6 +15,5 @@ void dest(vector<double> &tgt, int val);
 int sign(double x);
 void WMRA_delta(vector<double> &tgt, Matrix Tid, Matrix Tdd);
 void cross(vector<double> &tgt, vector<double> a, vector<double> b);
-vector<double> OMNI_Control(vector<double> omni_inputs);
 
 #endif;

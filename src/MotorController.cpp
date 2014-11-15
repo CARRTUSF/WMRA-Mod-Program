@@ -4,8 +4,6 @@
 #include "MotorController.h"
 using namespace std;
 
-
-
 MotorController::MotorController()
 {
 	initialized = false;
@@ -19,11 +17,6 @@ MotorController::MotorController()
 	motorLookup[7] = "H";
 }
 
-MotorController::~MotorController()
-{
-//	controller.~galilController();
-}
-
 bool MotorController::initialize(){
 
 	initialized = controller.initialize();
@@ -32,7 +25,7 @@ bool MotorController::initialize(){
 	if(initialized)
 		initialized = wmraSetup();
 	if(initialized)
-		return true; //cout << "Motor Controller Initialized" << endl;
+		return true; 
 	else {
 		cout << "Error: Initialization of Motor Controller FAILED" << endl;
 		return false;
@@ -58,13 +51,18 @@ bool MotorController::setMotorMode(motorControlMode mode) // 0=Position Tracking
 		motorMode = mode;
 	}
 	else if(mode == MotorController::LINEAR){ //linear control mode
+		controller.command("PTA=1"); // When switching from Velocity to Linear mode position tracking needs to be applied.
+		controller.command("PTB=1");
+		controller.command("PTC=1");
+		controller.command("PTD=1");
+		controller.command("PTE=1");
+		controller.command("PTF=1");
+		controller.command("PTG=1");
 		/* galil manual pg.88 (pdf pg.98) */
-		cout << "SETTING TO LINEAR MODE" << endl;
 		controller.command("LM ABCDEFG");
 		motorMode = mode;
 	}
 	else if(mode == MotorController::VELOCITY) {
-		cout << "SETTING TO VELOCITY MODE" << endl;
 		controller.command("ST ABCDEFGH");		
 		controller.command("JG 0.0,0.0,0.0,0.0,0.0,0.0,0.0");
 		controller.command("ST ABCDEFG");	
