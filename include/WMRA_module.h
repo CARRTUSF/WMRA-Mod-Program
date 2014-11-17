@@ -6,7 +6,6 @@ namespace WMRA{
 	enum CordFrame;
 };
 
-
 namespace WMRA{
 	class WMRA_module
 	{

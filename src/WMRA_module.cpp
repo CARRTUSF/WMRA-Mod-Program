@@ -83,8 +83,6 @@ bool WMRA_module::stop()
 	return arm.stop();
 }
 
-
-
 WMRA::Pose WMRA_module::getPose()
 {
 	return arm.getPose();
@@ -94,7 +92,6 @@ WMRA::JointValueSet WMRA_module::getJointAngles()
 {
 	return arm.getJointAngles();
 }
-
 
 //void WMRA_module::sendValues()
 //{
