@@ -121,3 +121,8 @@ WMRA::JointValueSet WMRA_module::getLastKnownJointPosition()
 WMRA_module::~WMRA_module(void)
 {
 }
+
+std::string WMRA_module::command(std::string Command)
+{
+	return arm.command(Command);
+}

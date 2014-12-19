@@ -43,8 +43,8 @@ public:
 	bool setInitialJointAngles(WMRA::JointValueSet& joints);
 	static void sendData(void* aArg);
 	WMRA::JointValueSet getLastKnownJointPosition();
-	
 	tthread::thread* t;
+	std::string command(std::string Command);
 
 private:
 	bool autonomousMove(Matrix start, Matrix dest, bool blocking = true);

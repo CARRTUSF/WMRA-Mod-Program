@@ -497,6 +497,12 @@ bool MotorController::motorsOn()
 	return true;
 }
 
+std::string MotorController::command(std::string Command)
+{
+	return controller.command(Command);
+}
+
+
 /*------------------------------------------------------
 
 Private Functions

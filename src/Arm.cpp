@@ -775,3 +775,8 @@ int Arm::joint_speed_limit(int joint_name, int speed)
 		return speed;
 	}
 }
+
+std::string Arm::command(std::string Command)
+{
+	return controller.command(Command);
+}

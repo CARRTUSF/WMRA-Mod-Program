@@ -166,8 +166,10 @@ public:
 
 	bool setJointLimits();
 
-
 	vector<double> prevPosition;
+
+	std::string command(std::string Command);
+
 private:
 	galilController controller;
 	bool setDefaults(); // set defaults

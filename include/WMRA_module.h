@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace WMRA{
 	class Pose;
 	class JointValueSet;
@@ -11,6 +13,7 @@ namespace WMRA{
 	{
 	public:
 		WMRA_module(void);
+		~WMRA_module(void);
 		bool initialize();
 		bool autonomous(WMRA::Pose dest, WMRA::CordFrame crodFr, bool blocking = true);
 		bool teleoperation(WMRA::Pose deltaPose);
@@ -31,7 +34,7 @@ namespace WMRA{
 		bool setInitialJointAngles(WMRA::JointValueSet& joints);
 		static void sendData(void* aArg);
 		WMRA::JointValueSet getLastKnownJointPosition();
-		~WMRA_module(void);
+		std::string command(std::string Command);
 	};
 };
 
